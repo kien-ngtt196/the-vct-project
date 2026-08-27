@@ -103,6 +103,10 @@ def parse_match(match_url):
 
     match_notes = soup.find_all(class_="match-header-vs-note")
 
+    match_status = match_notes[0].get_text(strip = True) if match_notes else None
+    if (match_status != "final"):
+        return None
+
     team1_element = soup.select_one(".match-header-link-name.mod-1 .wf-title-med")
     team2_element = soup.select_one(".match-header-link-name.mod-2 .wf-title-med")
 
@@ -111,7 +115,7 @@ def parse_match(match_url):
     match = {
         "id": match_id,
         "url": match_url,
-        "status": match_notes[0].get_text(strip = True) if match_notes else None,
+        "status": match_status,
         "format": match_notes[1].get_text(strip = True) if len(match_notes) > 1 else None,
         "team1": team1_element.get_text(strip = True) if team1_element else None,
         "team2": team2_element.get_text(strip = True) if team2_element else None,
@@ -120,6 +124,7 @@ def parse_match(match_url):
         "maps": parse_maps(soup),
     }
 
+    print(match)
     return match
 
 base_url = "https://www.vlr.gg/events/?region=all&tier=60"
@@ -128,24 +133,27 @@ base_response.raise_for_status()
 
 tournaments = parse_tournaments(base_response.text)
 
-# for tournament in tournaments:
-#     print(f"Title: {tournament['title']}")
-#     print(f"URL: {tournament['url']}")
-#     print(f"Status: {tournament['status']}")
-#     print(f"Tournament ID: {tournament['tournament_id']}")
+for tournament in tournaments:
+    print(f"Title: {tournament['title']}")
+    print(f"URL: {tournament['url']}")
+    print(f"Status: {tournament['status']}")
+    print(f"Tournament ID: {tournament['tournament_id']}")
 
-#     matches_page_url = get_matches_page_url(tournament['url'])
-#     print(f"Matches Page URL: {matches_page_url}")
+    matches_page_url = get_matches_page_url(tournament['url'])
+    print(f"Matches Page URL: {matches_page_url}")
 
-#     if matches_page_url == None:
-#         continue
+    if matches_page_url == None:
+        continue
 
-#     match_links = get_match_links(matches_page_url)
+    match_links = get_match_links(matches_page_url)
+    for match_link in match_links:
+        print(f"Match Link: {match_link}")
+        parse_match(match_link)
 
-#     print("-" * 40)    
+    print("-" * 40)    
 
-tmp = parse_match("https://www.vlr.gg/742476/paper-rex-vs-nongshim-redforce-vct-2026-pacific-stage-2-ur1")
-for key, value in tmp.items():
-    print(f"{key}: {value}")
+# tmp = parse_match("https://www.vlr.gg/742476/paper-rex-vs-nongshim-redforce-vct-2026-pacific-stage-2-ur1")
+# print(tmp)
+
 # tmp = parse_match("https://www.vlr.gg/742477/global-esports-vs-kiwoom-drx-vct-2026-pacific-stage-2-ur1")
 # print(tmp)
