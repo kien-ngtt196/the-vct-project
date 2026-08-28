@@ -1,7 +1,27 @@
 import re
+import time
+import json
 from bs4 import BeautifulSoup
-import requests
+from curl_cffi import requests
+from curl_cffi.requests.exceptions import RequestException
 from urllib.parse import urljoin
+
+session = requests.Session(impersonate="chrome120")
+
+def safe_get(url, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            response = session.get(url, timeout=30)
+            return response
+            
+        except RequestException as e:
+            print(f"  -> Warning: Attempt {attempt + 1} failed for {url}. Error: {e}")
+            if attempt < max_retries - 1:
+                print("  -> Waiting 5 seconds before retrying...")
+                time.sleep(5)
+            else:
+                print(f"  -> Giving up on {url} after {max_retries} attempts.")
+                return None
 
 def parse_tournaments(html):
 
@@ -33,14 +53,14 @@ def parse_tournaments(html):
             "title": event_title,
             "url": event_url,
             "status": event_status,
-            "tournament_id": event_id,
+            "id": event_id,
+            "matches": [],
         })
 
     return tournaments
 
 def get_matches_page_url(tournament_url):
-    response = requests.get(tournament_url, timeout=30)
-    response.raise_for_status()
+    response = safe_get(tournament_url)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -55,8 +75,7 @@ def get_matches_page_url(tournament_url):
     )
 
 def get_match_links(matches_page_url):
-    response = requests.get(matches_page_url, timeout=30)
-    response.raise_for_status()
+    response = safe_get(matches_page_url)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -66,8 +85,54 @@ def get_match_links(matches_page_url):
 
     return match_links
 
+def parse_player(map_section):
+    players = []
+
+    player_rows = map_section.select(".ovw-row:not(.mod-head)")
+
+    for player_row in player_rows:
+        name_element = player_row.select_one(".ovw-player-name")
+        team_element = player_row.select_one(".ovw-player-tag")
+        nationality_element = player_row.select_one(".ovw-player .flag")
+        agent_element = player_row.select_one(".ovw-agents .stats-sq img")
+        rating_element = player_row.select_one("div[data-col='rating2'] .side.mod-both")
+        acs_element = player_row.select_one("div[data-col='acs'] .side.mod-both")
+        kills_element = player_row.select_one("span[data-col='kills'] .side.mod-both")
+        deaths_element = player_row.select_one("span[data-col='deaths'] .side.mod-both")
+        assists_element = player_row.select_one("span[data-col='assists'] .side.mod-both")
+        kd_diff_element = player_row.select_one("div[data-col='kd-diff'] .side.mod-both")
+        kast_element = player_row.select_one("div[data-col='kast'] .side.mod-both")
+        adr_element = player_row.select_one("div[data-col='adr'] .side.mod-both")
+        headshot_percentage_element = player_row.select_one("div[data-col='hsp'] .side.mod-both")
+        first_kills_element = player_row.select_one("div[data-col='fb'] .side.mod-both")
+        first_deaths_element = player_row.select_one("div[data-col='fd'] .side.mod-both")
+
+        player_data = {
+            'name': name_element.get_text(strip=True) if name_element else None,
+            'team': team_element.get_text(strip=True) if team_element else None,
+            'nationality': nationality_element.get("title") if nationality_element else None,
+            'agent': agent_element.get("alt") if agent_element else None,
+            'rating': rating_element.get_text(strip=True) if rating_element else None,
+            'acs': acs_element.get_text(strip=True) if acs_element else None,
+            'kills': kills_element.get_text(strip=True) if kills_element else None,
+            'deaths': deaths_element.get_text(strip=True) if deaths_element else None,
+            'assists': assists_element.get_text(strip=True) if assists_element else None,
+            'kd_diff': kd_diff_element.get_text(strip=True) if kd_diff_element else None,
+            'kast': kast_element.get_text(strip=True) if kast_element else None,
+            'adr': adr_element.get_text(strip=True) if adr_element else None,
+            'headshot_percentage': headshot_percentage_element.get_text(strip=True) if headshot_percentage_element else None,
+            'first_kills': first_kills_element.get_text(strip=True) if first_kills_element else None,
+            'first_deaths': first_deaths_element.get_text(strip=True) if first_deaths_element else None,
+        }
+
+        players.append(player_data)
+
+    return players
+
+
 def parse_maps(soup):
     maps = []
+    players = []
 
     map_sections = soup.find_all(class_="vm-stats-game")
     for map_section in map_sections:
@@ -84,14 +149,14 @@ def parse_maps(soup):
             "game_id": game_id,
             "team1_score": team1_score_element.get_text(strip=True) if team1_score_element else None,
             "team2_score": team2_score_element.get_text(strip=True) if team2_score_element else None,
+            "players": parse_player(map_section)
         }
         maps.append(map_data)
 
     return maps
 
 def parse_match(match_url):
-    response = requests.get(match_url, timeout = 30)
-    response.raise_for_status()
+    response = safe_get(match_url)
     soup = BeautifulSoup(response.text, "html.parser")
 
     match_id_match = re.search(r"/(\d+)/", match_url)
@@ -124,36 +189,37 @@ def parse_match(match_url):
         "maps": parse_maps(soup),
     }
 
-    print(match)
     return match
 
-base_url = "https://www.vlr.gg/events/?region=all&tier=60"
-base_response = requests.get(base_url, timeout = 30)
-base_response.raise_for_status()
+if __name__ == "__main__":
+    import os
 
-tournaments = parse_tournaments(base_response.text)
+    base_url = "https://www.vlr.gg/events/?region=all&tier=60"
+    base_response = safe_get(base_url)
 
-for tournament in tournaments:
-    print(f"Title: {tournament['title']}")
-    print(f"URL: {tournament['url']}")
-    print(f"Status: {tournament['status']}")
-    print(f"Tournament ID: {tournament['tournament_id']}")
+    tournaments = parse_tournaments(base_response.text)
 
-    matches_page_url = get_matches_page_url(tournament['url'])
-    print(f"Matches Page URL: {matches_page_url}")
+    for tournament in tournaments:
+        print(f"Title: {tournament['title']}")
+        print(f"URL: {tournament['url']}")
+        print(f"Status: {tournament['status']}")
 
-    if matches_page_url == None:
-        continue
+        matches_page_url = get_matches_page_url(tournament['url'])
+        if matches_page_url == None:
+            continue
 
-    match_links = get_match_links(matches_page_url)
-    for match_link in match_links:
-        print(f"Match Link: {match_link}")
-        parse_match(match_link)
+        time.sleep(2)
 
-    print("-" * 40)    
+        match_links = get_match_links(matches_page_url)
+        for match_link in match_links:
+            time.sleep(2)
+            print(f"Match Link: {match_link}")
+            match_data = parse_match(match_link)
+            if match_data is not None:
+                tournament["matches"].append(match_data)
 
-# tmp = parse_match("https://www.vlr.gg/742476/paper-rex-vs-nongshim-redforce-vct-2026-pacific-stage-2-ur1")
-# print(tmp)
-
-# tmp = parse_match("https://www.vlr.gg/742477/global-esports-vs-kiwoom-drx-vct-2026-pacific-stage-2-ur1")
-# print(tmp)
+    os.makedirs("data", exist_ok=True)
+    with open("data/data.json", "w", encoding="utf-8") as f:
+        json.dump(tournaments, f, indent=4, ensure_ascii=False)
+            
+    print("Scraped data successfully saved to data/data.json")
