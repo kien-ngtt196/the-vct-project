@@ -177,10 +177,14 @@ def parse_match(match_url):
 
     score_elements = soup.find_all("span", class_=re.compile(r"match-header-vs-score-(loser|winner)$"))
 
+    date_element = soup.select_one(".moment-tz-convert")
+    match_date = date_element.get("data-utc-ts") if date_element else (date_element.get_text(strip=True) if date_element else None)
+
     match = {
         "id": match_id,
         "url": match_url,
         "status": match_status,
+        "date": match_date,
         "format": match_notes[1].get_text(strip = True) if len(match_notes) > 1 else None,
         "team1": team1_element.get_text(strip = True) if team1_element else None,
         "team2": team2_element.get_text(strip = True) if team2_element else None,
