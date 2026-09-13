@@ -13,3 +13,6 @@ __pycache__/
 data/
 data.json
 data/raw_data.json
+
+# Plan
+plan/
