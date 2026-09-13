@@ -1,3 +1,15 @@
-data/raw_data.json
-plan
+# Python environment
 .venv
+
+# Compiled C++ / Pybind11 artifacts
+*.pyd
+*.so
+build/
+dist/
+*.egg-info
+__pycache__/
+
+# Data
+data/
+data.json
+data/raw_data.json
