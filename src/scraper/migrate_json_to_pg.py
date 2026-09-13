@@ -51,7 +51,8 @@ def create_tables(curs):
             team1 VARCHAR(100),
             team2 VARCHAR(100),
             team1_score INT,
-            team2_score INT
+            team2_score INT,
+            match_date TIMESTAMP
         );
         CREATE TABLE IF NOT EXISTS games (
             id VARCHAR(50) PRIMARY KEY,
@@ -96,10 +97,11 @@ def upsert_tournament(curs, tournament):
 def upsert_match(curs, match, tournament_id):
     team1_score = safe_int(match.get("team1_score"))
     team2_score = safe_int(match.get("team2_score"))
+    match_date = match.get("date")
 
     curs.execute("""
-        INSERT INTO matches (id, tournament_id, url, status, format, team1, team2, team1_score, team2_score)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO matches (id, tournament_id, url, status, format, team1, team2, team1_score, team2_score, match_date)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO UPDATE SET
             tournament_id = EXCLUDED.tournament_id,
             url = EXCLUDED.url,
@@ -108,7 +110,8 @@ def upsert_match(curs, match, tournament_id):
             team1 = EXCLUDED.team1,
             team2 = EXCLUDED.team2,
             team1_score = EXCLUDED.team1_score,
-            team2_score = EXCLUDED.team2_score;
+            team2_score = EXCLUDED.team2_score,
+            match_date = EXCLUDED.match_date;
     """, (
         match["id"], 
         tournament_id, 
@@ -118,7 +121,8 @@ def upsert_match(curs, match, tournament_id):
         match.get("team1"), 
         match.get("team2"), 
         team1_score, 
-        team2_score
+        team2_score,
+        match_date
     ))
 
 
