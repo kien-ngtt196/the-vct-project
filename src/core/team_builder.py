@@ -31,175 +31,73 @@ def normalize_map_name(map_name):
     return " ".join(text.split())
 
 
-def build_player_features():
-    teams = build_team_structure()
-    features = []
-    for team in teams:
-        for player in team["players"]:
-            features.append({
-                "player_name": player["player_name"],
-                "team": team["team_name"],
-                "team_key": team["team_key"],
-                "recent_form": player.get("recent_form", 0.0),
-                "consistency": player.get("consistency", 0.0),
-                "composite_rating": player.get("composite_rating", 0.0),
-                "last_match_date": player.get("last_match_date"),
-            })
-    return features
-
-
-def build_team_snapshot():
-    teams = build_team_structure()
-    by_team = defaultdict(list)
-
-    for team in teams:
-        for player in team["players"]:
-            by_team[team["team_name"]].append(player)
-
-    team_snapshot = {}
-
-    for team_name, items in by_team.items():
-        team_snapshot[team_name] = {
-            "team_key": normalize_team_name(team_name),
-            "avg_recent_form": sum(p.get("recent_form", 0.0) for p in items) / len(items),
-            "avg_consistency": sum(p.get("consistency", 0.0) for p in items) / len(items),
-            "avg_composite_rating": sum(p.get("composite_rating", 0.0) for p in items) / len(items),
-            "player_count": len(items),
-        }
-
-    return team_snapshot
-
-
-def team_strength_score(team_name):
-    snapshot = build_team_snapshot().get(team_name)
-    if not snapshot:
-        return None
-
-    # simple weighted team score
-    score = (
-        0.45 * snapshot["avg_recent_form"] +
-        0.35 * snapshot["avg_composite_rating"] +
-        0.20 * max(0.0, 100.0 - snapshot["avg_consistency"]) / 100.0
-    )
-
-    return {
-        "team": team_name,
-        "score": score,
-        "avg_recent_form": snapshot["avg_recent_form"],
-        "avg_consistency": snapshot["avg_consistency"],
-        "avg_composite_rating": snapshot["avg_composite_rating"],
-    }
-
-
-def fetch_match_history():
-    conn = psycopg2.connect(**DATABASE_CONFIG)
-    cur = conn.cursor()
-
-    query = """
-        SELECT
-            t1.canonical_name,
-            t2.canonical_name,
-            g.team1_score,
-            g.team2_score,
-            mps.canonical_name,
-            m.match_date
-        FROM matches m
-        JOIN games g ON g.match_id = m.id
-        JOIN teams t1 ON t1.team_id = m.team1_id
-        JOIN teams t2 ON t2.team_id = m.team2_id
-        JOIN maps mps ON mps.map_id = g.map_id
-        WHERE m.match_date IS NOT NULL
-        ORDER BY m.match_date ASC
-    """
-
-    cur.execute(query)
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-    return rows
-
-
-DEFAULT_MAP_STRENGTH = 0.5
-
-
-def compute_map_strength():
-    teams = build_team_structure()
-    result = defaultdict(dict)
-
-    for team in teams:
-        team_key = normalize_team_name(team["team_name"])
-        for map_name, map_info in team.get("map_stats", {}).items():
-            result[team_key][map_name] = map_info.get("win_rate", 0.0)
-
-    return result
-
-
-def map_strength_for_team(team_name, map_name=None, default=DEFAULT_MAP_STRENGTH):
-    normalized_team = normalize_team_name(team_name)
-    map_strength = compute_map_strength()
-    exact_match = map_strength.get(normalized_team, {})
-
-    if map_name is None:
-        return exact_match
-    return exact_match.get(normalize_map_name(map_name), default)
-
-
-def expected_score(rating_a, rating_b):
-    return 1.0 / (1.0 + 10 ** ((rating_b - rating_a) / 400.0))
-
-
-def update_elo(current_rating, opponent_rating, result, k=32):
-    expected = expected_score(current_rating, opponent_rating)
-    return current_rating + k * (result - expected)
-
-
-def team_match_prediction(team_a, team_b, map_name=None):
-    team_a_score = team_strength_score(team_a)
-    team_b_score = team_strength_score(team_b)
-
-    if team_a_score is None or team_b_score is None:
-        return {
-            "team_a": team_a,
-            "team_b": team_b,
-            "winner": "unknown",
-            "confidence": 0.5,
-            "reason": "not enough player data"
-        }
-
-    map_strength = compute_map_strength()
-    map_a = map_strength_for_team(team_a, map_name)
-    map_b = map_strength_for_team(team_b, map_name)
-
-    raw_a = team_a_score["score"] + map_a * 50
-    raw_b = team_b_score["score"] + map_b * 50
-
-    diff = raw_a - raw_b
-    prob_a = 1 / (1 + math.exp(-diff / 25.0))
-
-    winner = team_a if prob_a >= 0.5 else team_b
-    confidence = max(prob_a, 1 - prob_a)
-
-    return {
-        "team_a": team_a,
-        "team_b": team_b,
-        "winner": winner,
-        "team_a_win_probability": round(prob_a, 3),
-        "team_b_win_probability": round(1 - prob_a, 3),
-        "confidence": round(confidence, 3),
-        "team_a_score": round(raw_a, 3),
-        "team_b_score": round(raw_b, 3),
-        "map_strength": {
-            team_a: round(map_a, 3),
-            team_b: round(map_b, 3),
-        }
-    }
-
-
 def mean_or_default(values):
-    values = [v for v in values if v is not None]
+    values = [float(v) for v in values if v is not None]
     if not values:
         return 0.0
     return sum(values) / len(values)
+
+
+def match_result_label(team_score, opponent_score):
+    if team_score is None or opponent_score is None:
+        return "draw"
+    if team_score > opponent_score:
+        return "win"
+    if team_score < opponent_score:
+        return "loss"
+    return "draw"
+
+
+def summarize_map_stats(map_stats):
+    if not map_stats:
+        return "no map history"
+    return " | ".join(
+        f"{map_name}:{info['win_rate']:.3f}" for map_name, info in sorted(map_stats.items())
+    )
+
+
+def compute_recent_form(match_history):
+    if not match_history:
+        return 0.0
+
+    recent = sorted(match_history, key=lambda x: x["date"])[-5:]
+    acs_values = [entry.get("acs") for entry in recent if entry.get("acs") is not None]
+    if not acs_values:
+        return 0.0
+
+    weights = list(range(1, len(acs_values) + 1))
+    weighted_sum = sum(value * weight for value, weight in zip(acs_values, weights))
+    return round(weighted_sum / sum(weights), 2)
+
+
+def compute_consistency(match_history):
+    acs_values = [entry.get("acs") for entry in match_history if entry.get("acs") is not None]
+    if not acs_values:
+        return 0.0
+
+    avg = mean_or_default(acs_values)
+    variance = mean_or_default([(float(value) - avg) ** 2 for value in acs_values])
+    std_dev = math.sqrt(float(variance))
+    score = max(0.0, 100.0 - std_dev)
+    return round(score, 2)
+
+
+def compute_composite_rating(match_history):
+    if not match_history:
+        return 0.0
+
+    rating_values = [entry.get("rating") for entry in match_history if entry.get("rating") is not None]
+    acs_values = [entry.get("acs") for entry in match_history if entry.get("acs") is not None]
+    kast_values = [entry.get("kast") for entry in match_history if entry.get("kast") is not None]
+    adr_values = [entry.get("adr") for entry in match_history if entry.get("adr") is not None]
+
+    rating = mean_or_default(rating_values)
+    acs = mean_or_default(acs_values)
+    kast = mean_or_default(kast_values)
+    adr = mean_or_default(adr_values)
+
+    composite = (0.40 * rating) + (0.30 * (acs / 100.0)) + (0.20 * (kast / 100.0)) + (0.10 * (adr / 100.0))
+    return round(composite, 3)
 
 
 def fetch_team_structure_rows():
@@ -285,24 +183,24 @@ def fetch_team_structure_rows():
             "team_id": team_id,
             "player_name": player_name,
             "player_nationality": nationality,
-            "acs": acs,
-            "rating": rating,
-            "kast": kast,
-            "adr": adr,
-            "kills": kills,
-            "deaths": deaths,
-            "assists": assists,
-            "kd_diff": kd_diff,
-            "headshot_percent": headshot_percent,
-            "first_kills": first_kills,
-            "first_deaths": first_deaths,
+            "acs": float(acs) if acs is not None else None,
+            "rating": float(rating) if rating is not None else None,
+            "kast": float(kast) if kast is not None else None,
+            "adr": float(adr) if adr is not None else None,
+            "kills": float(kills) if kills is not None else None,
+            "deaths": float(deaths) if deaths is not None else None,
+            "assists": float(assists) if assists is not None else None,
+            "kd_diff": float(kd_diff) if kd_diff is not None else None,
+            "headshot_percent": float(headshot_percent) if headshot_percent is not None else None,
+            "first_kills": float(first_kills) if first_kills is not None else None,
+            "first_deaths": float(first_deaths) if first_deaths is not None else None,
             "game_id": game_id,
             "map_name": raw_map_name,
             "match_date": match_date,
             "match_id": match_id,
             "opponent_name": opponent_name,
-            "team_score": team_score,
-            "opponent_score": opponent_score,
+            "team_score": float(team_score) if team_score is not None else None,
+            "opponent_score": float(opponent_score) if opponent_score is not None else None,
             "opponent_team_name": opponent_team_name,
         })
 
@@ -362,7 +260,7 @@ def build_team_structure():
             team_entry["match_history"].append({
                 "date": row["match_date"],
                 "opponent": opponent_name,
-                "result": "win" if row["team_score"] is not None and row["opponent_score"] is not None and row["team_score"] > row["opponent_score"] else "loss" if row["team_score"] is not None and row["opponent_score"] is not None and row["team_score"] < row["opponent_score"] else "draw",
+                "result": match_result_label(row["team_score"], row["opponent_score"]),
                 "map": row["map_name"],
                 "score_line": f"{row['team_score']}-{row['opponent_score']}" if row["team_score"] is not None and row["opponent_score"] is not None else "n/a",
             })
@@ -385,10 +283,14 @@ def build_team_structure():
             adr_vals = [v for v in stats["adr"] if v is not None]
             kills_vals = [v for v in stats["kills"] if v is not None]
             deaths_vals = [v for v in stats["deaths"] if v is not None]
-
             kd_ratio = 0.0
             if deaths_vals:
                 kd_ratio = mean_or_default(kills_vals) / max(1.0, mean_or_default(deaths_vals))
+
+            match_history = sorted(player_data["match_history"], key=lambda x: x["date"])
+            recent_form = compute_recent_form(match_history)
+            consistency = compute_consistency(match_history)
+            composite_rating = compute_composite_rating(match_history)
 
             player_obj = {
                 "player_name": player_name,
@@ -403,11 +305,11 @@ def build_team_structure():
                     "headshots_percent": round(mean_or_default([v for v in stats["headshots_percent"] if v is not None]), 2),
                     "first_kills": round(mean_or_default([v for v in stats["first_kills"] if v is not None]), 2),
                 },
-                "recent_form": 0.0,
-                "consistency": 0.0,
-                "composite_rating": 0.0,
-                "last_match_date": max((m["date"] for m in player_data["match_history"]), default=None),
-                "match_history": sorted(player_data["match_history"], key=lambda x: x["date"]),
+                "recent_form": recent_form,
+                "consistency": consistency,
+                "composite_rating": composite_rating,
+                "last_match_date": max((m["date"] for m in match_history), default=None),
+                "match_history": match_history,
             }
             players.append(player_obj)
 
@@ -430,12 +332,16 @@ def build_team_structure():
             team_consistency = round(mean_or_default([p["consistency"] for p in players]), 2)
             team_composite = round(mean_or_default([p["composite_rating"] for p in players]), 2)
 
+        team_win_rate = 0.0
+        if team_entry["match_history"]:
+            team_win_rate = round(mean_or_default([1.0 if m["result"] == "win" else 0.0 for m in team_entry["match_history"]]), 3)
+
         teams.append({
             "team_name": team_entry["team_name"],
             "team_key": team_key,
             "overall_rating": round(team_composite * 1000.0, 2),
             "team_stats": {
-                "win_rate": round(mean_or_default([m["result"] == "win" for m in team_entry["match_history"]]), 3),
+                "win_rate": team_win_rate,
                 "recent_form": team_recent_form,
                 "consistency": team_consistency,
                 "player_count": len(players),
@@ -521,14 +427,7 @@ def print_team_structure(teams, limit=10):
 
 
 def export_team_overview_csv(output_path="D:/My Projects/the-vct-project/data/team_builder_overview.csv"):
-    players = build_player_features()
-    by_team = defaultdict(list)
-    for player in players:
-        by_team[player["team"]].append(player)
-
-    snapshot = build_team_snapshot()
-    map_strength = compute_map_strength()
-
+    teams = build_team_structure()
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     fieldnames = [
@@ -550,20 +449,15 @@ def export_team_overview_csv(output_path="D:/My Projects/the-vct-project/data/te
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-        for team in sorted(snapshot.keys()):
-            team_stats = snapshot[team]
-            team_key = normalize_team_name(team)
-            team_map = map_strength.get(team_key, {})
-            if team_map:
-                map_summary = " | ".join(f"{map_name}:{value:.3f}" for map_name, value in sorted(team_map.items()))
-            else:
-                map_summary = "no map history (default 0.5)"
+        for team in sorted(teams, key=lambda t: t["team_name"]):
+            team_stats = team["team_stats"]
+            map_summary = summarize_map_stats(team["map_stats"])
 
             writer.writerow({
-                "team": team,
+                "team": team["team_name"],
                 "row_type": "team_summary",
-                "team_avg_recent_form": team_stats["avg_recent_form"],
-                "team_avg_consistency": team_stats["avg_consistency"],
+                "team_avg_recent_form": team_stats["recent_form"],
+                "team_avg_consistency": team_stats["consistency"],
                 "team_avg_composite_rating": team_stats["avg_composite_rating"],
                 "team_player_count": team_stats["player_count"],
                 "player_name": "",
@@ -574,12 +468,12 @@ def export_team_overview_csv(output_path="D:/My Projects/the-vct-project/data/te
                 "map_strength_summary": map_summary,
             })
 
-            for player in sorted(by_team.get(team, []), key=lambda p: p["player_name"]):
+            for player in sorted(team["players"], key=lambda p: p["player_name"]):
                 writer.writerow({
-                    "team": team,
+                    "team": team["team_name"],
                     "row_type": "player",
-                    "team_avg_recent_form": team_stats["avg_recent_form"],
-                    "team_avg_consistency": team_stats["avg_consistency"],
+                    "team_avg_recent_form": team_stats["recent_form"],
+                    "team_avg_consistency": team_stats["consistency"],
                     "team_avg_composite_rating": team_stats["avg_composite_rating"],
                     "team_player_count": team_stats["player_count"],
                     "player_name": player["player_name"],
