@@ -2,9 +2,4 @@
 .venv
 
 # Compiled C++ / Pybind11 artifacts
-*.pyd
-*.so
 build/
-dist/
-*.egg-info
-__pycache__/

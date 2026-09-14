@@ -1,0 +1,468 @@
+team,row_type,team_avg_recent_form,team_avg_consistency,team_avg_composite_rating,team_player_count,player_name,player_recent_form,player_consistency,player_composite_rating,player_last_match_date,map_strength_summary
+100t,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.333 | ascent:0.000 | bind:0.250 | breeze:0.250 | corrode:0.333 | fracture:0.500 | haven:0.000 | lotus:0.000 | pearl:0.400 | split:0.333 | summit:0.500 | sunset:0.500
+100t,player,0.0,0.0,0.0,5,asuna,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.333 | ascent:0.000 | bind:0.250 | breeze:0.250 | corrode:0.333 | fracture:0.500 | haven:0.000 | lotus:0.000 | pearl:0.400 | split:0.333 | summit:0.500 | sunset:0.500
+100t,player,0.0,0.0,0.0,5,bang,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.333 | ascent:0.000 | bind:0.250 | breeze:0.250 | corrode:0.333 | fracture:0.500 | haven:0.000 | lotus:0.000 | pearl:0.400 | split:0.333 | summit:0.500 | sunset:0.500
+100t,player,0.0,0.0,0.0,5,cryocells,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.333 | ascent:0.000 | bind:0.250 | breeze:0.250 | corrode:0.333 | fracture:0.500 | haven:0.000 | lotus:0.000 | pearl:0.400 | split:0.333 | summit:0.500 | sunset:0.500
+100t,player,0.0,0.0,0.0,5,timotino,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.333 | ascent:0.000 | bind:0.250 | breeze:0.250 | corrode:0.333 | fracture:0.500 | haven:0.000 | lotus:0.000 | pearl:0.400 | split:0.333 | summit:0.500 | sunset:0.500
+100t,player,0.0,0.0,0.0,5,vora,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.333 | ascent:0.000 | bind:0.250 | breeze:0.250 | corrode:0.333 | fracture:0.500 | haven:0.000 | lotus:0.000 | pearl:0.400 | split:0.333 | summit:0.500 | sunset:0.500
+ag,team_summary,0.0,0.0,0.0,12,,,,,,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,au1,0.0,0.0,0.0,2026-03-10 16:10:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,bai,0.0,0.0,0.0,2026-08-20 04:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,f4ngeer,0.0,0.0,0.0,2026-08-20 04:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,iamgrq,0.0,0.0,0.0,2026-08-20 04:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,k1ra,0.0,0.0,0.0,2026-08-20 04:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,never,0.0,0.0,0.0,2026-09-06 05:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,sakura,0.0,0.0,0.0,2026-09-06 05:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,sanye,0.0,0.0,0.0,2026-09-06 05:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,shr1mp,0.0,0.0,0.0,2026-08-20 04:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,tensions3y,0.0,0.0,0.0,2026-09-06 05:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,xp1aner,0.0,0.0,0.0,2026-09-06 05:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+ag,player,0.0,0.0,0.0,12,youze,0.0,0.0,0.0,2026-05-30 05:00:00,abyss:0.750 | ascent:0.333 | bind:0.667 | corrode:1.000 | fracture:0.400 | haven:0.500 | lotus:0.500 | pearl:0.000 | split:0.429 | sunset:0.000
+aq,team_summary,0.0,0.0,0.0,7,,,,,,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,5cm,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,dannyy,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,ffs,0.0,0.0,0.0,2026-05-22 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,juicy,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,s1mon,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,youjun,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+aq,player,0.0,0.0,0.0,7,youze,0.0,0.0,0.0,2026-03-20 05:00:00,abyss:1.000 | ascent:0.500 | bind:0.500 | breeze:1.000 | haven:1.000 | lotus:0.667 | pearl:0.500 | split:0.600 | sunset:1.000
+at,team_summary,0.0,0.0,0.0,5,,,,,,ascent:0.000 | split:0.000 | sunset:1.000
+at,player,0.0,0.0,0.0,5,dingwei,0.0,0.0,0.0,2026-09-05 08:00:00,ascent:0.000 | split:0.000 | sunset:1.000
+at,player,0.0,0.0,0.0,5,eren,0.0,0.0,0.0,2026-09-05 08:00:00,ascent:0.000 | split:0.000 | sunset:1.000
+at,player,0.0,0.0,0.0,5,folykiki,0.0,0.0,0.0,2026-09-05 08:00:00,ascent:0.000 | split:0.000 | sunset:1.000
+at,player,0.0,0.0,0.0,5,layla,0.0,0.0,0.0,2026-09-05 08:00:00,ascent:0.000 | split:0.000 | sunset:1.000
+at,player,0.0,0.0,0.0,5,monk,0.0,0.0,0.0,2026-09-05 08:00:00,ascent:0.000 | split:0.000 | sunset:1.000
+bbl,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.500 | ascent:0.500 | breeze:0.400 | corrode:1.000 | haven:0.500 | pearl:1.000 | split:0.500 | summit:0.500
+bbl,player,0.0,0.0,0.0,5,crewen,0.0,0.0,0.0,2026-08-23 12:15:00,abyss:0.500 | ascent:0.500 | breeze:0.400 | corrode:1.000 | haven:0.500 | pearl:1.000 | split:0.500 | summit:0.500
+bbl,player,0.0,0.0,0.0,5,lar0k,0.0,0.0,0.0,2026-08-23 12:15:00,abyss:0.500 | ascent:0.500 | breeze:0.400 | corrode:1.000 | haven:0.500 | pearl:1.000 | split:0.500 | summit:0.500
+bbl,player,0.0,0.0,0.0,5,loita,0.0,0.0,0.0,2026-08-23 12:15:00,abyss:0.500 | ascent:0.500 | breeze:0.400 | corrode:1.000 | haven:0.500 | pearl:1.000 | split:0.500 | summit:0.500
+bbl,player,0.0,0.0,0.0,5,lovers rock,0.0,0.0,0.0,2026-08-23 12:15:00,abyss:0.500 | ascent:0.500 | breeze:0.400 | corrode:1.000 | haven:0.500 | pearl:1.000 | split:0.500 | summit:0.500
+bbl,player,0.0,0.0,0.0,5,rosé,0.0,0.0,0.0,2026-08-23 12:15:00,abyss:0.500 | ascent:0.500 | breeze:0.400 | corrode:1.000 | haven:0.500 | pearl:1.000 | split:0.500 | summit:0.500
+blg,team_summary,0.0,0.0,0.0,11,,,,,,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,biank,0.0,0.0,0.0,2026-02-09 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,bud,0.0,0.0,0.0,2026-09-09 05:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,egggg,0.0,0.0,0.0,2026-09-09 05:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,ft,0.0,0.0,0.0,2026-09-03 05:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,knight,0.0,0.0,0.0,2026-08-22 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,lac,0.0,0.0,0.0,2026-09-09 05:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,nephh,0.0,0.0,0.0,2026-08-22 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,rushia,0.0,0.0,0.0,2026-08-22 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,whzy,0.0,0.0,0.0,2026-08-22 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,xiaofeng,0.0,0.0,0.0,2026-09-09 05:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+blg,player,0.0,0.0,0.0,11,yilai,0.0,0.0,0.0,2026-09-09 05:00:00,abyss:1.000 | ascent:1.000 | bind:0.250 | breeze:0.600 | haven:0.714 | lotus:0.500 | pearl:0.429 | split:0.556 | summit:0.500 | sunset:0.500
+c9,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+c9,player,0.0,0.0,0.0,6,demon1,0.0,0.0,0.0,2026-01-25 20:00:00,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+c9,player,0.0,0.0,0.0,6,oxy,0.0,0.0,0.0,2026-02-13 15:00:00,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+c9,player,0.0,0.0,0.0,6,penny,0.0,0.0,0.0,2026-02-13 15:00:00,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+c9,player,0.0,0.0,0.0,6,v1c,0.0,0.0,0.0,2026-02-13 15:00:00,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+c9,player,0.0,0.0,0.0,6,xeppaa,0.0,0.0,0.0,2026-02-13 15:00:00,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+c9,player,0.0,0.0,0.0,6,zellsis,0.0,0.0,0.0,2026-02-13 15:00:00,abyss:0.500 | bind:0.000 | breeze:0.000 | corrode:0.000 | haven:1.000 | pearl:0.500 | split:1.000
+dfm,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.500 | corrode:0.000 | haven:0.667 | lotus:0.000 | pearl:0.250 | split:0.800
+dfm,player,0.0,0.0,0.0,5,akame,0.0,0.0,0.0,2026-05-09 04:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.500 | corrode:0.000 | haven:0.667 | lotus:0.000 | pearl:0.250 | split:0.800
+dfm,player,0.0,0.0,0.0,5,caedye,0.0,0.0,0.0,2026-05-09 04:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.500 | corrode:0.000 | haven:0.667 | lotus:0.000 | pearl:0.250 | split:0.800
+dfm,player,0.0,0.0,0.0,5,meiy,0.0,0.0,0.0,2026-05-09 04:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.500 | corrode:0.000 | haven:0.667 | lotus:0.000 | pearl:0.250 | split:0.800
+dfm,player,0.0,0.0,0.0,5,ssees,0.0,0.0,0.0,2026-05-09 04:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.500 | corrode:0.000 | haven:0.667 | lotus:0.000 | pearl:0.250 | split:0.800
+dfm,player,0.0,0.0,0.0,5,yatsuka,0.0,0.0,0.0,2026-05-09 04:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.500 | corrode:0.000 | haven:0.667 | lotus:0.000 | pearl:0.250 | split:0.800
+drg,team_summary,0.0,0.0,0.0,11,,,,,,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,akeman,0.0,0.0,0.0,2026-03-18 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,flex1n,0.0,0.0,0.0,2026-05-09 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,flower,0.0,0.0,0.0,2026-05-21 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,life,0.0,0.0,0.0,2026-09-06 06:45:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,nicc,0.0,0.0,0.0,2026-09-06 06:45:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,shun,0.0,0.0,0.0,2026-05-21 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,spiritz1,0.0,0.0,0.0,2026-09-06 06:45:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,t1an,0.0,0.0,0.0,2026-09-06 06:45:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,verse,0.0,0.0,0.0,2026-09-06 06:45:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,vo0kashu,0.0,0.0,0.0,2026-05-09 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+drg,player,0.0,0.0,0.0,11,yiminggunai,0.0,0.0,0.0,2026-05-21 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.000 | breeze:0.250 | corrode:0.750 | haven:0.800 | lotus:0.800 | pearl:0.333 | split:0.250 | sunset:1.000
+edg,team_summary,0.0,0.0,0.0,16,,,,,,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,cb,0.0,0.0,0.0,2026-02-09 04:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,chichoo,0.0,0.0,0.0,2026-06-20 09:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,jiae,0.0,0.0,0.0,2026-05-24 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,jieni7,0.0,0.0,0.0,2026-06-20 09:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,jstt,0.0,0.0,0.0,2026-09-05 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,knyzl,0.0,0.0,0.0,2026-05-24 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,moonlight1,0.0,0.0,0.0,2026-05-24 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,nobody,0.0,0.0,0.0,2026-06-20 09:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,pipii,0.0,0.0,0.0,2026-09-05 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,smoggy,0.0,0.0,0.0,2026-06-20 09:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,takashi,0.0,0.0,0.0,2026-09-05 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,toast,0.0,0.0,0.0,2026-09-05 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,yang,0.0,0.0,0.0,2026-05-24 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,youngx,0.0,0.0,0.0,2026-09-05 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,z1h,0.0,0.0,0.0,2026-05-24 05:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+edg,player,0.0,0.0,0.0,16,zmjjkk,0.0,0.0,0.0,2026-06-20 09:00:00,abyss:0.500 | ascent:0.000 | bind:0.000 | breeze:0.333 | corrode:0.667 | fracture:0.750 | haven:0.667 | lotus:1.000 | pearl:0.333 | split:0.556
+ef,team_summary,0.0,0.0,0.0,5,,,,,,ascent:0.000 | fracture:0.500 | lotus:0.333 | pearl:0.500 | split:0.000
+ef,player,0.0,0.0,0.0,5,audaz,0.0,0.0,0.0,2026-05-15 14:45:00,ascent:0.000 | fracture:0.500 | lotus:0.333 | pearl:0.500 | split:0.000
+ef,player,0.0,0.0,0.0,5,echo,0.0,0.0,0.0,2026-05-15 14:45:00,ascent:0.000 | fracture:0.500 | lotus:0.333 | pearl:0.500 | split:0.000
+ef,player,0.0,0.0,0.0,5,favian,0.0,0.0,0.0,2026-05-15 14:45:00,ascent:0.000 | fracture:0.500 | lotus:0.333 | pearl:0.500 | split:0.000
+ef,player,0.0,0.0,0.0,5,izzy,0.0,0.0,0.0,2026-05-15 14:45:00,ascent:0.000 | fracture:0.500 | lotus:0.333 | pearl:0.500 | split:0.000
+ef,player,0.0,0.0,0.0,5,nekky,0.0,0.0,0.0,2026-05-15 14:45:00,ascent:0.000 | fracture:0.500 | lotus:0.333 | pearl:0.500 | split:0.000
+eg,team_summary,0.0,0.0,0.0,7,,,,,,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,bao,0.0,0.0,0.0,2026-08-29 20:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,c0m,0.0,0.0,0.0,2026-02-07 15:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,dgzin,0.0,0.0,0.0,2026-08-29 20:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,okeanos,0.0,0.0,0.0,2026-02-07 15:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,paincakes,0.0,0.0,0.0,2026-08-29 20:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,supamen,0.0,0.0,0.0,2026-08-29 20:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+eg,player,0.0,0.0,0.0,7,zerona,0.0,0.0,0.0,2026-08-29 20:00:00,abyss:1.000 | bind:0.000 | corrode:0.500 | haven:0.333 | lotus:1.000 | pearl:1.000 | sunset:0.000
+envy,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+envy,player,0.0,0.0,0.0,6,demon1,0.0,0.0,0.0,2026-02-06 17:00:00,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+envy,player,0.0,0.0,0.0,6,eggsterr,0.0,0.0,0.0,2026-02-06 17:00:00,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+envy,player,0.0,0.0,0.0,6,inspire,0.0,0.0,0.0,2026-01-25 20:00:00,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+envy,player,0.0,0.0,0.0,6,keznit,0.0,0.0,0.0,2026-02-06 17:00:00,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+envy,player,0.0,0.0,0.0,6,p0ppin,0.0,0.0,0.0,2026-02-06 17:00:00,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+envy,player,0.0,0.0,0.0,6,rossy,0.0,0.0,0.0,2026-02-06 17:00:00,abyss:0.000 | bind:1.000 | breeze:1.000 | corrode:0.333 | pearl:0.333 | split:0.000
+ep,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | haven:0.000 | lotus:0.667 | summit:0.000
+ep,player,0.0,0.0,0.0,5,iluri,0.0,0.0,0.0,2026-08-23 10:00:00,abyss:1.000 | haven:0.000 | lotus:0.667 | summit:0.000
+ep,player,0.0,0.0,0.0,5,kozzy,0.0,0.0,0.0,2026-08-23 10:00:00,abyss:1.000 | haven:0.000 | lotus:0.667 | summit:0.000
+ep,player,0.0,0.0,0.0,5,lime,0.0,0.0,0.0,2026-08-23 10:00:00,abyss:1.000 | haven:0.000 | lotus:0.667 | summit:0.000
+ep,player,0.0,0.0,0.0,5,magnum,0.0,0.0,0.0,2026-08-23 10:00:00,abyss:1.000 | haven:0.000 | lotus:0.667 | summit:0.000
+ep,player,0.0,0.0,0.0,5,patitek,0.0,0.0,0.0,2026-08-23 10:00:00,abyss:1.000 | haven:0.000 | lotus:0.667 | summit:0.000
+ff,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.500 | ascent:1.000 | haven:0.000 | lotus:0.000 | split:1.000 | summit:1.000
+ff,player,0.0,0.0,0.0,5,batujnax,0.0,0.0,0.0,2026-08-28 12:30:00,abyss:0.500 | ascent:1.000 | haven:0.000 | lotus:0.000 | split:1.000 | summit:1.000
+ff,player,0.0,0.0,0.0,5,deadink,0.0,0.0,0.0,2026-08-28 12:30:00,abyss:0.500 | ascent:1.000 | haven:0.000 | lotus:0.000 | split:1.000 | summit:1.000
+ff,player,0.0,0.0,0.0,5,hezacoil,0.0,0.0,0.0,2026-08-28 12:30:00,abyss:0.500 | ascent:1.000 | haven:0.000 | lotus:0.000 | split:1.000 | summit:1.000
+ff,player,0.0,0.0,0.0,5,kachoww,0.0,0.0,0.0,2026-08-28 12:30:00,abyss:0.500 | ascent:1.000 | haven:0.000 | lotus:0.000 | split:1.000 | summit:1.000
+ff,player,0.0,0.0,0.0,5,reazy,0.0,0.0,0.0,2026-08-28 12:30:00,abyss:0.500 | ascent:1.000 | haven:0.000 | lotus:0.000 | split:1.000 | summit:1.000
+fnc,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fnc,player,0.0,0.0,0.0,6,alfajer,0.0,0.0,0.0,2026-05-10 11:00:00,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fnc,player,0.0,0.0,0.0,6,boaster,0.0,0.0,0.0,2026-05-10 11:00:00,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fnc,player,0.0,0.0,0.0,6,crashies,0.0,0.0,0.0,2026-05-10 11:00:00,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fnc,player,0.0,0.0,0.0,6,cyvoph,0.0,0.0,0.0,2026-05-10 11:00:00,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fnc,player,0.0,0.0,0.0,6,kaajak,0.0,0.0,0.0,2026-05-10 11:00:00,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fnc,player,0.0,0.0,0.0,6,veqaj,0.0,0.0,0.0,2026-02-15 12:00:00,abyss:0.750 | ascent:1.000 | bind:0.500 | breeze:0.667 | corrode:0.750 | fracture:0.000 | haven:0.667 | lotus:1.000 | split:0.750
+fpx,team_summary,0.0,0.0,0.0,10,,,,,,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,aaaay,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,ben1ley,0.0,0.0,0.0,2026-05-25 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,berlin,0.0,0.0,0.0,2026-03-19 06:45:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,coconut,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,kovaq,0.0,0.0,0.0,2026-05-25 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,life,0.0,0.0,0.0,2026-02-01 04:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,setrod,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,sscary,0.0,0.0,0.0,2026-02-01 04:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,xlele,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fpx,player,0.0,0.0,0.0,10,zhubibi,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.000 | bind:0.333 | breeze:0.000 | fracture:0.000 | haven:0.500 | lotus:0.667 | pearl:0.750 | split:0.200 | summit:1.000 | sunset:0.667
+fs,team_summary,0.0,0.0,0.0,6,,,,,,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fs,player,0.0,0.0,0.0,6,crws,0.0,0.0,0.0,2026-05-17 06:00:00,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fs,player,0.0,0.0,0.0,6,jitboys,0.0,0.0,0.0,2026-05-17 06:00:00,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fs,player,0.0,0.0,0.0,6,killua,0.0,0.0,0.0,2026-05-17 06:00:00,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fs,player,0.0,0.0,0.0,6,leviathan,0.0,0.0,0.0,2026-05-17 06:00:00,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fs,player,0.0,0.0,0.0,6,primmie,0.0,0.0,0.0,2026-05-17 06:00:00,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fs,player,0.0,0.0,0.0,6,thyy,0.0,0.0,0.0,2026-02-08 03:00:00,abyss:1.000 | bind:0.000 | breeze:0.500 | corrode:1.000 | fracture:1.000 | haven:1.000 | lotus:1.000 | pearl:0.750 | split:0.800
+fur,team_summary,0.0,0.0,0.0,8,,,,,,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,alym,0.0,0.0,0.0,2026-05-16 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,artzin,0.0,0.0,0.0,2026-08-29 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,basic,0.0,0.0,0.0,2026-08-29 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,c0m,0.0,0.0,0.0,2026-08-29 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,eeiu,0.0,0.0,0.0,2026-05-16 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,koalanoob,0.0,0.0,0.0,2026-08-29 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,nerve,0.0,0.0,0.0,2026-05-16 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fur,player,0.0,0.0,0.0,8,shyy,0.0,0.0,0.0,2026-08-29 17:00:00,abyss:0.800 | bind:0.500 | breeze:0.500 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.800 | summit:0.000 | sunset:1.000
+fut,team_summary,0.0,0.0,0.0,7,,,,,,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,baha,0.0,0.0,0.0,2026-02-03 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,krostaly,0.0,0.0,0.0,2026-08-29 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,mrfalin,0.0,0.0,0.0,2026-02-03 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,s0pp,0.0,0.0,0.0,2026-08-29 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,sociablee,0.0,0.0,0.0,2026-08-29 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,xeus,0.0,0.0,0.0,2026-08-29 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+fut,player,0.0,0.0,0.0,7,yetujey,0.0,0.0,0.0,2026-08-29 11:00:00,abyss:1.000 | ascent:0.571 | breeze:1.000 | corrode:0.000 | fracture:0.000 | haven:0.667 | lotus:0.800 | pearl:0.500 | split:0.833 | summit:0.500
+g2,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.833 | ascent:0.400 | bind:0.333 | breeze:0.600 | corrode:0.400 | fracture:1.000 | haven:0.500 | lotus:0.400 | pearl:0.600 | split:0.444 | summit:1.000 | sunset:1.000
+g2,player,0.0,0.0,0.0,5,babybay,0.0,0.0,0.0,2026-09-04 15:05:00,abyss:0.833 | ascent:0.400 | bind:0.333 | breeze:0.600 | corrode:0.400 | fracture:1.000 | haven:0.500 | lotus:0.400 | pearl:0.600 | split:0.444 | summit:1.000 | sunset:1.000
+g2,player,0.0,0.0,0.0,5,jawgemo,0.0,0.0,0.0,2026-09-04 15:05:00,abyss:0.833 | ascent:0.400 | bind:0.333 | breeze:0.600 | corrode:0.400 | fracture:1.000 | haven:0.500 | lotus:0.400 | pearl:0.600 | split:0.444 | summit:1.000 | sunset:1.000
+g2,player,0.0,0.0,0.0,5,leaf,0.0,0.0,0.0,2026-09-04 15:05:00,abyss:0.833 | ascent:0.400 | bind:0.333 | breeze:0.600 | corrode:0.400 | fracture:1.000 | haven:0.500 | lotus:0.400 | pearl:0.600 | split:0.444 | summit:1.000 | sunset:1.000
+g2,player,0.0,0.0,0.0,5,trent,0.0,0.0,0.0,2026-09-04 15:05:00,abyss:0.833 | ascent:0.400 | bind:0.333 | breeze:0.600 | corrode:0.400 | fracture:1.000 | haven:0.500 | lotus:0.400 | pearl:0.600 | split:0.444 | summit:1.000 | sunset:1.000
+g2,player,0.0,0.0,0.0,5,valyn,0.0,0.0,0.0,2026-09-04 15:05:00,abyss:0.833 | ascent:0.400 | bind:0.333 | breeze:0.600 | corrode:0.400 | fracture:1.000 | haven:0.500 | lotus:0.400 | pearl:0.600 | split:0.444 | summit:1.000 | sunset:1.000
+ge,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.500 | ascent:0.750 | bind:0.000 | breeze:0.857 | corrode:0.000 | haven:0.500 | lotus:0.600 | pearl:0.667 | split:0.500 | summit:1.000 | sunset:0.000
+ge,player,0.0,0.0,0.0,5,autumn,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.500 | ascent:0.750 | bind:0.000 | breeze:0.857 | corrode:0.000 | haven:0.500 | lotus:0.600 | pearl:0.667 | split:0.500 | summit:1.000 | sunset:0.000
+ge,player,0.0,0.0,0.0,5,kr1stal,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.500 | ascent:0.750 | bind:0.000 | breeze:0.857 | corrode:0.000 | haven:0.500 | lotus:0.600 | pearl:0.667 | split:0.500 | summit:1.000 | sunset:0.000
+ge,player,0.0,0.0,0.0,5,patmen,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.500 | ascent:0.750 | bind:0.000 | breeze:0.857 | corrode:0.000 | haven:0.500 | lotus:0.600 | pearl:0.667 | split:0.500 | summit:1.000 | sunset:0.000
+ge,player,0.0,0.0,0.0,5,udotan,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.500 | ascent:0.750 | bind:0.000 | breeze:0.857 | corrode:0.000 | haven:0.500 | lotus:0.600 | pearl:0.667 | split:0.500 | summit:1.000 | sunset:0.000
+ge,player,0.0,0.0,0.0,5,xavi8k,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.500 | ascent:0.750 | bind:0.000 | breeze:0.857 | corrode:0.000 | haven:0.500 | lotus:0.600 | pearl:0.667 | split:0.500 | summit:1.000 | sunset:0.000
+gen,team_summary,0.0,0.0,0.0,7,,,,,,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,ash,0.0,0.0,0.0,2026-08-29 07:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,efina,0.0,0.0,0.0,2026-08-29 07:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,karon,0.0,0.0,0.0,2026-08-29 07:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,lakia,0.0,0.0,0.0,2026-02-07 06:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,raxcal,0.0,0.0,0.0,2026-08-29 07:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,t3xture,0.0,0.0,0.0,2026-08-29 07:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gen,player,0.0,0.0,0.0,7,zynx,0.0,0.0,0.0,2026-02-07 06:00:00,abyss:0.000 | ascent:1.000 | bind:1.000 | breeze:0.667 | haven:0.667 | lotus:1.000 | pearl:0.000 | split:1.000 | summit:0.000 | sunset:1.000
+gx,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.333 | bind:0.667 | breeze:0.500 | haven:0.000 | pearl:0.500 | split:1.000
+gx,player,0.0,0.0,0.0,5,ara,0.0,0.0,0.0,2026-02-06 13:00:00,abyss:0.333 | bind:0.667 | breeze:0.500 | haven:0.000 | pearl:0.500 | split:1.000
+gx,player,0.0,0.0,0.0,5,cloud,0.0,0.0,0.0,2026-02-06 13:00:00,abyss:0.333 | bind:0.667 | breeze:0.500 | haven:0.000 | pearl:0.500 | split:1.000
+gx,player,0.0,0.0,0.0,5,flickless,0.0,0.0,0.0,2026-02-06 13:00:00,abyss:0.333 | bind:0.667 | breeze:0.500 | haven:0.000 | pearl:0.500 | split:1.000
+gx,player,0.0,0.0,0.0,5,grubinho,0.0,0.0,0.0,2026-02-06 13:00:00,abyss:0.333 | bind:0.667 | breeze:0.500 | haven:0.000 | pearl:0.500 | split:1.000
+gx,player,0.0,0.0,0.0,5,westside,0.0,0.0,0.0,2026-02-06 13:00:00,abyss:0.333 | bind:0.667 | breeze:0.500 | haven:0.000 | pearl:0.500 | split:1.000
+jdg,team_summary,0.0,0.0,0.0,12,,,,,,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,babyblue,0.0,0.0,0.0,2026-09-10 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,berlin,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,coconut,0.0,0.0,0.0,2026-05-26 05:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,crownfisher,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,jkuro,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,link7,0.0,0.0,0.0,2026-09-10 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,nysleeptight,0.0,0.0,0.0,2026-09-10 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,silent,0.0,0.0,0.0,2026-09-10 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,stew,0.0,0.0,0.0,2026-05-05 05:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,yuicaw,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,yun,0.0,0.0,0.0,2026-09-10 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+jdg,player,0.0,0.0,0.0,12,zhe,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.250 | ascent:1.000 | bind:0.000 | breeze:0.667 | corrode:0.000 | fracture:1.000 | haven:0.818 | lotus:0.429 | pearl:0.667 | split:0.667 | summit:0.667
+kbg,team_summary,0.0,0.0,0.0,6,,,,,,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kbg,player,0.0,0.0,0.0,6,akeman,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kbg,player,0.0,0.0,0.0,6,coldfish,0.0,0.0,0.0,2026-05-23 08:15:00,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kbg,player,0.0,0.0,0.0,6,krst1ng,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kbg,player,0.0,0.0,0.0,6,sibeastw0w,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kbg,player,0.0,0.0,0.0,6,tonk,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kbg,player,0.0,0.0,0.0,6,ying,0.0,0.0,0.0,2026-09-13 05:00:00,abyss:1.000 | ascent:0.750 | fracture:0.000 | haven:1.000 | split:0.500 | summit:1.000 | sunset:0.000
+kc,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+kc,player,0.0,0.0,0.0,6,avez,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+kc,player,0.0,0.0,0.0,6,dos9,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+kc,player,0.0,0.0,0.0,6,lewn,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+kc,player,0.0,0.0,0.0,6,n4rrate,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+kc,player,0.0,0.0,0.0,6,sheydos,0.0,0.0,0.0,2026-02-05 11:00:00,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+kc,player,0.0,0.0,0.0,6,suygetsu,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.667 | ascent:0.000 | breeze:1.000 | corrode:0.000 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.667 | summit:0.000 | sunset:0.000
+krx,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krx,player,0.0,0.0,0.0,6,beyn,0.0,0.0,0.0,2026-08-28 06:05:00,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krx,player,0.0,0.0,0.0,6,free1ng,0.0,0.0,0.0,2026-08-28 06:05:00,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krx,player,0.0,0.0,0.0,6,hermes,0.0,0.0,0.0,2026-05-07 06:35:00,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krx,player,0.0,0.0,0.0,6,hyunmin,0.0,0.0,0.0,2026-08-28 06:05:00,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krx,player,0.0,0.0,0.0,6,mako,0.0,0.0,0.0,2026-08-28 06:05:00,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krx,player,0.0,0.0,0.0,6,yong,0.0,0.0,0.0,2026-08-28 06:05:00,abyss:0.667 | ascent:0.500 | bind:1.000 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:0.333 | lotus:0.667 | pearl:1.000 | split:0.500
+krü,team_summary,0.0,0.0,0.0,10,,,,,,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,beng,0.0,0.0,0.0,2026-01-31 19:45:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,dantedeu5,0.0,0.0,0.0,2026-05-17 17:00:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,governor,0.0,0.0,0.0,2026-01-31 19:45:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,infiltrator,0.0,0.0,0.0,2026-01-31 19:45:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,less,0.0,0.0,0.0,2026-05-17 17:00:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,mta,0.0,0.0,0.0,2026-01-31 19:45:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,mwzera,0.0,0.0,0.0,2026-05-17 17:00:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,nagz,0.0,0.0,0.0,2026-01-31 19:45:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,saadhak,0.0,0.0,0.0,2026-05-17 17:00:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+krü,player,0.0,0.0,0.0,10,silentzz,0.0,0.0,0.0,2026-05-17 17:00:00,abyss:0.500 | bind:1.000 | breeze:1.000 | haven:1.000 | lotus:1.000 | pearl:0.500 | split:1.000
+lev,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+lev,player,0.0,0.0,0.0,6,blowz,0.0,0.0,0.0,2026-08-30 17:00:00,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+lev,player,0.0,0.0,0.0,6,kingg,0.0,0.0,0.0,2026-08-30 17:00:00,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+lev,player,0.0,0.0,0.0,6,neon,0.0,0.0,0.0,2026-08-30 17:00:00,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+lev,player,0.0,0.0,0.0,6,pxs,0.0,0.0,0.0,2026-01-24 20:05:00,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+lev,player,0.0,0.0,0.0,6,sato,0.0,0.0,0.0,2026-08-30 17:00:00,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+lev,player,0.0,0.0,0.0,6,spike,0.0,0.0,0.0,2026-08-30 17:00:00,abyss:0.500 | ascent:0.333 | bind:0.500 | breeze:0.000 | corrode:1.000 | fracture:0.333 | haven:0.500 | lotus:0.667 | pearl:1.000 | split:0.667 | summit:0.500
+loud,team_summary,0.0,0.0,0.0,8,,,,,,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,cauanzin,0.0,0.0,0.0,2026-05-16 19:15:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,darker,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,davih,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,erde,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,lukxo,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,pancada,0.0,0.0,0.0,2026-01-31 17:00:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,tkzin,0.0,0.0,0.0,2026-09-06 13:00:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+loud,player,0.0,0.0,0.0,8,virtyy,0.0,0.0,0.0,2026-05-16 19:15:00,abyss:0.600 | ascent:0.000 | bind:0.000 | breeze:0.500 | haven:0.200 | lotus:0.667 | pearl:0.000 | split:0.500 | summit:0.750 | sunset:0.667
+m8,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | ascent:0.500 | bind:0.750 | corrode:0.667 | fracture:1.000 | haven:0.000 | lotus:0.000 | pearl:0.667 | split:0.400
+m8,player,0.0,0.0,0.0,5,bipo,0.0,0.0,0.0,2026-05-10 14:35:00,abyss:1.000 | ascent:0.500 | bind:0.750 | corrode:0.667 | fracture:1.000 | haven:0.000 | lotus:0.000 | pearl:0.667 | split:0.400
+m8,player,0.0,0.0,0.0,5,glyph,0.0,0.0,0.0,2026-05-10 14:35:00,abyss:1.000 | ascent:0.500 | bind:0.750 | corrode:0.667 | fracture:1.000 | haven:0.000 | lotus:0.000 | pearl:0.667 | split:0.400
+m8,player,0.0,0.0,0.0,5,marteen,0.0,0.0,0.0,2026-05-10 14:35:00,abyss:1.000 | ascent:0.500 | bind:0.750 | corrode:0.667 | fracture:1.000 | haven:0.000 | lotus:0.000 | pearl:0.667 | split:0.400
+m8,player,0.0,0.0,0.0,5,minny,0.0,0.0,0.0,2026-05-10 14:35:00,abyss:1.000 | ascent:0.500 | bind:0.750 | corrode:0.667 | fracture:1.000 | haven:0.000 | lotus:0.000 | pearl:0.667 | split:0.400
+m8,player,0.0,0.0,0.0,5,starxo,0.0,0.0,0.0,2026-05-10 14:35:00,abyss:1.000 | ascent:0.500 | bind:0.750 | corrode:0.667 | fracture:1.000 | haven:0.000 | lotus:0.000 | pearl:0.667 | split:0.400
+mibr,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.200 | ascent:0.000 | bind:1.000 | breeze:0.500 | corrode:0.667 | fracture:0.500 | haven:0.200 | lotus:0.000 | split:0.250 | sunset:0.500
+mibr,player,0.0,0.0,0.0,5,aspas,0.0,0.0,0.0,2026-08-30 20:10:00,abyss:0.200 | ascent:0.000 | bind:1.000 | breeze:0.500 | corrode:0.667 | fracture:0.500 | haven:0.200 | lotus:0.000 | split:0.250 | sunset:0.500
+mibr,player,0.0,0.0,0.0,5,mazino,0.0,0.0,0.0,2026-08-30 20:10:00,abyss:0.200 | ascent:0.000 | bind:1.000 | breeze:0.500 | corrode:0.667 | fracture:0.500 | haven:0.200 | lotus:0.000 | split:0.250 | sunset:0.500
+mibr,player,0.0,0.0,0.0,5,tex,0.0,0.0,0.0,2026-08-30 20:10:00,abyss:0.200 | ascent:0.000 | bind:1.000 | breeze:0.500 | corrode:0.667 | fracture:0.500 | haven:0.200 | lotus:0.000 | split:0.250 | sunset:0.500
+mibr,player,0.0,0.0,0.0,5,verno,0.0,0.0,0.0,2026-08-30 20:10:00,abyss:0.200 | ascent:0.000 | bind:1.000 | breeze:0.500 | corrode:0.667 | fracture:0.500 | haven:0.200 | lotus:0.000 | split:0.250 | sunset:0.500
+mibr,player,0.0,0.0,0.0,5,zekken,0.0,0.0,0.0,2026-08-30 20:10:00,abyss:0.200 | ascent:0.000 | bind:1.000 | breeze:0.500 | corrode:0.667 | fracture:0.500 | haven:0.200 | lotus:0.000 | split:0.250 | sunset:0.500
+navi,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | bind:1.000 | breeze:0.500 | haven:0.333 | split:0.667
+navi,player,0.0,0.0,0.0,5,filu,0.0,0.0,0.0,2026-02-06 11:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | haven:0.333 | split:0.667
+navi,player,0.0,0.0,0.0,5,hiro,0.0,0.0,0.0,2026-02-06 11:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | haven:0.333 | split:0.667
+navi,player,0.0,0.0,0.0,5,ruxic,0.0,0.0,0.0,2026-02-06 11:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | haven:0.333 | split:0.667
+navi,player,0.0,0.0,0.0,5,shao,0.0,0.0,0.0,2026-02-06 11:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | haven:0.333 | split:0.667
+navi,player,0.0,0.0,0.0,5,sociablee,0.0,0.0,0.0,2026-02-06 11:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | haven:0.333 | split:0.667
+nova,team_summary,0.0,0.0,0.0,12,,,,,,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,cb,0.0,0.0,0.0,2026-08-21 06:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,doomer,0.0,0.0,0.0,2026-09-10 05:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,ezeir,0.0,0.0,0.0,2026-08-21 06:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,green,0.0,0.0,0.0,2026-09-10 05:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,guang,0.0,0.0,0.0,2026-08-21 06:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,heybay,0.0,0.0,0.0,2026-03-17 07:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,leo7,0.0,0.0,0.0,2026-09-10 05:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,nono,0.0,0.0,0.0,2026-09-10 05:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,obone,0.0,0.0,0.0,2026-03-17 07:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,ongod,0.0,0.0,0.0,2026-09-10 05:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,qiutian,0.0,0.0,0.0,2026-08-21 06:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nova,player,0.0,0.0,0.0,12,swagzor,0.0,0.0,0.0,2026-08-21 06:00:00,abyss:0.000 | ascent:0.600 | breeze:0.500 | corrode:1.000 | fracture:0.000 | haven:0.500 | lotus:1.000 | pearl:0.500 | split:0.429 | summit:1.000 | sunset:1.000
+nrg,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.375 | ascent:0.500 | bind:0.333 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:1.000 | lotus:0.500 | pearl:0.714 | split:0.400 | summit:1.000 | sunset:0.000
+nrg,player,0.0,0.0,0.0,5,brawk,0.0,0.0,0.0,2026-09-05 14:00:00,abyss:0.375 | ascent:0.500 | bind:0.333 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:1.000 | lotus:0.500 | pearl:0.714 | split:0.400 | summit:1.000 | sunset:0.000
+nrg,player,0.0,0.0,0.0,5,ethan,0.0,0.0,0.0,2026-09-05 14:00:00,abyss:0.375 | ascent:0.500 | bind:0.333 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:1.000 | lotus:0.500 | pearl:0.714 | split:0.400 | summit:1.000 | sunset:0.000
+nrg,player,0.0,0.0,0.0,5,keiko,0.0,0.0,0.0,2026-09-05 14:00:00,abyss:0.375 | ascent:0.500 | bind:0.333 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:1.000 | lotus:0.500 | pearl:0.714 | split:0.400 | summit:1.000 | sunset:0.000
+nrg,player,0.0,0.0,0.0,5,mada,0.0,0.0,0.0,2026-09-05 14:00:00,abyss:0.375 | ascent:0.500 | bind:0.333 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:1.000 | lotus:0.500 | pearl:0.714 | split:0.400 | summit:1.000 | sunset:0.000
+nrg,player,0.0,0.0,0.0,5,skuba,0.0,0.0,0.0,2026-09-05 14:00:00,abyss:0.375 | ascent:0.500 | bind:0.333 | breeze:0.667 | corrode:0.333 | fracture:1.000 | haven:1.000 | lotus:0.500 | pearl:0.714 | split:0.400 | summit:1.000 | sunset:0.000
+ns,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.571 | ascent:1.000 | bind:0.000 | breeze:0.000 | corrode:0.400 | haven:0.286 | lotus:1.000 | pearl:1.000 | split:0.125 | summit:0.000 | sunset:0.500
+ns,player,0.0,0.0,0.0,5,dambi,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.571 | ascent:1.000 | bind:0.000 | breeze:0.000 | corrode:0.400 | haven:0.286 | lotus:1.000 | pearl:1.000 | split:0.125 | summit:0.000 | sunset:0.500
+ns,player,0.0,0.0,0.0,5,francis,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.571 | ascent:1.000 | bind:0.000 | breeze:0.000 | corrode:0.400 | haven:0.286 | lotus:1.000 | pearl:1.000 | split:0.125 | summit:0.000 | sunset:0.500
+ns,player,0.0,0.0,0.0,5,ivy,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.571 | ascent:1.000 | bind:0.000 | breeze:0.000 | corrode:0.400 | haven:0.286 | lotus:1.000 | pearl:1.000 | split:0.125 | summit:0.000 | sunset:0.500
+ns,player,0.0,0.0,0.0,5,rb,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.571 | ascent:1.000 | bind:0.000 | breeze:0.000 | corrode:0.400 | haven:0.286 | lotus:1.000 | pearl:1.000 | split:0.125 | summit:0.000 | sunset:0.500
+ns,player,0.0,0.0,0.0,5,xross,0.0,0.0,0.0,2026-09-06 04:00:00,abyss:0.571 | ascent:1.000 | bind:0.000 | breeze:0.000 | corrode:0.400 | haven:0.286 | lotus:1.000 | pearl:1.000 | split:0.125 | summit:0.000 | sunset:0.500
+ong,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.000 | ascent:0.000
+ong,player,0.0,0.0,0.0,5,cloudy,0.0,0.0,0.0,2026-08-28 04:00:00,abyss:0.000 | ascent:0.000
+ong,player,0.0,0.0,0.0,5,hermes,0.0,0.0,0.0,2026-08-28 04:00:00,abyss:0.000 | ascent:0.000
+ong,player,0.0,0.0,0.0,5,ray,0.0,0.0,0.0,2026-08-28 04:00:00,abyss:0.000 | ascent:0.000
+ong,player,0.0,0.0,0.0,5,wolverine,0.0,0.0,0.0,2026-08-28 04:00:00,abyss:0.000 | ascent:0.000
+ong,player,0.0,0.0,0.0,5,xiesta,0.0,0.0,0.0,2026-08-28 04:00:00,abyss:0.000 | ascent:0.000
+pcf,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.667 | bind:0.000 | breeze:1.000 | pearl:1.000 | split:1.000
+pcf,player,0.0,0.0,0.0,5,al0rante,0.0,0.0,0.0,2026-02-03 14:35:00,abyss:0.667 | bind:0.000 | breeze:1.000 | pearl:1.000 | split:1.000
+pcf,player,0.0,0.0,0.0,5,cned,0.0,0.0,0.0,2026-02-03 14:35:00,abyss:0.667 | bind:0.000 | breeze:1.000 | pearl:1.000 | split:1.000
+pcf,player,0.0,0.0,0.0,5,ninja,0.0,0.0,0.0,2026-02-03 14:35:00,abyss:0.667 | bind:0.000 | breeze:1.000 | pearl:1.000 | split:1.000
+pcf,player,0.0,0.0,0.0,5,qpert,0.0,0.0,0.0,2026-02-03 14:35:00,abyss:0.667 | bind:0.000 | breeze:1.000 | pearl:1.000 | split:1.000
+pcf,player,0.0,0.0,0.0,5,seven,0.0,0.0,0.0,2026-02-03 14:35:00,abyss:0.667 | bind:0.000 | breeze:1.000 | pearl:1.000 | split:1.000
+prx,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.333 | ascent:0.333 | bind:0.750 | breeze:0.643 | corrode:0.286 | fracture:0.500 | haven:0.833 | lotus:0.500 | pearl:0.625 | split:0.714 | sunset:0.000
+prx,player,0.0,0.0,0.0,5,d4v41,0.0,0.0,0.0,2026-08-29 04:00:00,abyss:0.333 | ascent:0.333 | bind:0.750 | breeze:0.643 | corrode:0.286 | fracture:0.500 | haven:0.833 | lotus:0.500 | pearl:0.625 | split:0.714 | sunset:0.000
+prx,player,0.0,0.0,0.0,5,f0rsaken,0.0,0.0,0.0,2026-08-29 04:00:00,abyss:0.333 | ascent:0.333 | bind:0.750 | breeze:0.643 | corrode:0.286 | fracture:0.500 | haven:0.833 | lotus:0.500 | pearl:0.625 | split:0.714 | sunset:0.000
+prx,player,0.0,0.0,0.0,5,invy,0.0,0.0,0.0,2026-08-29 04:00:00,abyss:0.333 | ascent:0.333 | bind:0.750 | breeze:0.643 | corrode:0.286 | fracture:0.500 | haven:0.833 | lotus:0.500 | pearl:0.625 | split:0.714 | sunset:0.000
+prx,player,0.0,0.0,0.0,5,jinggg,0.0,0.0,0.0,2026-08-29 04:00:00,abyss:0.333 | ascent:0.333 | bind:0.750 | breeze:0.643 | corrode:0.286 | fracture:0.500 | haven:0.833 | lotus:0.500 | pearl:0.625 | split:0.714 | sunset:0.000
+prx,player,0.0,0.0,0.0,5,something,0.0,0.0,0.0,2026-08-29 04:00:00,abyss:0.333 | ascent:0.333 | bind:0.750 | breeze:0.643 | corrode:0.286 | fracture:0.500 | haven:0.833 | lotus:0.500 | pearl:0.625 | split:0.714 | sunset:0.000
+ra,team_summary,0.0,0.0,0.0,5,,,,,,abyss:0.000 | bind:0.000
+ra,player,0.0,0.0,0.0,5,croudy,0.0,0.0,0.0,2026-03-17 05:00:00,abyss:0.000 | bind:0.000
+ra,player,0.0,0.0,0.0,5,guran,0.0,0.0,0.0,2026-03-17 05:00:00,abyss:0.000 | bind:0.000
+ra,player,0.0,0.0,0.0,5,nnono,0.0,0.0,0.0,2026-03-17 05:00:00,abyss:0.000 | bind:0.000
+ra,player,0.0,0.0,0.0,5,rachel,0.0,0.0,0.0,2026-03-17 05:00:00,abyss:0.000 | bind:0.000
+ra,player,0.0,0.0,0.0,5,z1yan,0.0,0.0,0.0,2026-03-17 05:00:00,abyss:0.000 | bind:0.000
+rrq,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | ascent:1.000 | bind:0.500 | breeze:0.500 | corrode:0.333 | haven:0.250 | lotus:0.500 | pearl:1.000
+rrq,player,0.0,0.0,0.0,5,crazyguy,0.0,0.0,0.0,2026-05-10 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.500 | breeze:0.500 | corrode:0.333 | haven:0.250 | lotus:0.500 | pearl:1.000
+rrq,player,0.0,0.0,0.0,5,jemkin,0.0,0.0,0.0,2026-05-10 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.500 | breeze:0.500 | corrode:0.333 | haven:0.250 | lotus:0.500 | pearl:1.000
+rrq,player,0.0,0.0,0.0,5,kushy,0.0,0.0,0.0,2026-05-10 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.500 | breeze:0.500 | corrode:0.333 | haven:0.250 | lotus:0.500 | pearl:1.000
+rrq,player,0.0,0.0,0.0,5,monyet,0.0,0.0,0.0,2026-05-10 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.500 | breeze:0.500 | corrode:0.333 | haven:0.250 | lotus:0.500 | pearl:1.000
+rrq,player,0.0,0.0,0.0,5,xffero,0.0,0.0,0.0,2026-05-10 04:00:00,abyss:1.000 | ascent:1.000 | bind:0.500 | breeze:0.500 | corrode:0.333 | haven:0.250 | lotus:0.500 | pearl:1.000
+sen,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.500 | pearl:1.000 | split:0.500
+sen,player,0.0,0.0,0.0,5,cortezia,0.0,0.0,0.0,2026-02-06 19:30:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.500 | pearl:1.000 | split:0.500
+sen,player,0.0,0.0,0.0,5,johnqt,0.0,0.0,0.0,2026-02-06 19:30:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.500 | pearl:1.000 | split:0.500
+sen,player,0.0,0.0,0.0,5,kyu,0.0,0.0,0.0,2026-02-06 19:30:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.500 | pearl:1.000 | split:0.500
+sen,player,0.0,0.0,0.0,5,n4rrate,0.0,0.0,0.0,2026-02-06 19:30:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.500 | pearl:1.000 | split:0.500
+sen,player,0.0,0.0,0.0,5,reduxx,0.0,0.0,0.0,2026-02-06 19:30:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.500 | pearl:1.000 | split:0.500
+sge,team_summary,0.0,0.0,0.0,5,,,,,,ascent:0.000 | lotus:1.000 | split:0.000
+sge,player,0.0,0.0,0.0,5,azury,0.0,0.0,0.0,2026-08-22 10:00:00,ascent:0.000 | lotus:1.000 | split:0.000
+sge,player,0.0,0.0,0.0,5,fizzy,0.0,0.0,0.0,2026-08-22 10:00:00,ascent:0.000 | lotus:1.000 | split:0.000
+sge,player,0.0,0.0,0.0,5,jamelinho213,0.0,0.0,0.0,2026-08-22 10:00:00,ascent:0.000 | lotus:1.000 | split:0.000
+sge,player,0.0,0.0,0.0,5,monsteerr,0.0,0.0,0.0,2026-08-22 10:00:00,ascent:0.000 | lotus:1.000 | split:0.000
+sge,player,0.0,0.0,0.0,5,musashi,0.0,0.0,0.0,2026-08-22 10:00:00,ascent:0.000 | lotus:1.000 | split:0.000
+t1,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | ascent:0.500 | bind:1.000 | breeze:0.600 | corrode:0.000 | haven:0.600 | lotus:0.667 | pearl:0.500 | split:0.667
+t1,player,0.0,0.0,0.0,5,buzz,0.0,0.0,0.0,2026-09-05 04:00:00,abyss:1.000 | ascent:0.500 | bind:1.000 | breeze:0.600 | corrode:0.000 | haven:0.600 | lotus:0.667 | pearl:0.500 | split:0.667
+t1,player,0.0,0.0,0.0,5,izu,0.0,0.0,0.0,2026-09-05 04:00:00,abyss:1.000 | ascent:0.500 | bind:1.000 | breeze:0.600 | corrode:0.000 | haven:0.600 | lotus:0.667 | pearl:0.500 | split:0.667
+t1,player,0.0,0.0,0.0,5,meteor,0.0,0.0,0.0,2026-09-05 04:00:00,abyss:1.000 | ascent:0.500 | bind:1.000 | breeze:0.600 | corrode:0.000 | haven:0.600 | lotus:0.667 | pearl:0.500 | split:0.667
+t1,player,0.0,0.0,0.0,5,munchkin,0.0,0.0,0.0,2026-09-05 04:00:00,abyss:1.000 | ascent:0.500 | bind:1.000 | breeze:0.600 | corrode:0.000 | haven:0.600 | lotus:0.667 | pearl:0.500 | split:0.667
+t1,player,0.0,0.0,0.0,5,stax,0.0,0.0,0.0,2026-09-05 04:00:00,abyss:1.000 | ascent:0.500 | bind:1.000 | breeze:0.600 | corrode:0.000 | haven:0.600 | lotus:0.667 | pearl:0.500 | split:0.667
+te,team_summary,0.0,0.0,0.0,10,,,,,,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,abo,0.0,0.0,0.0,2026-05-03 08:30:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,delb,0.0,0.0,0.0,2026-08-16 06:35:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,fengf,0.0,0.0,0.0,2026-09-04 08:00:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,fkey,0.0,0.0,0.0,2026-09-04 08:00:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,kai,0.0,0.0,0.0,2026-09-04 08:00:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,luok1ng,0.0,0.0,0.0,2026-09-04 08:00:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,toosy,0.0,0.0,0.0,2026-09-04 08:00:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,viva,0.0,0.0,0.0,2026-05-03 08:30:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,xlele,0.0,0.0,0.0,2026-05-25 06:40:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+te,player,0.0,0.0,0.0,10,yiyee,0.0,0.0,0.0,2026-03-19 05:00:00,abyss:0.500 | ascent:0.500 | bind:0.500 | breeze:1.000 | corrode:0.000 | haven:0.667 | lotus:0.400 | pearl:0.667 | split:0.333 | summit:1.000 | sunset:0.500
+tec,team_summary,0.0,0.0,0.0,7,,,,,,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,abo,0.0,0.0,0.0,2026-02-04 04:00:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,coco,0.0,0.0,0.0,2026-09-09 07:20:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,dynamite,0.0,0.0,0.0,2026-09-09 07:20:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,haodong,0.0,0.0,0.0,2026-09-09 07:20:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,lucas,0.0,0.0,0.0,2026-09-09 07:20:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,ra1ny,0.0,0.0,0.0,2026-09-09 07:20:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+tec,player,0.0,0.0,0.0,7,spitfires,0.0,0.0,0.0,2026-05-31 05:00:00,abyss:0.500 | ascent:1.000 | bind:0.500 | breeze:0.200 | corrode:0.500 | fracture:0.500 | haven:0.600 | lotus:0.500 | pearl:0.250 | split:0.400 | summit:0.667 | sunset:0.500
+th,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+th,player,0.0,0.0,0.0,6,benjyfishy,0.0,0.0,0.0,2026-06-14 10:00:00,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+th,player,0.0,0.0,0.0,6,boo,0.0,0.0,0.0,2026-06-14 10:00:00,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+th,player,0.0,0.0,0.0,6,comeback,0.0,0.0,0.0,2026-02-12 12:00:00,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+th,player,0.0,0.0,0.0,6,koshmaras,0.0,0.0,0.0,2026-06-14 10:00:00,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+th,player,0.0,0.0,0.0,6,riens,0.0,0.0,0.0,2026-06-14 10:00:00,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+th,player,0.0,0.0,0.0,6,wo0t,0.0,0.0,0.0,2026-06-14 10:00:00,abyss:0.667 | ascent:0.400 | bind:1.000 | breeze:0.600 | corrode:0.000 | fracture:0.333 | haven:0.429 | lotus:0.857 | pearl:0.000 | split:0.667
+tl,team_summary,0.0,0.0,0.0,7,,,,,,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,kamo,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,kicks,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,miniboo,0.0,0.0,0.0,2026-05-09 13:30:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,nats,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,purp0,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,trexx,0.0,0.0,0.0,2026-08-30 11:00:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+tl,player,0.0,0.0,0.0,7,wayne,0.0,0.0,0.0,2026-05-09 13:30:00,abyss:0.750 | ascent:0.400 | bind:1.000 | breeze:0.800 | corrode:0.750 | fracture:1.000 | haven:0.500 | lotus:0.833 | pearl:0.250 | split:0.667 | summit:0.500 | sunset:0.000
+ts,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | bind:0.500 | haven:0.000 | split:0.667
+ts,player,0.0,0.0,0.0,5,berserx,0.0,0.0,0.0,2026-02-05 03:00:00,abyss:1.000 | bind:0.500 | haven:0.000 | split:0.667
+ts,player,0.0,0.0,0.0,5,jessievash,0.0,0.0,0.0,2026-02-05 03:00:00,abyss:1.000 | bind:0.500 | haven:0.000 | split:0.667
+ts,player,0.0,0.0,0.0,5,kellys,0.0,0.0,0.0,2026-02-05 03:00:00,abyss:1.000 | bind:0.500 | haven:0.000 | split:0.667
+ts,player,0.0,0.0,0.0,5,sylvan,0.0,0.0,0.0,2026-02-05 03:00:00,abyss:1.000 | bind:0.500 | haven:0.000 | split:0.667
+ts,player,0.0,0.0,0.0,5,tenten,0.0,0.0,0.0,2026-02-05 03:00:00,abyss:1.000 | bind:0.500 | haven:0.000 | split:0.667
+tyl,team_summary,0.0,0.0,0.0,11,,,,,,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,5yyc,0.0,0.0,0.0,2026-09-04 05:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,erv,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,glxad,0.0,0.0,0.0,2026-09-04 05:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,melody,0.0,0.0,0.0,2026-09-04 05:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,notsobad,0.0,0.0,0.0,2026-09-04 05:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,scales,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,siufatbb,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,slowly,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,splash,0.0,0.0,0.0,2026-08-23 04:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,sword9,0.0,0.0,0.0,2026-05-05 07:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+tyl,player,0.0,0.0,0.0,11,xihe,0.0,0.0,0.0,2026-09-04 05:00:00,abyss:0.333 | ascent:0.400 | bind:0.250 | breeze:0.400 | corrode:1.000 | fracture:0.400 | haven:0.545 | lotus:0.333 | pearl:0.400 | split:0.500 | summit:0.600 | sunset:0.333
+ulf,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | bind:1.000 | breeze:0.500 | corrode:1.000 | haven:1.000 | pearl:0.000 | split:1.000
+ulf,player,0.0,0.0,0.0,5,audaz,0.0,0.0,0.0,2026-02-05 14:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | corrode:1.000 | haven:1.000 | pearl:0.000 | split:1.000
+ulf,player,0.0,0.0,0.0,5,d3mur,0.0,0.0,0.0,2026-02-05 14:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | corrode:1.000 | haven:1.000 | pearl:0.000 | split:1.000
+ulf,player,0.0,0.0,0.0,5,favian,0.0,0.0,0.0,2026-02-05 14:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | corrode:1.000 | haven:1.000 | pearl:0.000 | split:1.000
+ulf,player,0.0,0.0,0.0,5,nekky,0.0,0.0,0.0,2026-02-05 14:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | corrode:1.000 | haven:1.000 | pearl:0.000 | split:1.000
+ulf,player,0.0,0.0,0.0,5,sturnn,0.0,0.0,0.0,2026-02-05 14:00:00,abyss:1.000 | bind:1.000 | breeze:0.500 | corrode:1.000 | haven:1.000 | pearl:0.000 | split:1.000
+ur,team_summary,0.0,0.0,0.0,7,,,,,,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,cxix666,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,hopedawn,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,mart1n,0.0,0.0,0.0,2026-05-24 06:30:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,ninebody,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,qiuye,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,waituu,0.0,0.0,0.0,2026-09-12 05:00:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+ur,player,0.0,0.0,0.0,7,xii,0.0,0.0,0.0,2026-05-24 06:30:00,abyss:1.000 | breeze:0.000 | lotus:1.000 | pearl:0.000 | split:0.000 | summit:1.000 | sunset:0.667
+vit,team_summary,0.0,0.0,0.0,6,,,,,,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vit,player,0.0,0.0,0.0,6,chronicle,0.0,0.0,0.0,2026-08-22 12:30:00,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vit,player,0.0,0.0,0.0,6,derke,0.0,0.0,0.0,2026-08-22 12:30:00,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vit,player,0.0,0.0,0.0,6,jamppi,0.0,0.0,0.0,2026-08-22 12:30:00,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vit,player,0.0,0.0,0.0,6,profek,0.0,0.0,0.0,2026-08-22 12:30:00,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vit,player,0.0,0.0,0.0,6,sayonara,0.0,0.0,0.0,2026-08-22 12:30:00,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vit,player,0.0,0.0,0.0,6,unfake,0.0,0.0,0.0,2026-02-14 08:00:00,abyss:0.200 | ascent:0.250 | bind:0.500 | breeze:0.625 | corrode:0.667 | fracture:0.000 | haven:0.667 | lotus:0.833 | pearl:0.500 | split:1.000 | summit:0.000
+vl,team_summary,0.0,0.0,0.0,6,,,,,,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+vl,player,0.0,0.0,0.0,6,c1nder,0.0,0.0,0.0,2026-09-04 07:00:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+vl,player,0.0,0.0,0.0,6,foxy9,0.0,0.0,0.0,2026-09-04 07:00:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+vl,player,0.0,0.0,0.0,6,klaus,0.0,0.0,0.0,2026-09-04 07:00:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+vl,player,0.0,0.0,0.0,6,oonzmlp,0.0,0.0,0.0,2026-09-04 07:00:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+vl,player,0.0,0.0,0.0,6,xuna,0.0,0.0,0.0,2026-09-04 07:00:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+vl,player,0.0,0.0,0.0,6,zexy,0.0,0.0,0.0,2026-09-04 07:00:00,abyss:1.000 | bind:1.000 | breeze:1.000 | corrode:0.000 | haven:1.000 | lotus:0.500 | pearl:0.000 | split:1.000 | summit:1.000 | sunset:0.000
+wbg,team_summary,0.0,0.0,0.0,5,,,,,,fracture:0.000 | lotus:0.000 | pearl:1.000
+wbg,player,0.0,0.0,0.0,5,chenze,0.0,0.0,0.0,2026-05-22 07:00:00,fracture:0.000 | lotus:0.000 | pearl:1.000
+wbg,player,0.0,0.0,0.0,5,heybay,0.0,0.0,0.0,2026-05-22 07:00:00,fracture:0.000 | lotus:0.000 | pearl:1.000
+wbg,player,0.0,0.0,0.0,5,mindfreak,0.0,0.0,0.0,2026-05-22 07:00:00,fracture:0.000 | lotus:0.000 | pearl:1.000
+wbg,player,0.0,0.0,0.0,5,satoshi,0.0,0.0,0.0,2026-05-22 07:00:00,fracture:0.000 | lotus:0.000 | pearl:1.000
+wbg,player,0.0,0.0,0.0,5,yoyo,0.0,0.0,0.0,2026-05-22 07:00:00,fracture:0.000 | lotus:0.000 | pearl:1.000
+wol,team_summary,0.0,0.0,0.0,9,,,,,,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,aluba,0.0,0.0,0.0,2026-09-03 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,deryeon,0.0,0.0,0.0,2026-09-03 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,glacier,0.0,0.0,0.0,2026-09-03 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,jowa,0.0,0.0,0.0,2026-05-21 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,qiutian,0.0,0.0,0.0,2026-02-03 04:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,satoshi,0.0,0.0,0.0,2026-03-16 05:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,siufatbb,0.0,0.0,0.0,2026-05-21 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,spring,0.0,0.0,0.0,2026-09-03 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wol,player,0.0,0.0,0.0,9,yosemite,0.0,0.0,0.0,2026-09-03 07:00:00,abyss:0.250 | ascent:1.000 | bind:0.500 | breeze:0.000 | fracture:0.000 | haven:0.750 | pearl:1.000 | split:0.500
+wsig,team_summary,0.0,0.0,0.0,5,,,,,,pearl:0.000 | split:0.000
+wsig,player,0.0,0.0,0.0,5,apathy,0.0,0.0,0.0,2026-03-16 08:25:00,pearl:0.000 | split:0.000
+wsig,player,0.0,0.0,0.0,5,gin,0.0,0.0,0.0,2026-03-16 08:25:00,pearl:0.000 | split:0.000
+wsig,player,0.0,0.0,0.0,5,m1ng929,0.0,0.0,0.0,2026-03-16 08:25:00,pearl:0.000 | split:0.000
+wsig,player,0.0,0.0,0.0,5,superbigguo,0.0,0.0,0.0,2026-03-16 08:25:00,pearl:0.000 | split:0.000
+wsig,player,0.0,0.0,0.0,5,ye,0.0,0.0,0.0,2026-03-16 08:25:00,pearl:0.000 | split:0.000
+xlg,team_summary,0.0,0.0,0.0,12,,,,,,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,happywei,0.0,0.0,0.0,2026-08-20 06:35:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,jyy,0.0,0.0,0.0,2026-09-03 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,lysoar,0.0,0.0,0.0,2026-08-20 06:35:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,noman,0.0,0.0,0.0,2026-08-20 06:35:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,rarga,0.0,0.0,0.0,2026-08-20 06:35:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,rival,0.0,0.0,0.0,2026-05-23 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,sanye,0.0,0.0,0.0,2026-05-23 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,sharks,0.0,0.0,0.0,2026-09-03 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,symmetry,0.0,0.0,0.0,2026-09-03 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,wsleo,0.0,0.0,0.0,2026-08-20 06:35:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,xiaoyu,0.0,0.0,0.0,2026-09-03 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+xlg,player,0.0,0.0,0.0,12,yu1,0.0,0.0,0.0,2026-09-03 05:00:00,abyss:0.667 | ascent:1.000 | bind:0.500 | breeze:0.375 | fracture:1.000 | haven:0.667 | lotus:0.400 | pearl:0.000 | split:0.364 | summit:0.000 | sunset:0.000
+zeta,team_summary,0.0,0.0,0.0,5,,,,,,abyss:1.000 | bind:0.500 | corrode:1.000 | haven:0.500 | split:0.667
+zeta,player,0.0,0.0,0.0,5,absol,0.0,0.0,0.0,2026-02-07 03:00:00,abyss:1.000 | bind:0.500 | corrode:1.000 | haven:0.500 | split:0.667
+zeta,player,0.0,0.0,0.0,5,eko,0.0,0.0,0.0,2026-02-07 03:00:00,abyss:1.000 | bind:0.500 | corrode:1.000 | haven:0.500 | split:0.667
+zeta,player,0.0,0.0,0.0,5,sugarz3ro,0.0,0.0,0.0,2026-02-07 03:00:00,abyss:1.000 | bind:0.500 | corrode:1.000 | haven:0.500 | split:0.667
+zeta,player,0.0,0.0,0.0,5,syouta,0.0,0.0,0.0,2026-02-07 03:00:00,abyss:1.000 | bind:0.500 | corrode:1.000 | haven:0.500 | split:0.667
+zeta,player,0.0,0.0,0.0,5,xdll,0.0,0.0,0.0,2026-02-07 03:00:00,abyss:1.000 | bind:0.500 | corrode:1.000 | haven:0.500 | split:0.667
