@@ -8,11 +8,3 @@ build/
 dist/
 *.egg-info
 __pycache__/
-
-# Data
-data/
-data.json
-data/raw_data.json
-
-# Plan
-plan/
