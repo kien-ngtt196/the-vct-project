@@ -1,7 +1,6 @@
 import os
-from setuptools import setup, Extension
+from setuptools import setup
 from pybind11.setup_helpers import Pybind11Extension, build_ext
-import sys
 
 # Get directory of setup.py to resolve source paths correctly
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,5 +22,5 @@ setup(
     ext_modules=ext_modules,
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
-    python_requires=">=3.7",
+    python_requires=">=3.9",
 )

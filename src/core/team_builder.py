@@ -1,16 +1,17 @@
 import csv
 import math
 import os
+from pathlib import Path
 from collections import defaultdict
 
 import psycopg2
 
 DATABASE_CONFIG = {
-    "dbname": "vct_db",
-    "user": "postgres",
-    "password": "kotoha19062007",
-    "host": "localhost",
-    "port": "5432",
+    "dbname": os.getenv("VCT_DB_NAME", "vct_db"),
+    "user": os.getenv("VCT_DB_USER", "postgres"),
+    "password": os.getenv("VCT_DB_PASSWORD"),
+    "host": os.getenv("VCT_DB_HOST", "localhost"),
+    "port": os.getenv("VCT_DB_PORT", "5432"),
 }
 
 
@@ -108,6 +109,7 @@ def fetch_team_structure_rows():
             t.canonical_name AS team_name,
             t.team_id,
             pl.canonical_name AS player_name,
+            ps.player_id,
             ps.nationality,
             ps.acs,
             ps.rating,
@@ -156,6 +158,7 @@ def fetch_team_structure_rows():
         team_name,
         team_id,
         player_name,
+        player_id,
         nationality,
         acs,
         rating,
@@ -182,6 +185,7 @@ def fetch_team_structure_rows():
             "team_key": normalize_team_name(team_name),
             "team_id": team_id,
             "player_name": player_name,
+            "player_id": player_id,
             "player_nationality": nationality,
             "acs": float(acs) if acs is not None else None,
             "rating": float(rating) if rating is not None else None,
@@ -218,6 +222,8 @@ def build_team_structure():
         "players": {},
         "match_history": [],
         "map_record": defaultdict(lambda: {"wins": 0, "total": 0}),
+        "seen_matches": set(),
+        "seen_maps": set(),
     })
 
     for row in rows:
@@ -226,10 +232,11 @@ def build_team_structure():
         team_entry["team_name"] = row["team_name"]
         team_entry["team_key"] = team_key
 
-        player_key = row["player_name"]
+        player_key = row["player_id"] or row["player_name"]
         if player_key not in team_entry["players"]:
             team_entry["players"][player_key] = {
-                "player_name": player_key,
+                "player_id": row["player_id"],
+                "player_name": row["player_name"],
                 "player_key": player_key,
                 "player_nationality": row["player_nationality"],
                 "stats": {"acs": [], "rating": [], "kast": [], "adr": [], "kills": [], "deaths": [], "headshots_percent": [], "first_kills": []},
@@ -256,7 +263,9 @@ def build_team_structure():
         })
 
         opponent_name = row["opponent_team_name"] or row["opponent_name"]
-        if opponent_name is not None:
+        match_key = row["match_id"]
+        if opponent_name is not None and match_key not in team_entry["seen_matches"]:
+            team_entry["seen_matches"].add(match_key)
             team_entry["match_history"].append({
                 "date": row["match_date"],
                 "opponent": opponent_name,
@@ -266,7 +275,9 @@ def build_team_structure():
             })
 
         map_name = normalize_map_name(row["map_name"])
-        if map_name:
+        map_key = (row["match_id"], map_name)
+        if map_name and map_key not in team_entry["seen_maps"]:
+            team_entry["seen_maps"].add(map_key)
             map_entry = team_entry["map_record"][map_name]
             map_entry["total"] += 1
             if row["team_score"] is not None and row["opponent_score"] is not None and row["team_score"] > row["opponent_score"]:
@@ -275,7 +286,7 @@ def build_team_structure():
     teams = []
     for team_key, team_entry in sorted(team_map.items()):
         players = []
-        for player_name, player_data in sorted(team_entry["players"].items()):
+        for player_key, player_data in sorted(team_entry["players"].items(), key=lambda item: str(item[1]["player_name"])):
             stats = player_data["stats"]
             acs_vals = [v for v in stats["acs"] if v is not None]
             rating_vals = [v for v in stats["rating"] if v is not None]
@@ -293,8 +304,9 @@ def build_team_structure():
             composite_rating = compute_composite_rating(match_history)
 
             player_obj = {
-                "player_name": player_name,
-                "player_key": player_name,
+                "player_id": player_data["player_id"],
+                "player_name": player_data["player_name"],
+                "player_key": player_key,
                 "player_nationality": player_data.get("player_nationality"),
                 "stats": {
                     "acs": round(mean_or_default(acs_vals), 2),
@@ -426,8 +438,10 @@ def print_team_structure(teams, limit=10):
     print("\n" + "=" * 140)
 
 
-def export_team_overview_csv(output_path="D:/My Projects/the-vct-project/data/team_builder_overview.csv"):
+def export_team_overview_csv(output_path=None):
     teams = build_team_structure()
+    if output_path is None:
+        output_path = str(Path(__file__).resolve().parents[2] / "data" / "team_builder_overview.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     fieldnames = [
