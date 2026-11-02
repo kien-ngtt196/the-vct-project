@@ -1,5 +1,18 @@
 # Python environment
 .venv
 
+# Local secrets and generated Python files
+.env
+__pycache__/
+*.py[cod]
+
+# Scraper snapshots and generated exports
+data/raw/
+data/*.csv
+src/web/static/assets/
+.pytest_cache/
+*.log
+
 # Compiled C++ / Pybind11 artifacts
 build/
+src/core/build/
