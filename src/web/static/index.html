@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111318">
+    <title>VCT Scout — 2026 players, teams, power</title>
+    <link rel="stylesheet" href="/app.css?v=8">
+    <script src="/app.js?v=8" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="VCT Scout home">
+        <span class="wordmark-mark">V</span>
+        <span>VCT<span class="wordmark-light">SCOUT</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#power-rankings-section">Power rankings</a>
+        <a href="#player-rankings-section">Player rankings</a>
+        <a href="#search-section">Players & teams</a>
+        <a href="#watchlist-section">2027 watchlist</a>
+      </nav>
+      <span class="header-note">INDEPENDENT VCT STATS</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">VCT GLOBAL POWER · 2026 SEASON</p>
+        <h1>Global power<br><span>rankings.</span></h1>
+        <p class="hero-copy">
+          Compare tier-one teams and players across the imported 2026 season.
+          Scores emphasize international events and open a deeper sourced profile.
+        </p>
+      </section>
+
+      <section class="rankings-layout" id="power-rankings-section">
+        <section class="panel ranking-panel" aria-labelledby="power-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">GLOBAL POWER · 2026</p>
+              <h2 id="power-title">Current standings</h2>
+            </div>
+            <span class="model-badge">BASIC STATS · NOT A FORECAST</span>
+          </div>
+          <div class="table-scroll">
+            <table class="power-table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Team</th>
+                  <th scope="col">Power</th>
+                  <th scope="col">W–L–D</th>
+                  <th scope="col">Recent</th>
+                  <th scope="col">Execution</th>
+                  <th scope="col">Opponents</th>
+                </tr>
+              </thead>
+              <tbody id="power-rankings" aria-live="polite">
+                <tr><td class="table-message" colspan="7">Loading 2026 results…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="source-note">
+            The strongest team is scaled to 100. Click a team to inspect its 2026
+            results, event finishes, available prizes, and roster.
+          </p>
+        </section>
+
+        <aside class="ranking-sidebar">
+          <section class="panel methodology-panel" aria-labelledby="method-title">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">HOW THE RANKING WORKS</p>
+                <h2 id="method-title">Power, with context</h2>
+              </div>
+            </div>
+            <p class="panel-copy">
+              A descriptive 2026 ranking, not a match probability or tournament prediction.
+            </p>
+            <div class="method-list">
+              <div class="method-row">
+                <span class="method-icon" aria-hidden="true">01</span>
+                <div><strong>Season results <b>35%</b></strong><small>Completed match wins, weighted by event importance</small></div>
+              </div>
+              <div class="method-row">
+                <span class="method-icon" aria-hidden="true">02</span>
+                <div><strong>Recent form <b>25%</b></strong><small>Recency-weighted last five matches</small></div>
+              </div>
+              <div class="method-row">
+                <span class="method-icon" aria-hidden="true">03</span>
+                <div><strong>In-game execution <b>25%</b></strong><small>Weighted map wins (40%), round strength (40%), K/D (20%)</small></div>
+              </div>
+              <div class="method-row">
+                <span class="method-icon" aria-hidden="true">04</span>
+                <div><strong>Opponent strength <b>15%</b></strong><small>Event-weighted average 2026 opponent win rate</small></div>
+              </div>
+            </div>
+            <p class="data-caveat">
+              Event multipliers: Champions 3×, Masters 2×, regional 1×. Recent form
+              combines event importance with match recency. Tier is inferred from the
+              tournament title; unrecognized event types use regional weight.
+            </p>
+            <p class="data-caveat">
+              Regional strength and event-stage weighting are not included: the current
+              source data lacks reliable team-region and stage labels. Valorant gold
+              metrics are not applicable. Missing component data is neutral, not guessed.
+            </p>
+          </section>
+
+          <section class="panel power-panel" aria-labelledby="compare-title">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">HEAD-TO-HEAD</p>
+                <h2 id="compare-title">Compare teams</h2>
+              </div>
+              <span class="model-badge">2026</span>
+            </div>
+            <form id="power-form">
+              <label class="select-label" for="team-one">Team one</label>
+              <select id="team-one" required>
+                <option value="">Loading teams…</option>
+              </select>
+              <div class="versus">VS</div>
+              <label class="select-label" for="team-two">Team two</label>
+              <select id="team-two" required>
+                <option value="">Loading teams…</option>
+              </select>
+              <button class="primary-button" type="submit">Compare power <span aria-hidden="true">↗</span></button>
+            </form>
+            <div id="power-result" class="power-result" aria-live="polite">
+              <p class="muted">Choose two teams to compare their season components.</p>
+            </div>
+          </section>
+
+          <section class="panel future-panel" id="watchlist-section" aria-labelledby="future-title">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">NO GUESSES, JUST SOURCES</p>
+                <h2 id="future-title">2027 watchlist</h2>
+              </div>
+              <span class="future-year">’27</span>
+            </div>
+            <p id="future-message" class="panel-copy">Checking the tracked tier-one schedule…</p>
+            <div id="future-events" class="future-events"></div>
+            <p class="source-note">Events, fixtures, and roster records will appear here only after they are listed by the tracked source.</p>
+          </section>
+        </aside>
+      </section>
+
+      <section class="panel player-ranking-panel" id="player-rankings-section" aria-labelledby="player-rankings-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">GLOBAL PLAYER POWER · 2026</p>
+            <h2 id="player-rankings-title">Player standings</h2>
+          </div>
+          <span class="model-badge">MINIMUM 5 MAPS</span>
+        </div>
+        <div class="table-scroll">
+          <table class="power-table player-power-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Player</th>
+                <th scope="col">Team</th>
+                <th scope="col">Power</th>
+                <th scope="col">Maps</th>
+                <th scope="col">Rating</th>
+                <th scope="col">ACS</th>
+                <th scope="col">KAST</th>
+              </tr>
+            </thead>
+            <tbody id="player-rankings" aria-live="polite">
+              <tr><td class="table-message" colspan="8">Loading 2026 player results…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source-note">
+          The strongest eligible player is scaled to 100. Ratings are event-weighted
+          averages; each player profile shows underlying 2026 stats and roster evidence.
+        </p>
+      </section>
+
+      <section class="panel search-panel" id="search-section" aria-labelledby="search-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PLAYER & TEAM INDEX</p>
+            <h2 id="search-title">Search the scene</h2>
+          </div>
+          <span class="live-dot" aria-label="Search ready"></span>
+        </div>
+        <label class="search-box">
+          <span class="sr-only">Search players or teams</span>
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="search-input" type="search" placeholder="Try a player or team name…" autocomplete="off">
+          <kbd>ENTER</kbd>
+        </label>
+        <div id="search-status" class="muted status-line" role="status">Search VCT tier-one players and teams.</div>
+        <div id="search-results" class="search-results"></div>
+        <div id="profile-view" class="profile-view" aria-live="polite">
+          <div class="empty-state">
+            <span class="empty-glyph">◎</span>
+            <p>Select a ranking or search result to inspect its sourced profile.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <span>Independent stats explorer · Not affiliated with Riot Games</span>
+        <span>VLR.gg is the tracked data source · Player images link to source profiles</span>
+      </footer>
+    </main>
+  </body>
+</html>
