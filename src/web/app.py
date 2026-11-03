@@ -13,6 +13,7 @@ from src.db.database import connect
 
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+VCT_IMAGE_DIR = Path(__file__).resolve().parents[2] / "vct_images"
 PLAYER_ID_PATTERN = re.compile(r"^/api/players/(\d+)$")
 TEAM_ID_PATTERN = re.compile(r"^/api/teams/(\d+)$")
 CHAMPIONS_EVENT_WEIGHT = 3.0
@@ -937,9 +938,9 @@ class VCTRequestHandler(BaseHTTPRequestHandler):
         body = json.dumps(payload, default=str).encode("utf-8")
         self._send(status, body, "application/json; charset=utf-8")
 
-    def _static_file(self, relative_path):
-        path = (STATIC_DIR / relative_path).resolve()
-        if not path.is_relative_to(STATIC_DIR.resolve()) or not path.is_file():
+    def _static_file(self, relative_path, base_directory=STATIC_DIR):
+        path = (base_directory / relative_path).resolve()
+        if not path.is_relative_to(base_directory.resolve()) or not path.is_file():
             self._send_json(404, {"error": "Not found."})
             return
         content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
@@ -953,8 +954,14 @@ class VCTRequestHandler(BaseHTTPRequestHandler):
         try:
             if path == "/":
                 self._static_file("index.html")
-            elif path in {"/app.css", "/app.js"} or path.startswith("/assets/"):
+            elif path in {"/app.css", "/app.js", "/theme.js"} or path.startswith("/assets/"):
                 self._static_file(path.lstrip("/"))
+            elif path.startswith("/vct-images/"):
+                image_path = path.removeprefix("/vct-images/")
+                if Path(image_path).suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+                    self._send_json(404, {"error": "Not found."})
+                else:
+                    self._static_file(image_path, VCT_IMAGE_DIR)
             elif path == "/api/health":
                 with connect() as connection:
                     with connection.cursor() as cursor:

@@ -14,11 +14,93 @@ const heroScoutTeam = document.querySelector("#hero-scout-team");
 const heroScoutScore = document.querySelector("#hero-scout-score");
 const heroScoutSource = document.querySelector("#hero-scout-source");
 const heroScoutOpen = document.querySelector("#hero-scout-open");
+const themeToggle = document.querySelector("#theme-toggle");
+const themeToggleLabel = document.querySelector("#theme-toggle-label");
+const themeColor = document.querySelector('meta[name="theme-color"]');
+const profileDialog = document.querySelector("#profile-dialog");
+const profileDialogTitle = document.querySelector("#profile-dialog-title");
+const pagePanels = [...document.querySelectorAll("[data-page-panel]")];
+const pageLinks = [...document.querySelectorAll("[data-view-target]")];
 
 let searchTimer;
 let searchVersion = 0;
 let powerTeams = [];
 let heroPlayer = null;
+
+function applyTheme(theme, persist = false) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  themeToggle.setAttribute("aria-pressed", String(isDark));
+  themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+  themeToggleLabel.textContent = isDark ? "Light mode" : "Dark mode";
+  themeColor.content = isDark ? "#171b1a" : "#f5f5f2";
+  if (persist) {
+    try {
+      localStorage.setItem("vct-scout-theme", isDark ? "dark" : "light");
+    } catch (error) {
+      console.warn("Could not save the theme preference.", error);
+    }
+  }
+}
+
+applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+themeToggle.addEventListener("click", () => {
+  applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true);
+});
+
+function viewFromHash() {
+  const hash = window.location.hash.slice(1);
+  const legacyViews = {
+    "power-rankings-section": "teams",
+    "player-rankings-section": "players",
+    "search-section": "directory",
+    "watchlist-section": "watchlist",
+  };
+  const view = legacyViews[hash] || hash;
+  return pagePanels.some((panel) => panel.dataset.pagePanel === view) ? view : "home";
+}
+
+function showPage(view, scroll = true) {
+  pagePanels.forEach((panel) => {
+    panel.hidden = panel.dataset.pagePanel !== view;
+  });
+  pageLinks.forEach((link) => {
+    if (link.closest(".site-nav")) {
+      if (link.dataset.viewTarget === view) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    }
+  });
+  if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+pageLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const view = link.dataset.viewTarget;
+    if (!pagePanels.some((panel) => panel.dataset.pagePanel === view)) return;
+    event.preventDefault();
+    if (window.location.hash !== `#${view}`) {
+      window.history.pushState({ view }, "", `#${view}`);
+    }
+    showPage(view);
+  });
+});
+window.addEventListener("popstate", () => showPage(viewFromHash()));
+const initialView = viewFromHash();
+showPage(initialView, false);
+if (window.location.hash !== `#${initialView}`) {
+  window.history.replaceState({ view: initialView }, "", `#${initialView}`);
+}
+
+document.querySelector("#profile-dialog-close").addEventListener("click", () => profileDialog.close());
+profileDialog.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    profileDialog.close();
+  }
+});
+profileDialog.addEventListener("click", (event) => {
+  if (event.target === profileDialog) profileDialog.close();
+});
 
 function safeImageUrl(value) {
   if (!value) return null;
@@ -546,6 +628,8 @@ function renderTeam(team) {
 }
 
 async function loadProfile(item) {
+  profileDialogTitle.textContent = item.type === "player" ? "Player profile" : "Team profile";
+  if (!profileDialog.open) profileDialog.showModal();
   profileView.replaceChildren();
   const loading = document.createElement("p");
   loading.className = "muted";
@@ -556,7 +640,6 @@ async function loadProfile(item) {
     const details = await getJson(`/api/${kind}/${encodeURIComponent(item.id)}`);
     if (item.type === "player") renderPlayer(details);
     else renderTeam(details);
-    profileView.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     const message = document.createElement("p");
     message.className = "team-warning";
@@ -737,7 +820,9 @@ async function loadPowerRankings() {
   try {
     const payload = await getJson("/api/power-rankings");
     powerTeams = payload.teams;
-    document.querySelector("#team-count").textContent = String(powerTeams.length);
+    document.querySelectorAll('[data-count="teams"]').forEach((counter) => {
+      counter.textContent = String(powerTeams.length);
+    });
     [first, second].forEach((select, selectIndex) => {
       select.replaceChildren(new Option("Choose a 2026 team…", ""));
       powerTeams.forEach((team) => {
@@ -767,7 +852,9 @@ async function loadPlayerRankings() {
   const tableBody = document.querySelector("#player-rankings");
   try {
     const payload = await getJson("/api/player-power-rankings");
-    document.querySelector("#player-count").textContent = String(payload.players.length);
+    document.querySelectorAll('[data-count="players"]').forEach((counter) => {
+      counter.textContent = String(payload.players.length);
+    });
     if (payload.players.length) renderHeroScout(payload.players[0]);
     tableBody.replaceChildren(
       ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1)),

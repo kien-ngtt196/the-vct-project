@@ -4,26 +4,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f5f2">
-    <title>VCT Scout — 2026 players, teams, power</title>
-    <link rel="stylesheet" href="/app.css?v=10">
-    <script src="/app.js?v=10" defer></script>
+    <title>VCT Scout — VCT scouting, rankings & player data</title>
+    <script src="/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/app.css?v=18">
+    <script src="/app.js?v=14" defer></script>
   </head>
   <body>
     <header class="site-header">
-      <a class="wordmark" href="/" aria-label="VCT Scout home">
+      <a class="wordmark" href="#home" data-view-target="home" aria-label="VCT Scout home">
         <span class="wordmark-mark">V</span>
         <span>VCT<span class="wordmark-light">SCOUT</span></span>
       </a>
       <nav class="site-nav" aria-label="Main navigation">
-        <a href="#power-rankings-section">Power rankings</a>
-        <a href="#player-rankings-section">Player rankings</a>
-        <a href="#search-section">Players & teams</a>
-        <a href="#watchlist-section">2027 watchlist</a>
+        <a href="#home" data-view-target="home">Home</a>
+        <a href="#teams" data-view-target="teams">Team rankings</a>
+        <a href="#players" data-view-target="players">Player rankings</a>
+        <a href="#directory" data-view-target="directory">Players & teams</a>
+        <a href="#watchlist" data-view-target="watchlist">2027 watchlist</a>
       </nav>
-      <span class="header-note">INDEPENDENT VCT STATS</span>
+      <div class="header-actions">
+        <span class="header-note">INDEPENDENT VCT STATS</span>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Dark mode">
+          <span aria-hidden="true">◐</span>
+          <span id="theme-toggle-label">Dark mode</span>
+        </button>
+      </div>
     </header>
 
-    <main>
+    <main id="app-main">
+      <section class="page-view home-view" data-page-panel="home">
       <section class="hero">
         <div class="hero-copy-block">
           <p class="eyebrow"><span class="eyebrow-marker" aria-hidden="true"></span>VCT GLOBAL · 2026 SEASON</p>
@@ -33,13 +42,13 @@
             setting the pace, then open the source-backed player and team files.
           </p>
           <div class="hero-coverage" aria-label="Ranking coverage">
-            <div><strong id="team-count">—</strong><span>TEAMS RANKED</span></div>
+            <div><strong data-count="teams">—</strong><span>TEAMS RANKED</span></div>
             <i aria-hidden="true"></i>
-            <div><strong id="player-count">—</strong><span>PLAYERS TRACKED</span></div>
+            <div><strong data-count="players">—</strong><span>PLAYERS TRACKED</span></div>
             <i aria-hidden="true"></i>
             <div><strong>2026</strong><span>SEASON WINDOW</span></div>
           </div>
-          <a class="hero-link" href="#power-rankings-section">Explore the standings <span aria-hidden="true">↓</span></a>
+          <a class="hero-link" href="#teams" data-view-target="teams">Explore the standings <span aria-hidden="true">↗</span></a>
           <a class="art-credit" href="https://playvalorant.com/en-us/agents/jett/" target="_blank" rel="noopener noreferrer">
             Agent artwork: Jett · VALORANT / Riot Games ↗
           </a>
@@ -64,6 +73,63 @@
         </aside>
       </section>
 
+      <section class="home-workspace" aria-labelledby="workspace-title">
+        <div class="home-section-heading">
+          <div>
+            <p class="eyebrow">YOUR SCOUT DESK</p>
+            <h2 id="workspace-title">Pick a signal.</h2>
+          </div>
+          <span class="home-season">VCT · 2026</span>
+        </div>
+        <div class="home-feature-grid">
+          <a class="home-feature-card team-feature-card" href="#teams" data-view-target="teams">
+            <span class="feature-card-index">01 / TEAMS</span>
+            <span class="feature-card-title">Global power<br>rankings</span>
+            <span class="feature-card-detail"><strong data-count="teams">—</strong> teams · results, form, execution</span>
+            <span class="feature-card-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="home-feature-card player-feature-card" href="#players" data-view-target="players">
+            <span class="feature-card-index">02 / PLAYERS</span>
+            <span class="feature-card-title">Player<br>standings</span>
+            <span class="feature-card-detail"><strong data-count="players">—</strong> eligible players · minimum 5 maps</span>
+            <span class="feature-card-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="home-feature-card search-feature-card" href="#directory" data-view-target="directory">
+            <span class="feature-card-index">03 / SCOUT</span>
+            <span class="feature-card-title">Find a player<br>or team</span>
+            <span class="feature-card-detail">Open stats, form, results, and roster records</span>
+            <span class="feature-card-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="home-feature-card watch-feature-card" href="#watchlist" data-view-target="watchlist">
+            <span class="feature-card-index">04 / NEXT SEASON</span>
+            <span class="feature-card-title">2027<br>watchlist</span>
+            <span class="feature-card-detail">Source-listed events and fixtures only</span>
+            <span class="feature-card-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+
+      <article class="home-story">
+        <img
+          src="/assets/vct/loud-champions.jpg"
+          alt="LOUD players celebrate together while raising the VALORANT Champions trophy"
+          loading="lazy">
+        <div class="home-story-copy">
+          <p class="eyebrow">A MOMENT FROM THE VCT</p>
+          <h2>Built for the moments<br>that move a season.</h2>
+          <p>Explore the teams, players, and source-backed results behind every power shift.</p>
+          <a href="#teams" data-view-target="teams">Open team rankings <span aria-hidden="true">↗</span></a>
+        </div>
+        <span class="home-story-credit">ARTWORK FROM YOUR VCT_IMAGES FOLDER</span>
+      </article>
+      </section>
+
+      <section class="page-view feature-view teams-view" data-page-panel="teams" hidden>
+        <header class="feature-page-heading team-page-heading">
+          <p class="eyebrow">THE GLOBAL FIELD · 2026</p>
+          <h1>Team power,<br><span>in context.</span></h1>
+          <p>Compare the results and form behind every position. Select a team for its full scouting file.</p>
+        </header>
       <section class="rankings-layout" id="power-rankings-section">
         <section class="panel ranking-panel" aria-labelledby="power-title">
           <div class="section-heading">
@@ -163,24 +229,16 @@
             </div>
           </section>
 
-          <section class="panel future-panel" id="watchlist-section" aria-labelledby="future-title">
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">NO GUESSES, JUST SOURCES</p>
-                <h2 id="future-title">2027 watchlist</h2>
-              </div>
-              <span class="future-year">’27</span>
-            </div>
-            <p id="future-message" class="panel-copy">Checking the tracked tier-one schedule…</p>
-            <div id="future-events" class="future-events"></div>
-            <p class="source-note">Events, fixtures, and roster records will appear here only after they are listed by the tracked source.</p>
-            <a class="art-credit map-art-credit" href="https://playvalorant.com/en-us/maps/" target="_blank" rel="noopener noreferrer">
-              Icebox map artwork · VALORANT / Riot Games ↗
-            </a>
-          </section>
         </aside>
       </section>
+      </section>
 
+      <section class="page-view feature-view players-view" data-page-panel="players" hidden>
+        <header class="feature-page-heading player-page-heading">
+          <p class="eyebrow">THE PLAYERS SHAPING THE META · 2026</p>
+          <h1>Individual<br><span>impact.</span></h1>
+          <p>A source-backed view of player performance, weighted by event and ranked by the same season-wide model.</p>
+        </header>
       <section class="panel player-ranking-panel" id="player-rankings-section" aria-labelledby="player-rankings-title">
         <div class="section-heading">
           <div>
@@ -213,7 +271,14 @@
           averages; each player profile shows underlying 2026 stats and roster evidence.
         </p>
       </section>
+      </section>
 
+      <section class="page-view feature-view directory-view" data-page-panel="directory" hidden>
+        <header class="feature-page-heading directory-page-heading">
+          <p class="eyebrow">PLAYER & TEAM INDEX</p>
+          <h1>Find your<br><span>next read.</span></h1>
+          <p>Search the VCT field, then open a compact profile with stats, match history, and source links.</p>
+        </header>
       <section class="panel search-panel" id="search-section" aria-labelledby="search-title">
         <div class="section-heading">
           <div>
@@ -230,12 +295,30 @@
         </label>
         <div id="search-status" class="muted status-line" role="status">Search VCT tier-one players and teams.</div>
         <div id="search-results" class="search-results"></div>
-        <div id="profile-view" class="profile-view" aria-live="polite">
-          <div class="empty-state">
-            <span class="empty-glyph">◎</span>
-            <p>Select a ranking or search result to inspect its sourced profile.</p>
+      </section>
+      </section>
+
+      <section class="page-view feature-view watchlist-view" data-page-panel="watchlist" hidden>
+        <header class="feature-page-heading watchlist-page-heading">
+          <p class="eyebrow">PLAN WHAT'S NEXT</p>
+          <h1>Eyes on<br><span>2027.</span></h1>
+          <p>A clean schedule view. Only events and fixtures found in the tracked source appear here.</p>
+        </header>
+        <section class="panel future-panel" id="watchlist-section" aria-labelledby="future-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">NO GUESSES, JUST SOURCES</p>
+              <h2 id="future-title">2027 watchlist</h2>
+            </div>
+            <span class="future-year">’27</span>
           </div>
-        </div>
+          <p id="future-message" class="panel-copy">Checking the tracked tier-one schedule…</p>
+          <div id="future-events" class="future-events"></div>
+          <p class="source-note">Events, fixtures, and roster records will appear here only after they are listed by the tracked source.</p>
+          <a class="art-credit map-art-credit" href="https://playvalorant.com/en-us/maps/" target="_blank" rel="noopener noreferrer">
+            Icebox map artwork · VALORANT / Riot Games ↗
+          </a>
+        </section>
       </section>
 
       <footer class="site-footer">
@@ -243,5 +326,15 @@
         <span>VLR.gg is the tracked data source · Player images link to source profiles</span>
       </footer>
     </main>
+    <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-dialog-title">
+      <div class="profile-dialog-heading">
+        <div>
+          <p class="eyebrow">VCT SCOUT FILE</p>
+          <h2 id="profile-dialog-title">Profile</h2>
+        </div>
+        <button class="profile-dialog-close" id="profile-dialog-close" type="button" aria-label="Close profile">×</button>
+      </div>
+      <div id="profile-view" class="profile-view" aria-live="polite"></div>
+    </dialog>
   </body>
 </html>
