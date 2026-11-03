@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#111318">
+    <meta name="theme-color" content="#f5f5f2">
     <title>VCT Scout — 2026 players, teams, power</title>
-    <link rel="stylesheet" href="/app.css?v=8">
-    <script src="/app.js?v=8" defer></script>
+    <link rel="stylesheet" href="/app.css?v=10">
+    <script src="/app.js?v=10" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -25,12 +25,43 @@
 
     <main>
       <section class="hero">
-        <p class="eyebrow">VCT GLOBAL POWER · 2026 SEASON</p>
-        <h1>Global power<br><span>rankings.</span></h1>
-        <p class="hero-copy">
-          Compare tier-one teams and players across the imported 2026 season.
-          Scores emphasize international events and open a deeper sourced profile.
-        </p>
+        <div class="hero-copy-block">
+          <p class="eyebrow"><span class="eyebrow-marker" aria-hidden="true"></span>VCT GLOBAL · 2026 SEASON</p>
+          <h1>Read the<br><span>power shift.</span></h1>
+          <p class="hero-copy">
+            A live scouting view of the 2026 tier-one season. Track the teams
+            setting the pace, then open the source-backed player and team files.
+          </p>
+          <div class="hero-coverage" aria-label="Ranking coverage">
+            <div><strong id="team-count">—</strong><span>TEAMS RANKED</span></div>
+            <i aria-hidden="true"></i>
+            <div><strong id="player-count">—</strong><span>PLAYERS TRACKED</span></div>
+            <i aria-hidden="true"></i>
+            <div><strong>2026</strong><span>SEASON WINDOW</span></div>
+          </div>
+          <a class="hero-link" href="#power-rankings-section">Explore the standings <span aria-hidden="true">↓</span></a>
+          <a class="art-credit" href="https://playvalorant.com/en-us/agents/jett/" target="_blank" rel="noopener noreferrer">
+            Agent artwork: Jett · VALORANT / Riot Games ↗
+          </a>
+        </div>
+        <aside class="hero-scout" aria-label="Top-ranked player spotlight">
+          <div class="hero-scout-art">
+            <div class="hero-reticle" aria-hidden="true"></div>
+            <span class="hero-image-placeholder" id="hero-image-placeholder" aria-hidden="true">V</span>
+            <img id="hero-scout-image" alt="" hidden>
+            <span class="hero-art-index">SCOUT FILE / 001</span>
+            <a class="hero-image-credit" id="hero-scout-source" hidden target="_blank" rel="noopener noreferrer">PORTRAIT · VLR.GG ↗</a>
+          </div>
+          <div class="hero-scout-info">
+            <p class="hero-scout-label"><span></span>TOP PLAYER · 2026</p>
+            <h2 id="hero-scout-name">Loading scout file…</h2>
+            <p class="hero-scout-team" id="hero-scout-team">Reading the global leaderboard</p>
+            <div class="hero-scout-bottom">
+              <div><strong id="hero-scout-score">—</strong><span>POWER / 100</span></div>
+              <button id="hero-scout-open" type="button" disabled>OPEN SCOUT FILE <span aria-hidden="true">↗</span></button>
+            </div>
+          </div>
+        </aside>
       </section>
 
       <section class="rankings-layout" id="power-rankings-section">
@@ -143,6 +174,9 @@
             <p id="future-message" class="panel-copy">Checking the tracked tier-one schedule…</p>
             <div id="future-events" class="future-events"></div>
             <p class="source-note">Events, fixtures, and roster records will appear here only after they are listed by the tracked source.</p>
+            <a class="art-credit map-art-credit" href="https://playvalorant.com/en-us/maps/" target="_blank" rel="noopener noreferrer">
+              Icebox map artwork · VALORANT / Riot Games ↗
+            </a>
           </section>
         </aside>
       </section>
