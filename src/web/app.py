@@ -926,7 +926,7 @@ class VCTRequestHandler(BaseHTTPRequestHandler):
         self.send_header(
             "Content-Security-Policy",
             "default-src 'self'; img-src 'self' https://vlr.gg https://www.vlr.gg "
-            "https://owcdn.net data:; style-src 'self'; script-src 'self'; "
+            "https://owcdn.net https://cmsassets.rgpub.io data:; style-src 'self'; script-src 'self'; "
             "connect-src 'self'; object-src 'none'; base-uri 'none'",
         )
         self.send_header("Content-Length", str(len(body)))
