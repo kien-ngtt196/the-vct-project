@@ -6,8 +6,11 @@
     <meta name="theme-color" content="#f5f5f2">
     <title>VCT Scout — VCT scouting, rankings & player data</title>
     <script src="/theme.js?v=1"></script>
-    <link rel="stylesheet" href="/app.css?v=18">
-    <script src="/app.js?v=14" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app.css?v=23">
+    <script src="/app.js?v=18" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -19,8 +22,7 @@
         <a href="#home" data-view-target="home">Home</a>
         <a href="#teams" data-view-target="teams">Team rankings</a>
         <a href="#players" data-view-target="players">Player rankings</a>
-        <a href="#directory" data-view-target="directory">Players & teams</a>
-        <a href="#watchlist" data-view-target="watchlist">2027 watchlist</a>
+        <a href="#watchlist" data-view-target="watchlist">2027 roadmap</a>
       </nav>
       <div class="header-actions">
         <span class="header-note">INDEPENDENT VCT STATS</span>
@@ -53,24 +55,32 @@
             Agent artwork: Jett · VALORANT / Riot Games ↗
           </a>
         </div>
-        <aside class="hero-scout" aria-label="Top-ranked player spotlight">
-          <div class="hero-scout-art">
-            <div class="hero-reticle" aria-hidden="true"></div>
-            <span class="hero-image-placeholder" id="hero-image-placeholder" aria-hidden="true">V</span>
-            <img id="hero-scout-image" alt="" hidden>
-            <span class="hero-art-index">SCOUT FILE / 001</span>
-            <a class="hero-image-credit" id="hero-scout-source" hidden target="_blank" rel="noopener noreferrer">PORTRAIT · VLR.GG ↗</a>
-          </div>
-          <div class="hero-scout-info">
-            <p class="hero-scout-label"><span></span>TOP PLAYER · 2026</p>
-            <h2 id="hero-scout-name">Loading scout file…</h2>
-            <p class="hero-scout-team" id="hero-scout-team">Reading the global leaderboard</p>
-            <div class="hero-scout-bottom">
-              <div><strong id="hero-scout-score">—</strong><span>POWER / 100</span></div>
-              <button id="hero-scout-open" type="button" disabled>OPEN SCOUT FILE <span aria-hidden="true">↗</span></button>
+        <section class="home-leaders" aria-label="Current top rankings">
+          <section class="home-leader-group" aria-labelledby="home-top-teams-title">
+            <header class="home-leader-heading">
+              <div>
+                <p class="eyebrow">GLOBAL POWER · 2026</p>
+                <h2 id="home-top-teams-title">Top teams</h2>
+              </div>
+              <a href="#teams" data-view-target="teams" aria-label="View all team rankings">ALL ↗</a>
+            </header>
+            <div class="home-leader-list" id="home-top-teams" aria-live="polite">
+              <p class="home-leader-message">Loading team rankings…</p>
             </div>
-          </div>
-        </aside>
+          </section>
+          <section class="home-leader-group" aria-labelledby="home-top-players-title">
+            <header class="home-leader-heading">
+              <div>
+                <p class="eyebrow">INDIVIDUAL IMPACT · 2026</p>
+                <h2 id="home-top-players-title">Top players</h2>
+              </div>
+              <a href="#players" data-view-target="players" aria-label="View all player rankings">ALL ↗</a>
+            </header>
+            <div class="home-leader-list" id="home-top-players" aria-live="polite">
+              <p class="home-leader-message">Loading player rankings…</p>
+            </div>
+          </section>
+        </section>
       </section>
 
       <section class="home-workspace" aria-labelledby="workspace-title">
@@ -94,16 +104,10 @@
             <span class="feature-card-detail"><strong data-count="players">—</strong> eligible players · minimum 5 maps</span>
             <span class="feature-card-arrow" aria-hidden="true">↗</span>
           </a>
-          <a class="home-feature-card search-feature-card" href="#directory" data-view-target="directory">
-            <span class="feature-card-index">03 / SCOUT</span>
-            <span class="feature-card-title">Find a player<br>or team</span>
-            <span class="feature-card-detail">Open stats, form, results, and roster records</span>
-            <span class="feature-card-arrow" aria-hidden="true">↗</span>
-          </a>
           <a class="home-feature-card watch-feature-card" href="#watchlist" data-view-target="watchlist">
-            <span class="feature-card-index">04 / NEXT SEASON</span>
-            <span class="feature-card-title">2027<br>watchlist</span>
-            <span class="feature-card-detail">Source-listed events and fixtures only</span>
+            <span class="feature-card-index">03 / NEXT SEASON</span>
+            <span class="feature-card-title">The 2027<br>journey</span>
+            <span class="feature-card-detail">From open qualifiers to the world championship</span>
             <span class="feature-card-arrow" aria-hidden="true">↗</span>
           </a>
         </div>
@@ -198,9 +202,9 @@
               tournament title; unrecognized event types use regional weight.
             </p>
             <p class="data-caveat">
-              Regional strength and event-stage weighting are not included: the current
-              source data lacks reliable team-region and stage labels. Valorant gold
-              metrics are not applicable. Missing component data is neutral, not guessed.
+              Team regions are inferred from the most frequent regional 2026 tier-one
+              tournament listing in VLR. Regional strength is not part of the score;
+              unknown metrics remain neutral rather than guessed.
             </p>
           </section>
 
@@ -245,6 +249,16 @@
             <p class="eyebrow">GLOBAL PLAYER POWER · 2026</p>
             <h2 id="player-rankings-title">Player standings</h2>
           </div>
+          <div class="player-ranking-tools">
+            <label class="ranking-search-box">
+              <span class="sr-only">Search players or teams</span>
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="search-input" type="search" placeholder="Search players or teams…" autocomplete="off">
+              <kbd>ENTER</kbd>
+            </label>
+            <div id="search-status" class="ranking-search-status" role="status">Search players or teams</div>
+            <div id="search-results" class="search-results ranking-search-results" hidden></div>
+          </div>
           <span class="model-badge">MINIMUM 5 MAPS</span>
         </div>
         <div class="table-scroll">
@@ -273,50 +287,24 @@
       </section>
       </section>
 
-      <section class="page-view feature-view directory-view" data-page-panel="directory" hidden>
-        <header class="feature-page-heading directory-page-heading">
-          <p class="eyebrow">PLAYER & TEAM INDEX</p>
-          <h1>Find your<br><span>next read.</span></h1>
-          <p>Search the VCT field, then open a compact profile with stats, match history, and source links.</p>
-        </header>
-      <section class="panel search-panel" id="search-section" aria-labelledby="search-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">PLAYER & TEAM INDEX</p>
-            <h2 id="search-title">Search the scene</h2>
-          </div>
-          <span class="live-dot" aria-label="Search ready"></span>
-        </div>
-        <label class="search-box">
-          <span class="sr-only">Search players or teams</span>
-          <span class="search-icon" aria-hidden="true">⌕</span>
-          <input id="search-input" type="search" placeholder="Try a player or team name…" autocomplete="off">
-          <kbd>ENTER</kbd>
-        </label>
-        <div id="search-status" class="muted status-line" role="status">Search VCT tier-one players and teams.</div>
-        <div id="search-results" class="search-results"></div>
-      </section>
-      </section>
-
       <section class="page-view feature-view watchlist-view" data-page-panel="watchlist" hidden>
         <header class="feature-page-heading watchlist-page-heading">
-          <p class="eyebrow">PLAN WHAT'S NEXT</p>
-          <h1>Eyes on<br><span>2027.</span></h1>
-          <p>A clean schedule view. Only events and fixtures found in the tracked source appear here.</p>
+          <p class="eyebrow">THE ROAD TO 2027</p>
+          <h1>One circuit.<br><span>Four regions.</span></h1>
+          <p>Follow each region from open entry to the international stage. Dates and event listings appear only when confirmed by VLR.</p>
         </header>
-        <section class="panel future-panel" id="watchlist-section" aria-labelledby="future-title">
-          <div class="section-heading">
+        <section class="roadmap-panel" aria-labelledby="roadmap-title">
+          <div class="roadmap-heading">
             <div>
-              <p class="eyebrow">NO GUESSES, JUST SOURCES</p>
-              <h2 id="future-title">2027 watchlist</h2>
+              <p class="eyebrow">OPEN QUALIFIERS → CUPS → MASTERS → CHAMPIONS</p>
+              <h2 id="roadmap-title">The 2027 circuit</h2>
             </div>
-            <span class="future-year">’27</span>
+            <span class="model-badge">REGIONAL DATES · TO BE CONFIRMED</span>
           </div>
-          <p id="future-message" class="panel-copy">Checking the tracked tier-one schedule…</p>
-          <div id="future-events" class="future-events"></div>
-          <p class="source-note">Events, fixtures, and roster records will appear here only after they are listed by the tracked source.</p>
-          <a class="art-credit map-art-credit" href="https://playvalorant.com/en-us/maps/" target="_blank" rel="noopener noreferrer">
-            Icebox map artwork · VALORANT / Riot Games ↗
+          <p class="roadmap-note" id="roadmap-note">Riot’s 2027 format preview introduces Open Qualifiers, Cups, Masters, and Champions. Exact dates and regional brackets remain subject to official listings.</p>
+          <div class="roadmap-regions" id="roadmap-regions" aria-live="polite"></div>
+          <a class="roadmap-source" href="https://www.youtube.com/watch?v=ZMTbkk6PgyM" target="_blank" rel="noopener noreferrer">
+            RIOT GAMES · THE VCT IN 2027 ↗
           </a>
         </section>
       </section>

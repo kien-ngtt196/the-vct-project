@@ -129,8 +129,37 @@ def _team_search(cursor, query, limit):
                      AND lower(ta.alias_name) = lower(%s)
                )
         )
-        SELECT t.team_id, t.canonical_name, t.logo_url, t.logo_local_path, t.source_url
+        SELECT t.team_id, t.canonical_name, t.logo_url, t.logo_local_path,
+               t.source_url, team_region.region
         FROM teams t
+        LEFT JOIN LATERAL (
+            SELECT tournament.region
+            FROM matches region_match
+            JOIN tournaments tournament ON tournament.id = region_match.tournament_id
+            LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
+            WHERE tournament.tier = 'tier1'
+              AND region_match.match_date >= DATE '2026-01-01'
+              AND region_match.match_date < DATE '2027-01-01'
+              AND COALESCE(
+                  event_season.year,
+                  EXTRACT(YEAR FROM region_match.match_date)::INTEGER
+              ) = 2026
+              AND (region_match.team1_id = t.team_id OR region_match.team2_id = t.team_id)
+              AND tournament.region IS NOT NULL
+              AND (
+                  tournament.region ILIKE '%%america%%'
+                  OR tournament.region ILIKE '%%emea%%'
+                  OR tournament.region ILIKE '%%europe%%'
+                  OR tournament.region ILIKE '%%africa%%'
+                  OR tournament.region ILIKE '%%middle east%%'
+                  OR tournament.region ILIKE '%%pacific%%'
+                  OR tournament.region ILIKE '%%asia%%'
+                  OR tournament.region ILIKE '%%china%%'
+              )
+            GROUP BY tournament.region
+            ORDER BY COUNT(*) DESC, tournament.region
+            LIMIT 1
+        ) team_region ON TRUE
         WHERE (
             t.team_id IN (SELECT team_id FROM exact_matches)
             OR (
@@ -167,6 +196,7 @@ def _team_search(cursor, query, limit):
             "image_url": row[2],
             "image_local_path": row[3],
             "source_url": row[4],
+            "region": row[5],
         }
         for row in cursor.fetchall()
     ]
@@ -522,6 +552,7 @@ def team_details(team_id):
         "image_url": team[2],
         "image_local_path": team[3],
         "source_url": team[4],
+        "region": ranked_team.get("region") if ranked_team else None,
         "stats": ranked_team,
         "tournaments": tournaments,
         "current_roster": [
@@ -557,6 +588,7 @@ def team_power_rankings():
                 WITH eligible_matches AS (
                     SELECT m.id, m.team1_id, m.team2_id,
                            m.team1_score, m.team2_score, m.match_date,
+                           tournament.region,
                            CASE
                                WHEN tournament.title ILIKE '%champions%' THEN {CHAMPIONS_EVENT_WEIGHT}
                                WHEN tournament.title ILIKE '%masters%' THEN {MASTERS_EVENT_WEIGHT}
@@ -574,6 +606,48 @@ def team_power_rankings():
                       AND m.team2_id IS NOT NULL
                       AND m.team1_score IS NOT NULL
                       AND m.team2_score IS NOT NULL
+                ),
+                team_region_candidates AS (
+                    SELECT team1_id AS team_id, region
+                    FROM eligible_matches
+                    WHERE region IS NOT NULL
+                      AND (
+                          region ILIKE '%america%'
+                          OR region ILIKE '%emea%'
+                          OR region ILIKE '%europe%'
+                          OR region ILIKE '%africa%'
+                          OR region ILIKE '%middle east%'
+                          OR region ILIKE '%pacific%'
+                          OR region ILIKE '%asia%'
+                          OR region ILIKE '%china%'
+                      )
+                    UNION ALL
+                    SELECT team2_id AS team_id, region
+                    FROM eligible_matches
+                    WHERE region IS NOT NULL
+                      AND (
+                          region ILIKE '%america%'
+                          OR region ILIKE '%emea%'
+                          OR region ILIKE '%europe%'
+                          OR region ILIKE '%africa%'
+                          OR region ILIKE '%middle east%'
+                          OR region ILIKE '%pacific%'
+                          OR region ILIKE '%asia%'
+                          OR region ILIKE '%china%'
+                      )
+                ),
+                team_regions AS (
+                    SELECT team_id, region
+                    FROM (
+                        SELECT team_id, region,
+                               ROW_NUMBER() OVER (
+                                   PARTITION BY team_id
+                                   ORDER BY COUNT(*) DESC, region
+                               ) AS region_rank
+                        FROM team_region_candidates
+                        GROUP BY team_id, region
+                    ) ranked_regions
+                    WHERE region_rank = 1
                 ),
                 team_match_rows AS (
                     SELECT id AS match_id, match_date, event_weight,
@@ -695,9 +769,11 @@ def team_power_rankings():
                        COALESCE(execution_totals.kills, 0),
                        COALESCE(execution_totals.deaths, 0),
                        COALESCE(execution_totals.weighted_kills, 0),
-                       COALESCE(execution_totals.weighted_deaths, 0)
+                       COALESCE(execution_totals.weighted_deaths, 0),
+                       team_regions.region
                 FROM match_totals
                 JOIN teams team ON team.team_id = match_totals.team_id
+                LEFT JOIN team_regions ON team_regions.team_id = team.team_id
                 LEFT JOIN map_totals ON map_totals.team_id = team.team_id
                 LEFT JOIN recent_totals ON recent_totals.team_id = team.team_id
                 LEFT JOIN opponent_totals ON opponent_totals.team_id = team.team_id
@@ -731,6 +807,7 @@ def team_power_rankings():
                     "deaths": row[22],
                     "weighted_kills": row[23],
                     "weighted_deaths": row[24],
+                    "region": row[25],
                 }
                 for row in cursor.fetchall()
             ]
@@ -927,7 +1004,9 @@ class VCTRequestHandler(BaseHTTPRequestHandler):
         self.send_header(
             "Content-Security-Policy",
             "default-src 'self'; img-src 'self' https://vlr.gg https://www.vlr.gg "
-            "https://owcdn.net https://cmsassets.rgpub.io data:; style-src 'self'; script-src 'self'; "
+            "https://owcdn.net data:; "
+            "style-src 'self' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; script-src 'self'; "
             "connect-src 'self'; object-src 'none'; base-uri 'none'",
         )
         self.send_header("Content-Length", str(len(body)))

@@ -39,13 +39,17 @@ available and forwards to the versioned importer.
   season performance; it weights Champions 3×, Masters 2×, and regional
   matches 1×, then scales the current leader to 100. The player ranking uses
   weighted 2026 rating, ACS, KAST, ADR, and K/D, requires at least five maps,
-  and also scales its leader to 100. Neither ranking predicts match outcomes.
+  and also scales its leader to 100. Team region labels are inferred from the
+  most frequent regional 2026 tier-one tournament region in VLR data. Neither
+  ranking predicts match outcomes.
 - Explicitly sourced roster-tenure records and separately stored observed
   match participation, so an appearance is never mislabeled as a current
   roster. The profile refresh reads current roster listings from VLR team
   pages and labels event-page roster evidence separately.
-- A 2027 watchlist that shows only events and fixtures actually present in the
-  imported data. Unknown events, rosters, and fixtures are not invented.
+- A four-region 2027 roadmap for Open Qualifiers, regional Cups, Masters, and
+  Champions. Event listings and dates appear only when present in imported VLR
+  data; unannounced stages are clearly marked. VLR regional event logos are
+  saved locally in `vct_images/`.
 
 See [workflow.md](./workflow.md) for the architecture, data model, refresh,
 profile/image refresh, validation, team and player power formulas, roster

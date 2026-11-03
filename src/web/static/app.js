@@ -5,15 +5,10 @@ const profileView = document.querySelector("#profile-view");
 const powerForm = document.querySelector("#power-form");
 const powerResult = document.querySelector("#power-result");
 const powerRankings = document.querySelector("#power-rankings");
-const futureMessage = document.querySelector("#future-message");
-const futureEvents = document.querySelector("#future-events");
-const heroImage = document.querySelector("#hero-scout-image");
-const heroImagePlaceholder = document.querySelector("#hero-image-placeholder");
-const heroScoutName = document.querySelector("#hero-scout-name");
-const heroScoutTeam = document.querySelector("#hero-scout-team");
-const heroScoutScore = document.querySelector("#hero-scout-score");
-const heroScoutSource = document.querySelector("#hero-scout-source");
-const heroScoutOpen = document.querySelector("#hero-scout-open");
+const homeTopTeams = document.querySelector("#home-top-teams");
+const homeTopPlayers = document.querySelector("#home-top-players");
+const roadmapRegions = document.querySelector("#roadmap-regions");
+const roadmapNote = document.querySelector("#roadmap-note");
 const themeToggle = document.querySelector("#theme-toggle");
 const themeToggleLabel = document.querySelector("#theme-toggle-label");
 const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -25,7 +20,38 @@ const pageLinks = [...document.querySelectorAll("[data-view-target]")];
 let searchTimer;
 let searchVersion = 0;
 let powerTeams = [];
-let heroPlayer = null;
+const regions = [
+  {
+    key: "americas",
+    name: "Americas",
+    logo: "/vct-images/vlr-vct-americas-2027.png",
+    source: "https://www.vlr.gg/events/?region=26",
+  },
+  {
+    key: "emea",
+    name: "EMEA",
+    logo: "/vct-images/vlr-vct-emea-2027.png",
+    source: "https://www.vlr.gg/events/?region=27",
+  },
+  {
+    key: "pacific",
+    name: "Pacific",
+    logo: "/vct-images/vlr-vct-pacific-2027.png",
+    source: "https://www.vlr.gg/events/?region=28",
+  },
+  {
+    key: "china",
+    name: "China",
+    logo: "/vct-images/vlr-vct-china-2027.png",
+    source: "https://www.vlr.gg/events/?region=24",
+  },
+];
+const roadmapStages = [
+  ["Open Qualifiers", "The open entry point for teams starting their regional run."],
+  ["Regional Cups", "Regional events build toward international qualification."],
+  ["Masters", "The strongest teams meet on the international stage."],
+  ["Champions", "The season culminates in the world championship."],
+];
 
 function applyTheme(theme, persist = false) {
   const isDark = theme === "dark";
@@ -53,7 +79,8 @@ function viewFromHash() {
   const legacyViews = {
     "power-rankings-section": "teams",
     "player-rankings-section": "players",
-    "search-section": "directory",
+    directory: "players",
+    "search-section": "players",
     "watchlist-section": "watchlist",
   };
   const view = legacyViews[hash] || hash;
@@ -108,7 +135,7 @@ function safeImageUrl(value) {
     const url = new URL(value, window.location.origin);
     if (
       url.origin === window.location.origin
-      && url.pathname.startsWith("/assets/")
+      && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vct-images/"))
       && !url.pathname.split("/").includes("..")
     ) return url.href;
     if (url.protocol !== "https:") return null;
@@ -131,34 +158,6 @@ function safeSourceUrl(value) {
   }
 }
 
-function renderHeroScout(player) {
-  heroPlayer = player;
-  heroScoutName.textContent = player.name;
-  heroScoutTeam.textContent = player.team || "TEAM NOT RECORDED · 2026";
-  heroScoutScore.textContent = Number(player.power_score).toFixed(1);
-  heroScoutOpen.disabled = false;
-
-  const imageUrl = safeImageUrl(player.image_local_path || player.image_url);
-  heroImage.hidden = !imageUrl;
-  heroImagePlaceholder.hidden = Boolean(imageUrl);
-  if (imageUrl) {
-    heroImage.alt = `${player.name} portrait`;
-    heroImage.src = imageUrl;
-    heroImage.onerror = () => {
-      heroImage.hidden = true;
-      heroImagePlaceholder.hidden = false;
-    };
-  }
-
-  const sourceUrl = safeSourceUrl(player.source_url);
-  heroScoutSource.hidden = !sourceUrl;
-  if (sourceUrl) heroScoutSource.href = sourceUrl;
-}
-
-heroScoutOpen.addEventListener("click", () => {
-  if (heroPlayer) loadProfile({ type: "player", id: heroPlayer.id });
-});
-
 async function getJson(path) {
   const response = await fetch(path);
   const payload = await response.json();
@@ -166,7 +165,22 @@ async function getJson(path) {
   return payload;
 }
 
-function addImage(parent, url, className, alt, fallbackText) {
+function addValorantFallback(parent, className) {
+  const fallback = document.createElement("span");
+  fallback.className = `${className} result-fallback valorant-fallback`;
+  fallback.setAttribute("role", "img");
+  fallback.setAttribute("aria-label", "VALORANT logo");
+  const mark = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  mark.setAttribute("viewBox", "0 0 64 64");
+  mark.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M6 9h19l7 19 7-19h19L39 55H25z");
+  mark.append(path);
+  fallback.append(mark);
+  parent.append(fallback);
+}
+
+function addImage(parent, url, className, alt) {
   const safeUrl = safeImageUrl(url);
   if (safeUrl) {
     const image = document.createElement("img");
@@ -176,17 +190,12 @@ function addImage(parent, url, className, alt, fallbackText) {
     image.loading = "lazy";
     image.referrerPolicy = "no-referrer";
     image.onerror = () => {
-      const fallback = document.createElement("span");
-      fallback.className = `${className} result-fallback`;
-      fallback.textContent = fallbackText;
-      image.replaceWith(fallback);
+      addValorantFallback(image.parentElement, className);
+      image.remove();
     };
     parent.append(image);
   } else {
-    const fallback = document.createElement("span");
-    fallback.className = `${className} result-fallback`;
-    fallback.textContent = fallbackText;
-    parent.append(fallback);
+    addValorantFallback(parent, className);
   }
 }
 
@@ -200,17 +209,16 @@ function renderSearchResult(item) {
     item.image_local_path || item.image_url,
     "result-avatar",
     `${item.name} ${item.type} image`,
-    item.name.slice(0, 1).toUpperCase(),
   );
   const name = document.createElement("span");
   name.className = "result-name";
   name.textContent = item.name;
   const meta = document.createElement("small");
-  meta.className = "result-meta";
-  meta.textContent = item.type === "player"
-    ? [item.team, item.nationality].filter(Boolean).join(" · ") || "Player"
-    : "VCT team";
-  name.append(meta);
+  if (item.type === "player") {
+    meta.className = "result-meta";
+    meta.textContent = [item.team, item.nationality].filter(Boolean).join(" · ") || "Player";
+    name.append(meta);
+  }
   button.append(name);
   const type = document.createElement("span");
   type.className = "result-type";
@@ -229,7 +237,6 @@ function makeProfileButton(id, type, name, imageUrl, meta, className) {
     imageUrl,
     "result-avatar",
     `${name} ${type} image`,
-    name.slice(0, 1).toUpperCase(),
   );
   const title = document.createElement("span");
   title.className = "result-name";
@@ -244,14 +251,104 @@ function makeProfileButton(id, type, name, imageUrl, meta, className) {
   return button;
 }
 
+function getRegion(regionName) {
+  const value = String(regionName || "").trim().toLowerCase();
+  if (!value) return null;
+  if (value.includes("china")) return regions[3];
+  if (
+    value.includes("emea")
+    || value.includes("europe")
+    || value.includes("africa")
+    || value.includes("middle east")
+    || value.includes("turkey")
+    || value.includes("türkiye")
+  ) return regions[1];
+  if (
+    value.includes("america")
+    || value.includes("brazil")
+    || value.includes("latam")
+    || value.includes("mexico")
+  ) return regions[0];
+  if (
+    value.includes("pacific")
+    || value.includes("asia")
+    || value.includes("korea")
+    || value.includes("japan")
+    || value.includes("oceania")
+    || value.includes("vietnam")
+    || value.includes("thailand")
+    || value.includes("singapore")
+    || value.includes("malaysia")
+    || value.includes("indonesia")
+    || value.includes("philippines")
+  ) return regions[2];
+  return null;
+}
+
+function renderHomeLeader(item, type, rank) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "home-leader-button";
+  button.setAttribute("aria-label", `Open ${type} profile: ${item.name}`);
+  button.addEventListener("click", () => loadProfile({ type, id: item.id, region: item.region }));
+
+  const position = document.createElement("span");
+  position.className = "home-leader-position";
+  position.textContent = String(rank).padStart(2, "0");
+  const image = document.createElement("span");
+  image.className = "home-leader-image";
+  addImage(
+    image,
+    item.image_local_path || item.image_url,
+    "home-leader-avatar",
+    `${item.name} ${type} image`,
+  );
+  const identity = document.createElement("span");
+  identity.className = "home-leader-identity";
+  const name = document.createElement("strong");
+  name.textContent = item.name;
+  const meta = document.createElement("small");
+  if (type === "player") {
+    meta.textContent = item.team || "TEAM NOT RECORDED · 2026";
+    identity.append(name, meta);
+  } else {
+    identity.append(name);
+  }
+
+  const score = document.createElement("span");
+  score.className = "home-leader-score";
+  const value = document.createElement("strong");
+  value.textContent = Number(item.power_score).toFixed(1);
+  const label = document.createElement("small");
+  label.textContent = "POWER";
+  score.append(value, label);
+  button.append(position, image, identity, score);
+  return button;
+}
+
+function renderHomeLeaders(container, items, type, errorMessage) {
+  if (!items.length) {
+    const message = document.createElement("p");
+    message.className = "home-leader-message";
+    message.textContent = errorMessage || "No ranked entries are available.";
+    container.replaceChildren(message);
+    return;
+  }
+  container.replaceChildren(
+    ...items.slice(0, 3).map((item, index) => renderHomeLeader(item, type, index + 1)),
+  );
+}
+
 async function search() {
   const query = searchInput.value.trim();
   const requestVersion = ++searchVersion;
   searchResults.replaceChildren();
   if (!query) {
-    searchStatus.textContent = "Search VCT tier-one players and teams.";
+    searchResults.hidden = true;
+    searchStatus.textContent = "Search players or teams";
     return;
   }
+  searchResults.hidden = false;
   searchStatus.textContent = "Searching indexed VLR results…";
   try {
     const payload = await getJson(`/api/search?q=${encodeURIComponent(query)}&limit=20`);
@@ -307,7 +404,6 @@ function renderPlayer(player) {
     player.image_local_path || player.image_url,
     "card-photo",
     `${player.name} portrait`,
-    player.name.slice(0, 1).toUpperCase(),
   );
   const info = document.createElement("div");
   info.className = "card-top-info";
@@ -458,11 +554,13 @@ function renderTeam(team) {
     team.image_local_path || team.image_url,
     "team-avatar",
     `${team.name} logo`,
-    team.name.slice(0, 1).toUpperCase(),
   );
+  const heading = document.createElement("div");
+  heading.className = "team-profile-heading";
   const title = document.createElement("h3");
   title.textContent = team.name;
-  header.append(title);
+  heading.append(title);
+  header.append(heading);
   const sourceUrl = safeSourceUrl(team.source_url);
   if (sourceUrl) {
     const source = document.createElement("a");
@@ -686,7 +784,7 @@ function renderPowerTeam(team, rank) {
     null,
     "rank-team-button",
   );
-  identity.querySelector("img")?.classList.replace("result-avatar", "rank-team-logo");
+  identity.querySelector(".result-avatar")?.classList.replace("result-avatar", "rank-team-logo");
   identity.querySelector(".result-name")?.classList.add("power-rank-name");
   teamCell.append(identity);
   const scoreCell = document.createElement("td");
@@ -724,7 +822,7 @@ function renderPowerPlayer(player, rank) {
     player.nationality,
     "rank-player-button",
   );
-  identity.querySelector("img")?.classList.replace("result-avatar", "rank-player-image");
+  identity.querySelector(".result-avatar")?.classList.replace("result-avatar", "rank-player-image");
   identity.querySelector(".result-name")?.classList.add("power-rank-name");
   playerCell.append(identity);
   const team = document.createElement("td");
@@ -820,6 +918,7 @@ async function loadPowerRankings() {
   try {
     const payload = await getJson("/api/power-rankings");
     powerTeams = payload.teams;
+    renderHomeLeaders(homeTopTeams, powerTeams, "team");
     document.querySelectorAll('[data-count="teams"]').forEach((counter) => {
       counter.textContent = String(powerTeams.length);
     });
@@ -836,6 +935,7 @@ async function loadPowerRankings() {
       ...powerTeams.map((team, index) => renderPowerTeam(team, index + 1)),
     );
   } catch (error) {
+    renderHomeLeaders(homeTopTeams, [], "team", error.message);
     [first, second].forEach((select) => select.replaceChildren(new Option("Data unavailable", "")));
     powerResult.textContent = error.message;
     const row = document.createElement("tr");
@@ -855,11 +955,12 @@ async function loadPlayerRankings() {
     document.querySelectorAll('[data-count="players"]').forEach((counter) => {
       counter.textContent = String(payload.players.length);
     });
-    if (payload.players.length) renderHeroScout(payload.players[0]);
+    renderHomeLeaders(homeTopPlayers, payload.players, "player");
     tableBody.replaceChildren(
       ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1)),
     );
   } catch (error) {
+    renderHomeLeaders(homeTopPlayers, [], "player", error.message);
     const row = document.createElement("tr");
     const message = document.createElement("td");
     message.className = "table-message";
@@ -875,44 +976,92 @@ powerForm.addEventListener("submit", (event) => {
   renderPowerComparison();
 });
 
-async function loadFuture() {
+async function loadRoadmap() {
   try {
     const data = await getJson("/api/2027");
-    futureMessage.textContent = data.message;
-    futureEvents.replaceChildren();
-    const listed = [
-      ...data.events.map((event) => ({ ...event, kind: "Event" })),
-      ...data.matches.map((match) => ({ ...match, kind: "Fixture" })),
-    ];
-    listed.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "future-event";
-      const title = item.title || [item.team1, item.team2].filter(Boolean).join(" vs ") || "To be announced";
-      const sourceUrl = safeSourceUrl(item.url);
-      if (sourceUrl) {
-        const link = document.createElement("a");
-        link.className = "source-link";
-        link.href = sourceUrl;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = title;
-        card.append(link);
-      } else {
-        card.textContent = title;
-      }
-      const detail = document.createElement("small");
-      const dates = item.start_date && item.end_date
-        ? `${item.start_date} – ${item.end_date}`
-        : item.start_date || item.date;
-      detail.textContent = [item.kind, item.region, item.status, dates].filter(Boolean).join(" · ");
-      card.append(detail);
-      futureEvents.append(card);
-    });
+    const events = data.events || [];
+    roadmapNote.textContent = events.length
+      ? `${events.length} 2027 event listing${events.length === 1 ? "" : "s"} found on VLR. Stages without a confirmed listing remain marked as unannounced.`
+      : "Riot’s 2027 format preview introduces Open Qualifiers, Cups, Masters, and Champions. Exact dates and regional brackets remain subject to official listings.";
+    roadmapRegions.replaceChildren(...regions.map((region) => {
+      const regionCard = document.createElement("article");
+      regionCard.className = "roadmap-region";
+      const regionHeading = document.createElement("header");
+      regionHeading.className = "roadmap-region-heading";
+      addImage(regionHeading, region.logo, "roadmap-region-icon", `${region.name} VCT event logo`);
+      const title = document.createElement("h3");
+      title.textContent = region.name;
+      const source = document.createElement("a");
+      source.href = region.source;
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      source.className = "roadmap-region-source";
+      source.textContent = "VLR ↗";
+      regionHeading.append(title, source);
+      regionCard.append(regionHeading);
+
+      const regionalEvents = events.filter((item) => getRegion(item.region)?.key === region.key);
+      const qualifierEvents = regionalEvents.filter((item) => /qualif|open/i.test(item.title || ""));
+      const cupEvents = regionalEvents.filter((item) =>
+        !/qualif|open|masters|champions/i.test(item.title || ""));
+      const globalEvents = [
+        events.filter((item) => /masters/i.test(item.title || "")),
+        events.filter((item) => /champions/i.test(item.title || "")),
+      ];
+      const stageEvents = [qualifierEvents, cupEvents, ...globalEvents];
+
+      roadmapStages.forEach(([stageName, description], index) => {
+        const stage = document.createElement("section");
+        stage.className = "roadmap-stage";
+        const stageHeading = document.createElement("div");
+        stageHeading.className = "roadmap-stage-heading";
+        const stageTitle = document.createElement("h4");
+        stageTitle.textContent = stageName;
+        const stageDescription = document.createElement("p");
+        stageDescription.textContent = description;
+        stageHeading.append(stageTitle, stageDescription);
+        stage.append(stageHeading);
+        const stageItems = stageEvents[index];
+        if (stageItems.length) {
+          stageItems.forEach((item) => {
+            const event = document.createElement("article");
+            event.className = "roadmap-event";
+            const eventTitle = document.createElement("strong");
+            const eventUrl = safeSourceUrl(item.url);
+            if (eventUrl) {
+              const link = document.createElement("a");
+              link.href = eventUrl;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.textContent = item.title;
+              eventTitle.append(link);
+            } else {
+              eventTitle.textContent = item.title;
+            }
+            const eventDetails = document.createElement("small");
+            const dateRange = item.start_date && item.end_date
+              ? `${item.start_date} – ${item.end_date}`
+              : item.start_date || "";
+            eventDetails.textContent = [item.status, dateRange].filter(Boolean).join(" · ")
+              || "Date to be announced";
+            event.append(eventTitle, eventDetails);
+            stage.append(event);
+          });
+        } else {
+          const pending = document.createElement("p");
+          pending.className = "roadmap-pending";
+          pending.textContent = "Awaiting a confirmed listing";
+          stage.append(pending);
+        }
+        regionCard.append(stage);
+      });
+      return regionCard;
+    }));
   } catch (error) {
-    futureMessage.textContent = error.message;
+    roadmapNote.textContent = `Unable to load 2027 event listings: ${error.message}`;
   }
 }
 
 loadPowerRankings();
 loadPlayerRankings();
-loadFuture();
+loadRoadmap();
