@@ -7,10 +7,18 @@ const powerResult = document.querySelector("#power-result");
 const powerRankings = document.querySelector("#power-rankings");
 const futureMessage = document.querySelector("#future-message");
 const futureEvents = document.querySelector("#future-events");
+const heroImage = document.querySelector("#hero-scout-image");
+const heroImagePlaceholder = document.querySelector("#hero-image-placeholder");
+const heroScoutName = document.querySelector("#hero-scout-name");
+const heroScoutTeam = document.querySelector("#hero-scout-team");
+const heroScoutScore = document.querySelector("#hero-scout-score");
+const heroScoutSource = document.querySelector("#hero-scout-source");
+const heroScoutOpen = document.querySelector("#hero-scout-open");
 
 let searchTimer;
 let searchVersion = 0;
 let powerTeams = [];
+let heroPlayer = null;
 
 function safeImageUrl(value) {
   if (!value) return null;
@@ -40,6 +48,34 @@ function safeSourceUrl(value) {
     return null;
   }
 }
+
+function renderHeroScout(player) {
+  heroPlayer = player;
+  heroScoutName.textContent = player.name;
+  heroScoutTeam.textContent = player.team || "TEAM NOT RECORDED · 2026";
+  heroScoutScore.textContent = Number(player.power_score).toFixed(1);
+  heroScoutOpen.disabled = false;
+
+  const imageUrl = safeImageUrl(player.image_local_path || player.image_url);
+  heroImage.hidden = !imageUrl;
+  heroImagePlaceholder.hidden = Boolean(imageUrl);
+  if (imageUrl) {
+    heroImage.alt = `${player.name} portrait`;
+    heroImage.src = imageUrl;
+    heroImage.onerror = () => {
+      heroImage.hidden = true;
+      heroImagePlaceholder.hidden = false;
+    };
+  }
+
+  const sourceUrl = safeSourceUrl(player.source_url);
+  heroScoutSource.hidden = !sourceUrl;
+  if (sourceUrl) heroScoutSource.href = sourceUrl;
+}
+
+heroScoutOpen.addEventListener("click", () => {
+  if (heroPlayer) loadProfile({ type: "player", id: heroPlayer.id });
+});
 
 async function getJson(path) {
   const response = await fetch(path);
@@ -533,6 +569,25 @@ function formatRate(rate) {
   return `${(Number(rate) * 100).toFixed(1)}%`;
 }
 
+function renderScoreMeter(container, score) {
+  const value = Number(score);
+  const readout = document.createElement("div");
+  readout.className = "score-readout";
+  const number = document.createElement("strong");
+  number.textContent = value.toFixed(1);
+  const unit = document.createElement("small");
+  unit.textContent = "pts";
+  readout.append(number, unit);
+
+  const track = document.createElement("span");
+  track.className = "score-track";
+  track.setAttribute("aria-hidden", "true");
+  const fill = document.createElement("span");
+  fill.style.width = `${Math.max(0, Math.min(100, value))}%`;
+  track.append(fill);
+  container.append(readout, track);
+}
+
 function renderPowerTeam(team, rank) {
   const row = document.createElement("tr");
   row.className = "power-rank-row";
@@ -553,11 +608,7 @@ function renderPowerTeam(team, rank) {
   teamCell.append(identity);
   const scoreCell = document.createElement("td");
   scoreCell.className = "power-rank-score";
-  const score = document.createElement("strong");
-  score.textContent = team.power_score.toFixed(1);
-  const scoreUnit = document.createElement("small");
-  scoreUnit.textContent = "pts";
-  scoreCell.append(score, scoreUnit);
+  renderScoreMeter(scoreCell, team.power_score);
   const record = document.createElement("td");
   record.className = "power-rank-record";
   const matchLosses = team.matches_played - team.matches_won - team.matches_drawn;
@@ -598,11 +649,7 @@ function renderPowerPlayer(player, rank) {
   team.textContent = player.team || "Not recorded";
   const scoreCell = document.createElement("td");
   scoreCell.className = "power-rank-score";
-  const score = document.createElement("strong");
-  score.textContent = Number(player.power_score).toFixed(1);
-  const scoreUnit = document.createElement("small");
-  scoreUnit.textContent = "pts";
-  scoreCell.append(score, scoreUnit);
+  renderScoreMeter(scoreCell, player.power_score);
   const maps = document.createElement("td");
   maps.className = "power-rank-component";
   maps.textContent = String(player.maps_played);
@@ -690,6 +737,7 @@ async function loadPowerRankings() {
   try {
     const payload = await getJson("/api/power-rankings");
     powerTeams = payload.teams;
+    document.querySelector("#team-count").textContent = String(powerTeams.length);
     [first, second].forEach((select, selectIndex) => {
       select.replaceChildren(new Option("Choose a 2026 team…", ""));
       powerTeams.forEach((team) => {
@@ -719,6 +767,8 @@ async function loadPlayerRankings() {
   const tableBody = document.querySelector("#player-rankings");
   try {
     const payload = await getJson("/api/player-power-rankings");
+    document.querySelector("#player-count").textContent = String(payload.players.length);
+    if (payload.players.length) renderHeroScout(payload.players[0]);
     tableBody.replaceChildren(
       ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1)),
     );
