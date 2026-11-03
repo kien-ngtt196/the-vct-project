@@ -995,7 +995,7 @@ select:focus-visible, input:focus-visible { outline: 1px solid var(--cyan); outl
   background-image:
     linear-gradient(90deg, #171b1a 4%, rgba(23,27,26,.96) 34%, rgba(23,27,26,.5) 73%, #171b1a 100%),
     linear-gradient(0deg, #171b1a 0%, transparent 34%, rgba(23,27,26,.2) 100%),
-    url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data/74075835ddc4e8457fb30f7fe560d2aff6d51702-5120x1772.png?accountingTag=VAL&fm=webp&q=75&w=1800");
+    url("/vct-images/182526448-champions-seoul-transition-screens-for-desktop-wallpaper.jpg");
 }
 :root[data-theme="dark"] .hero::after { background: linear-gradient(90deg, transparent, #39423e 12%, #39423e 88%, transparent); }
 :root[data-theme="dark"] .hero-coverage { border-color: #39423e; }
@@ -1067,7 +1067,7 @@ select:focus-visible, input:focus-visible { outline: 1px solid var(--cyan); outl
   background:
     linear-gradient(90deg, rgba(32,38,36,.97) 0%, rgba(32,38,36,.91) 54%, rgba(32,38,36,.72) 100%),
     linear-gradient(0deg, rgba(32,38,36,.9), rgba(32,38,36,.3)),
-    url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/421063d481e9e1b2b5f2f834f53b7512f77413b9-2000x2000.jpg?accountingTag=VAL&fm=webp&q=76&w=900");
+    url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg");
 }
 :root[data-theme="dark"] .future-event { border-left-color: var(--cyan); background: rgba(25,31,29,.84); }
 :root[data-theme="dark"] .champions-feature { border-color: #39423e; }
@@ -1144,7 +1144,7 @@ main { width: min(1320px, 91vw); }
   background-image:
     linear-gradient(90deg, #f5f5f2 4%, rgba(245,245,242,.96) 34%, rgba(245,245,242,.42) 73%, #f5f5f2 100%),
     linear-gradient(0deg, #f5f5f2 0%, transparent 34%, rgba(245,245,242,.12) 100%),
-    url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data/74075835ddc4e8457fb30f7fe560d2aff6d51702-5120x1772.png?accountingTag=VAL&fm=webp&q=75&w=1800");
+    url("/vct-images/182526448-champions-seoul-transition-screens-for-desktop-wallpaper.jpg");
   background-position: center, center, 72% 45%;
   background-size: cover;
   opacity: .31;
@@ -1336,7 +1336,7 @@ select:focus-visible, input:focus-visible { outline-color: rgba(58,137,134,.65);
   background:
     linear-gradient(90deg, rgba(250,251,249,.97) 0%, rgba(250,251,249,.9) 54%, rgba(250,251,249,.62) 100%),
     linear-gradient(0deg, rgba(250,251,249,.88), rgba(250,251,249,.15)),
-    url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/421063d481e9e1b2b5f2f834f53b7512f77413b9-2000x2000.jpg?accountingTag=VAL&fm=webp&q=76&w=900");
+    url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg");
   background-position: center, center, 68% 45%;
   background-size: cover;
   content: "";
@@ -1501,7 +1501,7 @@ main { width: min(1480px, 94vw); }
 .home-section-heading .eyebrow { margin-bottom: 6px; }
 .home-section-heading h2 { font-size: clamp(23px, 3vw, 32px); }
 .home-season { color: var(--muted); font: 600 10px var(--mono-font); letter-spacing: .1em; }
-.home-feature-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.home-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .home-feature-card {
   position: relative;
   display: flex;
@@ -1718,4 +1718,439 @@ main { width: min(1480px, 94vw); }
 }
 @media (prefers-reduced-motion: reduce) {
   .page-view, .profile-dialog[open] { animation: none; transition: none; }
+}
+
+body {
+  background-color: #f5f5f2;
+  background-image:
+    linear-gradient(rgba(245,245,242,.78), rgba(245,245,242,.88)),
+    url("/vct-images/182526448-champions-seoul-transition-screens-for-desktop-wallpaper.jpg");
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+.home-view .hero::before {
+  background-image:
+    linear-gradient(90deg, rgba(20,24,23,.9) 2%, rgba(20,24,23,.76) 42%, rgba(20,24,23,.25) 100%),
+    linear-gradient(0deg, rgba(20,24,23,.62), transparent 58%),
+    url("/vct-images/182526448-champions-seoul-transition-screens-for-desktop-wallpaper.jpg");
+  opacity: .9;
+}
+.home-view .hero-copy-block {
+  animation: editorial-rise .7s cubic-bezier(.2,.7,.2,1) both;
+}
+.home-view .hero-copy-block > .art-credit { color: #d1d6d3; }
+.home-view .hero-link { color: #fff; }
+.home-view .hero-link:hover { color: #ffc0c4; }
+.home-view .hero h1 { color: #fff; }
+.home-view .hero h1 span { color: #c9d0cc; }
+.home-view .hero-copy { color: #d1d6d3; }
+.home-view .hero .eyebrow,
+.home-view .hero-coverage span { color: #d1d6d3; }
+.home-view .hero-coverage { border-color: rgba(255,255,255,.25); }
+.home-view .hero-coverage strong { color: #fff; }
+.home-view .hero-coverage i { background: rgba(255,255,255,.25); }
+
+.home-leaders {
+  display: grid;
+  align-self: center;
+  gap: 18px;
+  animation: editorial-rise .7s .12s cubic-bezier(.2,.7,.2,1) both;
+}
+.home-leader-group {
+  overflow: hidden;
+  padding: 18px 20px 8px;
+  border: 1px solid rgba(255,255,255,.38);
+  background: rgba(248,249,246,.9);
+  box-shadow: 0 18px 50px rgba(15,22,18,.16);
+  backdrop-filter: blur(12px);
+}
+.home-leader-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+}
+.home-leader-heading .eyebrow { margin-bottom: 5px; font-size: 7px; }
+.home-leader-heading h2 {
+  color: #252b28;
+  font-size: clamp(18px, 2vw, 23px);
+}
+.home-leader-heading > a {
+  color: #77817c;
+  font: 700 8px var(--mono-font);
+  letter-spacing: .08em;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+.home-leader-heading > a:hover { color: var(--red); }
+.home-leader-list { border-top: 1px solid #e4e8e4; }
+.home-leader-button {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 26px 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 2px;
+  border: 0;
+  border-bottom: 1px solid #e4e8e4;
+  background: transparent;
+  color: #303834;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color .22s ease, padding .22s ease, color .22s ease;
+}
+.home-leader-button:last-child { border-bottom: 0; }
+.home-leader-button:hover,
+.home-leader-button:focus-visible {
+  padding-right: 8px;
+  padding-left: 8px;
+  outline: none;
+  background: rgba(255,255,255,.8);
+}
+.home-leader-button:focus-visible { box-shadow: inset 0 0 0 1px rgba(232,66,80,.48); }
+.home-leader-position {
+  color: #9aa39e;
+  font: 500 10px var(--mono-font);
+}
+.home-leader-button:first-child .home-leader-position { color: var(--red); }
+.home-leader-image { width: 38px; height: 38px; }
+.home-leader-avatar {
+  display: block;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e5e9e5;
+  border-radius: 50%;
+  background: #e9ede9;
+  object-fit: cover;
+}
+.home-leader-identity { display: grid; min-width: 0; gap: 3px; }
+.home-leader-identity strong {
+  overflow: hidden;
+  color: #2a312d;
+  font-size: 11px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-leader-identity small {
+  overflow: hidden;
+  color: #818b85;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-leader-score { display: grid; justify-items: end; gap: 2px; }
+.home-leader-score strong { color: #303834; font: 600 12px var(--mono-font); }
+.home-leader-score small { color: #929b96; font-size: 6px; letter-spacing: .1em; }
+.home-leader-message { margin: 0; padding: 14px 0; color: #78817e; font-size: 10px; }
+.valorant-fallback {
+  display: grid;
+  place-items: center;
+  color: var(--red);
+}
+.valorant-fallback svg { display: block; width: 58%; height: 58%; fill: currentColor; }
+.result-avatar.valorant-fallback,
+.team-avatar.valorant-fallback,
+.rank-team-logo.valorant-fallback,
+.rank-player-image.valorant-fallback,
+.card-photo.valorant-fallback,
+.home-leader-avatar.valorant-fallback {
+  border-radius: inherit;
+}
+.home-leader-avatar.valorant-fallback {
+  border: 1px solid #e5e9e5;
+  background: #e9ede9;
+}
+
+.ranking-panel, .player-ranking-panel {
+  border-color: rgba(255,255,255,.56);
+  background:
+    linear-gradient(rgba(250,251,249,.88), rgba(250,251,249,.9)),
+    url("/vct-images/53144399553_8cb39b0208_o.jpg") center 42% / cover;
+  backdrop-filter: blur(7px);
+}
+.power-table { background: transparent; }
+.power-table thead { background: rgba(248,250,247,.86); }
+.power-table th { background: rgba(248,250,247,.86); }
+.power-table td { background: rgba(255,255,255,.2); }
+.power-table tbody tr:hover td { background: rgba(255,255,255,.72); }
+.home-feature-card,
+.feature-page-heading,
+.home-story {
+  box-shadow: 0 18px 48px rgba(18,24,21,.11);
+}
+.home-feature-card,
+.home-leader-button,
+.home-story > img,
+.feature-page-heading,
+.ranking-panel,
+.player-ranking-panel {
+  animation: editorial-rise .55s cubic-bezier(.2,.7,.2,1) both;
+}
+.home-feature-card:nth-child(2) { animation-delay: .06s; }
+.home-feature-card:nth-child(3) { animation-delay: .12s; }
+.home-feature-card:nth-child(4) { animation-delay: .18s; }
+.home-leader-button:nth-child(2) { animation-delay: .06s; }
+.home-leader-button:nth-child(3) { animation-delay: .12s; }
+@keyframes editorial-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+:root[data-theme="dark"] body {
+  background-color: #171b1a;
+  background-image:
+    linear-gradient(rgba(23,27,26,.77), rgba(23,27,26,.86)),
+    url("/vct-images/182526448-champions-seoul-transition-screens-for-desktop-wallpaper.jpg");
+}
+:root[data-theme="dark"] .home-view .hero::before {
+  background-image:
+    linear-gradient(90deg, rgba(14,17,17,.92) 1%, rgba(14,17,17,.8) 38%, rgba(14,17,17,.18) 100%),
+    linear-gradient(0deg, rgba(14,17,17,.72), transparent 54%, rgba(14,17,17,.1)),
+    url("/vct-images/182526448-champions-seoul-transition-screens-for-desktop-wallpaper.jpg");
+}
+:root[data-theme="dark"] .home-leader-group {
+  border-color: rgba(255,255,255,.13);
+  background: rgba(32,38,36,.9);
+}
+:root[data-theme="dark"] .home-leader-heading h2,
+:root[data-theme="dark"] .home-leader-identity strong,
+:root[data-theme="dark"] .home-leader-score strong { color: #edf1ee; }
+:root[data-theme="dark"] .home-leader-list,
+:root[data-theme="dark"] .home-leader-button { border-color: #39423e; }
+:root[data-theme="dark"] .home-leader-button { color: #edf1ee; }
+:root[data-theme="dark"] .home-leader-button:hover,
+:root[data-theme="dark"] .home-leader-button:focus-visible { background: rgba(255,255,255,.07); }
+:root[data-theme="dark"] .home-leader-avatar.valorant-fallback { border-color: #39423e; background: #252d2a; }
+:root[data-theme="dark"] .ranking-panel,
+:root[data-theme="dark"] .player-ranking-panel {
+  border-color: rgba(255,255,255,.12);
+  background:
+    linear-gradient(rgba(25,30,28,.86), rgba(25,30,28,.9)),
+    url("/vct-images/53144399553_8cb39b0208_o.jpg") center 42% / cover;
+}
+:root[data-theme="dark"] .power-table thead,
+:root[data-theme="dark"] .power-table th { background: rgba(35,42,39,.84); }
+:root[data-theme="dark"] .power-table td { background: rgba(25,30,28,.16); }
+:root[data-theme="dark"] .power-table tbody tr:hover td { background: rgba(255,255,255,.07); }
+:root[data-theme="dark"] .valorant-fallback { color: #ff6570; }
+
+.home-feature-card,
+.feature-page-heading,
+.power-table,
+.profile-dialog,
+.roadmap-panel {
+  font-family: "Roboto", "Segoe UI", sans-serif;
+}
+body { font-family: "Roboto", "Segoe UI", sans-serif; }
+.home-view .hero h1,
+.home-section-heading h2,
+.feature-page-heading h1,
+.section-heading h2,
+.roadmap-heading h2 {
+  font-family: "Roboto", "Segoe UI", sans-serif;
+}
+.player-ranking-tools {
+  position: relative;
+  display: grid;
+  width: min(390px, 42vw);
+  min-width: 230px;
+  gap: 4px;
+}
+.ranking-search-box {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e2e6e2;
+  border-radius: 5px;
+  background: #fbfcfa;
+}
+.ranking-search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #303834;
+  font-size: 11px;
+}
+.ranking-search-box kbd { flex: 0 0 auto; }
+.ranking-search-status { color: #818b86; font-size: 8px; }
+.ranking-search-results {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 3px);
+  right: 0;
+  display: grid;
+  width: min(410px, 84vw);
+  max-height: 330px;
+  gap: 4px;
+  overflow: auto;
+  padding: 7px;
+  border: 1px solid #e1e5e1;
+  border-radius: 7px;
+  background: rgba(255,255,255,.98);
+  box-shadow: 0 14px 35px rgba(20,30,24,.16);
+}
+.ranking-search-results[hidden] { display: none; }
+.ranking-search-results .result-button {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 34px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: #f7f8f6;
+  text-align: left;
+  cursor: pointer;
+}
+.ranking-search-results .result-avatar { width: 34px; height: 34px; }
+.ranking-search-results .result-name { display: grid; gap: 4px; font-size: 11px; }
+.ranking-search-results .result-meta,
+.ranking-search-results .result-type { color: #818b86; font-size: 8px; }
+.team-region-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #818b86;
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.team-region-meta img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+.team-region-profile { margin-top: 5px; font-size: 10px; }
+.team-region-profile img { width: 19px; height: 19px; }
+.home-leader-identity .team-region-meta { font-size: 7px; }
+.rank-team-button .team-region-meta { font-size: 8px; }
+.roadmap-panel {
+  overflow: hidden;
+  padding: clamp(16px, 3vw, 30px);
+  border: 1px solid rgba(255,255,255,.34);
+  border-radius: 10px;
+  background:
+    linear-gradient(rgba(248,249,246,.9), rgba(248,249,246,.94)),
+    url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg") center / cover;
+  box-shadow: 0 18px 48px rgba(18,24,21,.11);
+}
+.roadmap-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.roadmap-heading .eyebrow { margin-bottom: 5px; }
+.roadmap-heading h2 { margin: 0; color: #252b28; font-size: clamp(21px, 3vw, 30px); }
+.roadmap-note { max-width: 740px; color: #68736d; font-size: 11px; line-height: 1.6; }
+.roadmap-regions { display: grid; gap: 13px; margin-top: 18px; }
+.roadmap-region {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid rgba(210,218,212,.9);
+  border-radius: 7px;
+  background: rgba(255,255,255,.74);
+}
+.roadmap-region-heading {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 9px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e5e9e5;
+}
+.roadmap-region-icon {
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+.roadmap-region-heading h3 { margin: 0; color: #303834; font-size: 15px; }
+.roadmap-region-source { margin-left: auto; color: #79837e; font-size: 9px; text-decoration: none; }
+.roadmap-region-source:hover { color: var(--red); }
+.roadmap-stage { min-width: 0; padding: 8px 9px; border-left: 2px solid #dfe5df; }
+.roadmap-stage:nth-child(2) { border-left-color: var(--red); }
+.roadmap-stage-heading h4 { margin: 0 0 5px; color: #303834; font-size: 10px; }
+.roadmap-stage-heading p { min-height: 30px; margin: 0 0 8px; color: #808a85; font-size: 8px; line-height: 1.45; }
+.roadmap-event { display: grid; gap: 4px; margin-top: 6px; }
+.roadmap-event strong { color: #414b45; font-size: 9px; line-height: 1.35; }
+.roadmap-event a { text-decoration-color: #b7c3bb; text-underline-offset: 3px; }
+.roadmap-event small, .roadmap-pending { color: #808a85; font-size: 8px; line-height: 1.45; }
+.roadmap-pending { margin: 6px 0 0; }
+.roadmap-source { display: inline-block; margin-top: 17px; color: #68756e; font: 700 8px "Roboto", sans-serif; letter-spacing: .07em; text-decoration: none; }
+.roadmap-source:hover { color: var(--red); }
+
+:root[data-theme="dark"] .ranking-search-box,
+:root[data-theme="dark"] .ranking-search-results { border-color: #39423e; background: #252d2a; }
+:root[data-theme="dark"] .ranking-search-box input,
+:root[data-theme="dark"] .ranking-search-results .result-name { color: #edf1ee; }
+:root[data-theme="dark"] .ranking-search-results .result-button { background: #202623; }
+:root[data-theme="dark"] .ranking-search-status,
+:root[data-theme="dark"] .ranking-search-results .result-meta,
+:root[data-theme="dark"] .ranking-search-results .result-type,
+:root[data-theme="dark"] .team-region-meta { color: #a7b0ab; }
+:root[data-theme="dark"] .roadmap-panel {
+  border-color: rgba(255,255,255,.12);
+  background:
+    linear-gradient(rgba(25,30,28,.87), rgba(25,30,28,.93)),
+    url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg") center / cover;
+}
+:root[data-theme="dark"] .roadmap-region { border-color: #39423e; background: rgba(32,38,36,.86); }
+:root[data-theme="dark"] .roadmap-region-heading { border-color: #39423e; }
+:root[data-theme="dark"] .roadmap-heading h2,
+:root[data-theme="dark"] .roadmap-region-heading h3,
+:root[data-theme="dark"] .roadmap-stage-heading h4,
+:root[data-theme="dark"] .roadmap-event strong { color: #edf1ee; }
+:root[data-theme="dark"] .roadmap-note,
+:root[data-theme="dark"] .roadmap-stage-heading p,
+:root[data-theme="dark"] .roadmap-event small,
+:root[data-theme="dark"] .roadmap-pending,
+:root[data-theme="dark"] .roadmap-region-source { color: #a7b0ab; }
+
+@media (max-width: 900px) {
+  .roadmap-region { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .player-ranking-tools { width: min(360px, 42vw); min-width: 205px; }
+}
+@media (max-width: 700px) {
+  .home-view .hero { grid-template-columns: 1fr; }
+  .home-leaders { gap: 12px; }
+  .home-leader-group { padding: 15px 14px 6px; }
+  .home-leader-button { grid-template-columns: 22px 34px minmax(0, 1fr) auto; gap: 8px; }
+  .home-leader-image, .home-leader-avatar { width: 34px; height: 34px; }
+  .player-ranking-tools { width: 100%; min-width: 0; }
+  .section-heading { align-items: flex-start; flex-wrap: wrap; }
+  .roadmap-heading { align-items: flex-start; flex-direction: column; }
+  .roadmap-region { grid-template-columns: 1fr; }
+  .roadmap-region-heading { grid-column: 1; }
+  .roadmap-stage { padding-left: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-view .hero-copy-block,
+  .home-leaders,
+  .home-feature-card,
+  .home-leader-button,
+  .home-story > img,
+  .feature-page-heading,
+  .ranking-panel,
+  .player-ranking-panel {
+    animation: none;
+  }
+  .home-leader-button { transition: none; }
 }
