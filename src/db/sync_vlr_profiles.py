@@ -165,7 +165,7 @@ def _current_2026_data(cursor):
     return teams, cursor.fetchall()
 
 
-def _save_event_results(cursor, event, aliases, source_urls):
+def _save_event_results(cursor, event, aliases, source_urls, *, placements_only=False):
     tournament_id, title, event_url = event
     response = _request(event_url)
     if response is None:
@@ -218,6 +218,9 @@ def _save_event_results(cursor, event, aliases, source_urls):
             """,
             (tournament_id, team_data[0], placement, cells[1].get_text(strip=True), event_url),
         )
+
+    if placements_only:
+        return team_profiles, True
 
     for card in soup.select(".event-team"):
         link = card.select_one("a[href^='/team/']")
@@ -599,7 +602,7 @@ def _download_all_images(cursor, first_year=2026):
     return downloaded, len(team_images), len(player_images)
 
 
-def sync_vlr_profiles(download_images=True, historical_events=False):
+def sync_vlr_profiles(download_images=True, historical_events=False, placements_only=False):
     initialize_database()
     first_year = 2022 if historical_events else 2026
     counts = {
@@ -637,11 +640,14 @@ def sync_vlr_profiles(download_images=True, historical_events=False):
                     event,
                     aliases,
                     source_urls,
+                    placements_only=placements_only,
                 )
                 if succeeded:
                     counts["events"] += 1
                 all_team_profiles.update(team_profiles)
 
+            if placements_only:
+                return counts
             scraped, roster_entries, _ = _scrape_team_profiles(
                 cursor,
                 teams,
@@ -676,11 +682,13 @@ def main():
         "--historical-events", action="store_true",
         help="Include event placements and roster evidence for imported 2022–2026 events.",
     )
+    parser.add_argument("--placements-only", action="store_true", help="Refresh final placements and prizes only.")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     print(sync_vlr_profiles(
         download_images=not args.no_download,
         historical_events=args.historical_events,
+        placements_only=args.placements_only,
     ))
 
 
