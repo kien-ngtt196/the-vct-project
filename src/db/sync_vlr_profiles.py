@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests
 from curl_cffi.requests.exceptions import RequestException
 
+from src.analytics.power import placement_rank
 from src.db.database import connect
 from src.db.import_vlr import canonical_team_name, get_or_create_player, normalize_name
 from src.db.initialize import initialize_database
@@ -191,36 +192,42 @@ def _save_event_results(cursor, event, aliases, source_urls):
         image_url = _image_url(image.get("src") if image else None)
         team_profiles[team_profile_id] = (team_id, profile_url, image_url)
 
+    for row in soup.select(".wf-ptable--standings .row"):
+        cells = row.select(":scope > .cell")
+        if len(cells) < 3:
+            continue
+        placement = cells[0].get_text(strip=True)
+        link = row.select_one(".mod-team a[href^='/team/']")
+        if placement_rank(placement) is None or link is None:
+            continue
+        profile_id = _profile_id(urljoin(BASE_URL, link["href"]), TEAM_PROFILE)
+        team_data = team_profiles.get(profile_id)
+        if team_data is None:
+            continue
+        cursor.execute(
+            """
+            INSERT INTO team_event_results (
+                tournament_id, team_id, placement_text, prize, source_url
+            )
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (tournament_id, team_id) DO UPDATE SET
+                placement_text = EXCLUDED.placement_text,
+                prize = EXCLUDED.prize,
+                source_url = EXCLUDED.source_url,
+                updated_at = now()
+            """,
+            (tournament_id, team_data[0], placement, cells[1].get_text(strip=True), event_url),
+        )
+
     for card in soup.select(".event-team"):
         link = card.select_one("a[href^='/team/']")
-        note = card.select_one(".event-team-note")
         if link is None:
             continue
-        profile_url = urljoin(BASE_URL, link.get("href", ""))
-        profile_match = TEAM_PROFILE.fullmatch(urlsplit(profile_url).path)
-        if profile_match is None:
-            continue
-        team_profile_id = profile_match.group(1)
-        team_data = team_profiles.get(team_profile_id)
+        profile_url = urljoin(BASE_URL, link["href"])
+        team_data = team_profiles.get(_profile_id(profile_url, TEAM_PROFILE))
         if team_data is None:
             continue
         team_id, _, _ = team_data
-        placement = note.get_text(" ", strip=True) if note else None
-        if placement:
-            cursor.execute(
-                """
-                INSERT INTO team_event_results (
-                    tournament_id, team_id, placement_text, source_url
-                )
-                VALUES (%s, %s, %s, %s)
-                ON CONFLICT (tournament_id, team_id) DO UPDATE SET
-                    placement_text = EXCLUDED.placement_text,
-                    source_url = EXCLUDED.source_url,
-                    updated_at = now()
-                """,
-                (tournament_id, team_id, placement, event_url),
-            )
-
         for player_link in card.select("a[href^='/player/']"):
             player_url = urljoin(BASE_URL, player_link.get("href", ""))
             tag = _player_tag(player_url)
@@ -441,7 +448,7 @@ def _scrape_team_profiles(cursor, teams, team_profiles):
     return scraped, roster_count, player_profile_urls
 
 
-def _refresh_missing_player_images(cursor):
+def _refresh_missing_player_images(cursor, first_year=2026):
     cursor.execute(
         """
         SELECT DISTINCT player.player_id, player.source_url
@@ -452,19 +459,20 @@ def _refresh_missing_player_images(cursor):
         JOIN tournaments tournament ON tournament.id = match.tournament_id
         LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
         WHERE tournament.tier = 'tier1'
-          AND match.match_date >= DATE '2026-01-01'
+          AND match.match_date >= make_date(%s, 1, 1)
           AND match.match_date < DATE '2027-01-01'
           AND COALESCE(
               event_season.year,
               EXTRACT(YEAR FROM match.match_date)::INTEGER
-          ) = 2026
+          ) BETWEEN %s AND 2026
           AND player.source_url IS NOT NULL
           AND (
               player.image_url IS NULL
               OR player.image_url LIKE '%/sil.png'
           )
         ORDER BY player.player_id
-        """
+        """,
+        (first_year, first_year),
     )
     players = cursor.fetchall()
     refreshed = 0
@@ -516,7 +524,7 @@ def _safe_asset_name(url):
     return safe_name if safe_name and safe_name != "." else "image"
 
 
-def _download_all_images(cursor):
+def _download_all_images(cursor, first_year=2026):
     cursor.execute(
         """
         SELECT team.team_id, team.logo_url, team.logo_local_path
@@ -529,15 +537,16 @@ def _download_all_images(cursor):
               JOIN tournaments tournament ON tournament.id = match.tournament_id
               LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
               WHERE tournament.tier = 'tier1'
-                AND match.match_date >= DATE '2026-01-01'
+                AND match.match_date >= make_date(%s, 1, 1)
                 AND match.match_date < DATE '2027-01-01'
                 AND COALESCE(
                     event_season.year,
                     EXTRACT(YEAR FROM match.match_date)::INTEGER
-                ) = 2026
+                ) BETWEEN %s AND 2026
                 AND (match.team1_id = team.team_id OR match.team2_id = team.team_id)
           )
-        """
+        """,
+        (first_year, first_year),
     )
     team_images = cursor.fetchall()
     cursor.execute(
@@ -550,15 +559,16 @@ def _download_all_images(cursor):
         JOIN tournaments tournament ON tournament.id = match.tournament_id
         LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
         WHERE tournament.tier = 'tier1'
-          AND match.match_date >= DATE '2026-01-01'
+          AND match.match_date >= make_date(%s, 1, 1)
           AND match.match_date < DATE '2027-01-01'
           AND COALESCE(
               event_season.year,
               EXTRACT(YEAR FROM match.match_date)::INTEGER
-          ) = 2026
+          ) BETWEEN %s AND 2026
           AND player.image_url IS NOT NULL
           AND player.image_url NOT LIKE '%/sil.png'
-        """
+        """,
+        (first_year, first_year),
     )
     player_images = cursor.fetchall()
     downloaded = 0
@@ -589,8 +599,9 @@ def _download_all_images(cursor):
     return downloaded, len(team_images), len(player_images)
 
 
-def sync_vlr_profiles(download_images=True):
+def sync_vlr_profiles(download_images=True, historical_events=False):
     initialize_database()
+    first_year = 2022 if historical_events else 2026
     counts = {
         "events": 0,
         "team_profiles": 0,
@@ -603,6 +614,20 @@ def sync_vlr_profiles(download_images=True):
         connection.autocommit = True
         with connection.cursor() as cursor:
             teams, events = _current_2026_data(cursor)
+            if historical_events:
+                cursor.execute(
+                    """
+                    SELECT tournament.id, tournament.title, tournament.url
+                    FROM tournaments tournament
+                    JOIN seasons season ON season.season_id = tournament.season_id
+                    WHERE tournament.tier = 'tier1' AND season.year BETWEEN 2022 AND 2026
+                      AND EXISTS (
+                          SELECT 1 FROM matches WHERE tournament_id = tournament.id
+                      )
+                    ORDER BY season.year, tournament.start_date NULLS FIRST, tournament.id
+                    """
+                )
+                events = cursor.fetchall()
             aliases, source_urls = _team_lookup(cursor)
             all_team_profiles = {}
 
@@ -625,14 +650,14 @@ def sync_vlr_profiles(download_images=True):
             counts["team_profiles"] = scraped
             counts["roster_entries"] = roster_entries
             counts["player_images_refreshed"] = _refresh_missing_player_images(
-                cursor
+                cursor, first_year
             )
             if download_images:
                 (
                     counts["images_downloaded"],
                     counts["teams_with_image_urls"],
                     counts["players_with_image_urls"],
-                ) = _download_all_images(cursor)
+                ) = _download_all_images(cursor, first_year)
     finally:
         connection.close()
     return counts
@@ -647,9 +672,16 @@ def main():
         action="store_true",
         help="Refresh metadata without downloading image files.",
     )
+    parser.add_argument(
+        "--historical-events", action="store_true",
+        help="Include event placements and roster evidence for imported 2022–2026 events.",
+    )
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    print(sync_vlr_profiles(download_images=not args.no_download))
+    print(sync_vlr_profiles(
+        download_images=not args.no_download,
+        historical_events=args.historical_events,
+    ))
 
 
 if __name__ == "__main__":
