@@ -9,6 +9,7 @@ __pycache__/
 # Scraper snapshots and generated exports
 data/raw/
 data/*.csv
+data/*.dump
 src/web/static/assets/
 .pytest_cache/
 *.log

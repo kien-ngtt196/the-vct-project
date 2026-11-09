@@ -35,6 +35,23 @@ class ScraperTests(unittest.TestCase):
         dates = scraper.parse_event_dates("Dates Mar 1—16, 2026")
         self.assertEqual(dates, ("2026-03-01", "2026-03-16"))
 
+    def test_event_dates_accept_single_day(self):
+        dates = scraper.parse_event_dates("Dates Jun 30, 2022")
+        self.assertEqual(dates, ("2022-06-30", "2022-06-30"))
+
+    def test_event_matches_link_drops_stage_filter(self):
+        event_url = "https://www.vlr.gg/event/926/reykjavik"
+        response = type("Response", (), {
+            "text": '<a href="/event/matches/926/reykjavik/?series_id=1843">Matches</a>'
+        })()
+        with patch.object(scraper, "safe_get", return_value=response), patch.dict(
+            scraper.event_details_cache, clear=True
+        ):
+            expected = "https://www.vlr.gg/event/matches/926/reykjavik/"
+            self.assertEqual(scraper.get_matches_page_url(event_url), expected)
+            scraper.get_event_details(event_url)
+            self.assertEqual(scraper.get_matches_page_url(event_url), expected)
+
     def test_scheduled_match_is_kept_without_player_stats(self):
         html = """
         <div class="match-header-vs-note">Scheduled</div>

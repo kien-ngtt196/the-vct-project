@@ -92,6 +92,19 @@ def parse_event_dates(text):
         re.IGNORECASE,
     )
     if match is None or match.group(5) is None:
+        single_day = re.search(
+            r"Dates\s+([A-Za-z]+)\s+(\d{1,2}),\s*(20\d{2})\b",
+            text or "",
+            re.IGNORECASE,
+        )
+        if single_day is None:
+            return None, None
+        for month_format in ("%b", "%B"):
+            try:
+                date = datetime.strptime(" ".join(single_day.groups()), f"{month_format} %d %Y").date()
+                return date.isoformat(), date.isoformat()
+            except ValueError:
+                continue
         return None, None
 
     end_year = int(match.group(5))
@@ -149,7 +162,7 @@ def get_event_details(event_url):
         "start_date": start_date,
         "end_date": end_date,
         "matches_page_url": (
-            normalize_url(matches_link.get("href")) if matches_link else None
+            normalize_url(matches_link["href"].split("?", 1)[0]) if matches_link else None
         ),
     }
     event_details_cache[event_url] = details
@@ -225,7 +238,7 @@ def get_matches_page_url(tournament_url):
 
     return urljoin(
         "https://www.vlr.gg",
-        matches_link["href"]
+        matches_link["href"].split("?", 1)[0]
     )
 
 def get_match_links(matches_page_url):
@@ -240,8 +253,9 @@ def get_match_links(matches_page_url):
     seen_links = set()
     for match in soup.find_all("a", href=re.compile(r"^/\d+/")):
         link = urljoin(BASE_URL, match["href"])
-        if link not in seen_links:
-            seen_links.add(link)
+        match_id = match["href"].split("/")[1]
+        if match_id not in seen_links:
+            seen_links.add(match_id)
             match_links.append(link)
 
     return match_links
@@ -389,6 +403,17 @@ def parse_match(match_url):
 
     return match
 
+def write_snapshot(tournaments, filename):
+    output_dir = os.path.join("data", "raw")
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, filename)
+    temporary_path = f"{output_path}.tmp"
+    with open(temporary_path, "w", encoding="utf-8") as snapshot:
+        json.dump(tournaments, snapshot, indent=4, ensure_ascii=False)
+    os.replace(temporary_path, output_path)
+    return output_path
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape VLR.gg tier-one VALORANT events.")
     parser.add_argument(
@@ -399,7 +424,17 @@ if __name__ == "__main__":
     parser.add_argument("--max-pages", type=int, default=29)
     parser.add_argument("--page-delay", type=float, default=1.0)
     parser.add_argument("--match-delay", type=float, default=2.0)
+    parser.add_argument(
+        "--backfill", action="store_true",
+        help="Import historical events one at a time, starting at Reykjavík 2022.",
+    )
     args = parser.parse_args()
+    if args.backfill:
+        from src.db.import_vlr import import_snapshot, is_tier_one_event
+
+        args.since = "2022-04-10"
+    now = datetime.now(timezone.utc)
+    timestamp = now.strftime("%Y%m%dT%H%M%SZ")
     try:
         since = datetime.strptime(args.since, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     except ValueError:
@@ -416,6 +451,8 @@ if __name__ == "__main__":
 
         page_response = safe_get(page_url)
         if page_response is None:
+            if args.backfill:
+                raise SystemExit(f"Could not read VLR event listing page {page}.")
             break
 
         page_tournaments = parse_tournaments(page_response.text)
@@ -431,6 +468,14 @@ if __name__ == "__main__":
 
             seen_event_urls.add(tournament["url"])
             end_date = tournament.get("end_date")
+            if args.backfill:
+                start_date = tournament.get("start_date")
+                if tournament["season"] > now.year or (
+                    start_date and datetime.fromisoformat(start_date).date() > now.date()
+                ):
+                    continue
+                if not is_tier_one_event(tournament["title"]):
+                    continue
             if (
                 tournament["season"] >= since.year
                 and (end_date is None or datetime.fromisoformat(end_date).date() >= since.date())
@@ -442,6 +487,11 @@ if __name__ == "__main__":
 
         time.sleep(args.page_delay)
 
+    if args.backfill:
+        if not any(event["id"] == "926" for event in tournaments):
+            raise SystemExit("The Tier 1 listing did not reach Masters Reykjavík 2022.")
+        tournaments.sort(key=lambda event: (event["id"] != "926", event["season"]))
+    incomplete_events = []
     for tournament in tournaments:
         print(f"Title: {tournament['title']}")
         print(f"Year: {tournament['season']}")
@@ -450,12 +500,17 @@ if __name__ == "__main__":
 
         matches_page_url = get_matches_page_url(tournament['url'])
         if matches_page_url is None:
+            if args.backfill and tournament["id"] == "926":
+                raise SystemExit("Could not find the Reykjavík matches page.")
+            if args.backfill:
+                incomplete_events.append(tournament["id"])
             continue
 
         time.sleep(args.page_delay)
 
         match_links = get_match_links(matches_page_url)
         collected = 0
+        failed = 0
         for match_number, match_link in enumerate(match_links, start=1):
             if match_number == 1 or match_number % 10 == 0:
                 print(f"  Fetching match {match_number}/{len(match_links)}")
@@ -465,17 +520,26 @@ if __name__ == "__main__":
                 match_date = parse_vlr_date(match_data.get("date"))
                 if match_date is not None and match_date < since:
                     continue
+                if args.backfill and match_date is not None and match_date > now:
+                    continue
                 tournament["matches"].append(match_data)
                 collected += 1
+            else:
+                failed += 1
         print(f"  Collected {collected} matches.")
+        if args.backfill and (failed or not match_links):
+            incomplete_events.append(tournament["id"])
+            print(f"  Incomplete listing or match details for event {tournament['id']}.")
+        if args.backfill and tournament["id"] == "926" and collected != 24:
+            raise SystemExit(f"Reykjavík pilot collected {collected} of 24 series.")
+        if args.backfill and collected:
+            path = write_snapshot(
+                [tournament], f"events_{timestamp}_{tournament['id']}.json"
+            )
+            import_snapshot(path)
 
-    output_dir = os.path.join("data", "raw")
-    os.makedirs(output_dir, exist_ok=True)
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    output_path = os.path.join(output_dir, f"events_{timestamp}.json")
-    temporary_path = f"{output_path}.tmp"
-    with open(temporary_path, "w", encoding="utf-8") as f:
-        json.dump(tournaments, f, indent=4, ensure_ascii=False)
-    os.replace(temporary_path, output_path)
+    output_path = write_snapshot(tournaments, f"events_{timestamp}.json")
 
     print(f"Scraped data successfully saved to {output_path}")
+    if incomplete_events:
+        raise SystemExit(f"Backfill needs review for events: {', '.join(incomplete_events)}")

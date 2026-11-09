@@ -1,4 +1,5 @@
 import argparse
+import re
 import json
 import math
 import os
@@ -140,7 +141,10 @@ def resolve_input_path(input_path=None):
             raise FileNotFoundError(f"VLR snapshot does not exist: {path}")
         return path
 
-    candidates = sorted(RAW_DIR.glob("events_*.json"))
+    candidates = sorted(
+        path for path in RAW_DIR.glob("events_*.json")
+        if not path.name.endswith("_catalog.json")
+    )
     if not candidates:
         raise FileNotFoundError(
             "No VLR snapshots found. Run the tier-one scraper or set VCT_INPUT_JSON."
@@ -243,6 +247,13 @@ def get_or_create_map(cursor, map_name):
     return cursor.fetchone()[0]
 
 
+def is_tier_one_event(title):
+    return not re.search(
+        r"ascension|game changers|china evolution series|china threshold|road to vct|emea promotion",
+        title, re.IGNORECASE,
+    )
+
+
 def upsert_tournament(cursor, tournament, season_id):
     tournament_id = tournament.get("id")
     if not tournament_id:
@@ -272,7 +283,7 @@ def upsert_tournament(cursor, tournament, season_id):
             tournament["url"],
             tournament.get("status") or "unknown",
             season_id,
-            "tier1",
+            "tier1" if is_tier_one_event(tournament["title"]) else "outside-tier1",
             tournament.get("region"),
             tournament.get("logo_url"),
             tournament.get("start_date"),
