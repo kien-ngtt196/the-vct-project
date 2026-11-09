@@ -12,6 +12,7 @@ from src.analytics.power import (
     PLACEMENT_POINTS, TEAM_POWER_WEIGHTS, achievement_points,
     calculate_player_power, calculate_team_power, placement_rank,
 )
+from src.analytics.roles import agent_profile
 from src.db.database import connect
 
 
@@ -226,7 +227,39 @@ def search_entities(query, entity_type="all", limit=20):
     return results[:limit]
 
 
-def player_details(player_id):
+def tournament_honors(cursor, *, team_id=None, player_id=None):
+    placements = ["1", "1st"]
+    if player_id is not None:
+        placements.extend(("2", "2nd", "3", "3rd"))
+    cursor.execute(
+        """
+        SELECT t.id, t.title, t.url, t.logo_url, s.year, r.prize,
+               r.placement_text, team.canonical_name, t.region
+        FROM team_event_results r
+        JOIN teams team ON team.team_id = r.team_id
+        JOIN tournaments t ON t.id = r.tournament_id
+        JOIN seasons s USING (season_id)
+        WHERE t.tier = 'tier1' AND lower(trim(r.placement_text)) = ANY(%s)
+          AND r.prize IS NOT NULL
+          AND (
+              r.team_id = %s OR EXISTS (
+                  SELECT 1 FROM match_players mp JOIN matches m ON m.id = mp.match_id
+                  WHERE m.tournament_id = r.tournament_id AND mp.team_id = r.team_id
+                    AND mp.player_id = %s AND lower(m.status) IN ('final', 'completed', 'complete')
+              )
+          )
+        ORDER BY s.year DESC, t.end_date DESC NULLS LAST, t.title
+        """,
+        (placements, team_id, player_id),
+    )
+    return [
+        dict(id=row[0], title=row[1], url=row[2], logo_url=row[3], year=row[4], prize=row[5],
+             rank=placement_rank(row[6]), team=row[7], region=row[8])
+        for row in cursor.fetchall()
+    ]
+
+
+def player_details(player_id, year=2026):
     with connect() as connection:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -247,22 +280,29 @@ def player_details(player_id):
                 SELECT m.id, m.match_date, t.canonical_name, g.map_name,
                        ps.rating, ps.acs, ps.kast_percentage, ps.adr,
                        ps.kills, ps.deaths, ps.assists, ps.headshot_percentage,
-                       ps.first_kills, ps.agent
+                       ps.first_kills, ps.agent, m.url, tournament.title,
+                       opponent.canonical_name, opponent.logo_url, opponent.logo_local_path,
+                       CASE WHEN ps.team_id = m.team1_id THEN g.team1_score
+                            WHEN ps.team_id = m.team2_id THEN g.team2_score END,
+                       CASE WHEN ps.team_id = m.team1_id THEN g.team2_score
+                            WHEN ps.team_id = m.team2_id THEN g.team1_score END,
+                       t.logo_url, t.logo_local_path, tournament.logo_url
                 FROM player_stats ps
                 JOIN games g ON g.id = ps.game_id
                 JOIN matches m ON m.id = g.match_id
                 JOIN tournaments tournament ON tournament.id = m.tournament_id
                 LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                 LEFT JOIN teams t ON t.team_id = ps.team_id
+                LEFT JOIN teams opponent ON opponent.team_id =
+                    CASE WHEN ps.team_id = m.team1_id THEN m.team2_id
+                         WHEN ps.team_id = m.team2_id THEN m.team1_id END
                 WHERE ps.player_id = %s
                   AND tournament.tier = 'tier1'
-                  AND m.match_date >= DATE '2026-01-01'
-                  AND m.match_date < DATE '2027-01-01'
-                  AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = 2026
+                  AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = %s
                 ORDER BY m.match_date DESC NULLS LAST, m.id DESC, g.id
                 LIMIT 10
                 """,
-                (player_id,),
+                (player_id, year),
             )
             recent_maps = [
                 {
@@ -280,6 +320,17 @@ def player_details(player_id):
                     "headshot_percentage": row[11],
                     "first_kills": row[12],
                     "agent": row[13],
+                    "agent_portrait": next(iter(agent_profile([row[13]])["top_agents"]), None),
+                    "match_url": row[14],
+                    "event": row[15],
+                    "opponent": row[16],
+                    "opponent_logo_url": row[17],
+                    "opponent_logo_local_path": row[18],
+                    "team_score": row[19],
+                    "opponent_score": row[20],
+                    "team_logo_url": row[21],
+                    "team_logo_local_path": row[22],
+                    "event_logo_url": row[23],
                 }
                 for row in cursor.fetchall()
             ]
@@ -295,7 +346,10 @@ def player_details(player_id):
                        AVG(stats.kast_percentage),
                        AVG(stats.adr),
                        AVG(stats.headshot_percentage),
-                       COALESCE(SUM(stats.first_kills), 0)
+                       COALESCE(SUM(stats.first_kills), 0),
+                       ARRAY_AGG(stats.agent) FILTER (
+                           WHERE lower(match.status) IN ('final', 'completed', 'complete')
+                       )
                 FROM player_stats stats
                 JOIN games game ON game.id = stats.game_id
                 JOIN matches match ON match.id = game.match_id
@@ -303,21 +357,20 @@ def player_details(player_id):
                 LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                 WHERE stats.player_id = %s
                   AND tournament.tier = 'tier1'
-                  AND match.match_date >= DATE '2026-01-01'
-                  AND match.match_date < DATE '2027-01-01'
                   AND COALESCE(
                       event_season.year,
                       EXTRACT(YEAR FROM match.match_date)::INTEGER
-                  ) = 2026
+                  ) = %s
                 """,
-                (player_id,),
+                (player_id, year),
             )
             player_stats = cursor.fetchone()
 
             cursor.execute(
                 """
                 SELECT t.team_id, t.canonical_name, rm.start_date, rm.end_date,
-                       rm.status, rm.source, rm.source_url, rm.notes
+                       rm.status, rm.source, rm.source_url, rm.notes,
+                       t.logo_url, t.logo_local_path
                 FROM roster_memberships rm
                 JOIN teams t ON t.team_id = rm.team_id
                 WHERE rm.player_id = %s
@@ -336,6 +389,8 @@ def player_details(player_id):
                     "source": row[5],
                     "source_url": row[6],
                     "notes": row[7],
+                    "image_url": row[8],
+                    "image_local_path": row[9],
                 }
                 for row in cursor.fetchall()
             ]
@@ -343,18 +398,17 @@ def player_details(player_id):
             cursor.execute(
                 """
                 SELECT t.team_id, t.canonical_name, MIN(m.match_date), MAX(m.match_date),
-                       COUNT(DISTINCT m.id)
+                       COUNT(DISTINCT m.id), t.logo_url, t.logo_local_path,
+                       ARRAY_AGG(DISTINCT EXTRACT(YEAR FROM m.match_date)::int
+                                 ORDER BY EXTRACT(YEAR FROM m.match_date)::int)
                 FROM match_players mp
                 JOIN teams t ON t.team_id = mp.team_id
                 JOIN matches m ON m.id = mp.match_id
                 JOIN tournaments tournament ON tournament.id = m.tournament_id
-                LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                 WHERE mp.player_id = %s
                   AND tournament.tier = 'tier1'
-                  AND m.match_date >= DATE '2026-01-01'
-                  AND m.match_date < DATE '2027-01-01'
-                  AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = 2026
-                GROUP BY t.team_id, t.canonical_name
+                  AND m.match_date IS NOT NULL
+                GROUP BY t.team_id, t.canonical_name, t.logo_url, t.logo_local_path
                 ORDER BY MAX(m.match_date) DESC NULLS LAST
                 """,
                 (player_id,),
@@ -366,9 +420,13 @@ def player_details(player_id):
                     "first_match": row[2],
                     "last_match": row[3],
                     "matches": row[4],
+                    "image_url": row[5],
+                    "image_local_path": row[6],
+                    "years": row[7],
                 }
                 for row in cursor.fetchall()
             ]
+            achievements = tournament_honors(cursor, player_id=player_id)
 
     current_rosters = [
         entry for entry in roster_history if entry["status"] == "current"
@@ -382,7 +440,7 @@ def player_details(player_id):
         else "No current roster source; showing match appearances"
     )
     global_power = next(
-        (entry for entry in player_power_rankings() if entry["id"] == player_id),
+        (entry for entry in player_power_rankings(year) if entry["id"] == player_id),
         None,
     )
 
@@ -392,6 +450,10 @@ def player_details(player_id):
         "image_url": player[2],
         "image_local_path": player[3],
         "nationality": player[4],
+        "year": year,
+        **agent_profile(player_stats[10]),
+        "achievements": achievements,
+        "trophies": [event for event in achievements if event["rank"] == 1],
         "source_url": player[5],
         "stats": {
             "maps_played": player_stats[0],
@@ -407,6 +469,8 @@ def player_details(player_id):
         },
         "global_power": global_power,
         "current_team": current_team,
+        "current_team_logo_url": current_rosters[0]["image_url"] if current_team else None,
+        "current_team_logo_local_path": current_rosters[0]["image_local_path"] if current_team else None,
         "current_status": current_status,
         "recent_maps": recent_maps,
         "roster_history": roster_history,
@@ -433,13 +497,19 @@ def team_details(team_id, year=2026):
                 SELECT DISTINCT ON (m.id)
                        m.id, m.match_date, m.status, m.team1_id, m.team2_id,
                        m.team1_score, m.team2_score,
-                       opponent.canonical_name, tournament.title, tournament.url
+                       opponent.canonical_name, tournament.title, tournament.url,
+                       opponent.logo_url, opponent.logo_local_path, tournament.logo_url, m.url,
+                       ARRAY(SELECT g.map_name FROM games g WHERE g.match_id = m.id
+                             AND g.map_name IS NOT NULL
+                             AND g.team1_score IS NOT NULL AND g.team2_score IS NOT NULL
+                             ORDER BY g.id)
                 FROM matches m
                 JOIN tournaments tournament ON tournament.id = m.tournament_id
                 LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                 LEFT JOIN teams opponent ON opponent.team_id =
                     CASE WHEN m.team1_id = %s THEN m.team2_id ELSE m.team1_id END
                 WHERE tournament.tier = 'tier1'
+                  AND lower(m.status) IN ('final', 'completed', 'complete')
                   AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = %s
                   AND (m.team1_id = %s OR m.team2_id = %s)
                 ORDER BY m.id, m.match_date DESC NULLS LAST
@@ -525,15 +595,15 @@ def team_details(team_id, year=2026):
                 }
                 for row in cursor.fetchall()
             ]
+            trophies = tournament_honors(cursor, team_id=team_id)
 
     match_rows.sort(key=lambda row: str(row[1] or ""), reverse=True)
     recent_matches = []
     for row in match_rows[:10]:
         team1_score, team2_score = row[5], row[6]
+        score, opponent_score = (team1_score, team2_score) if row[3] == team_id else (team2_score, team1_score)
         won = None
-        if team1_score is not None and team2_score is not None:
-            score = team1_score if row[3] == team_id else team2_score
-            opponent_score = team2_score if row[3] == team_id else team1_score
+        if score is not None and opponent_score is not None:
             won = score > opponent_score
         recent_matches.append(
             {
@@ -546,6 +616,13 @@ def team_details(team_id, year=2026):
                 "won": won,
                 "event": row[8],
                 "event_url": row[9],
+                "opponent_logo_url": row[10],
+                "opponent_logo_local_path": row[11],
+                "event_logo_url": row[12],
+                "match_url": row[13],
+                "team_score": score,
+                "opponent_score": opponent_score,
+                "maps": row[14],
             }
         )
 
@@ -565,6 +642,7 @@ def team_details(team_id, year=2026):
         "stats": ranked_team,
         "year": year,
         "tournaments": tournaments,
+        "trophies": trophies,
         "current_roster": [
             {
                 "id": row[0],
@@ -594,7 +672,7 @@ def season_achievements(cursor, year):
     cursor.execute(
         """
         WITH events AS (
-            SELECT t.id, CASE
+            SELECT t.id, t.title, t.logo_url, t.region, t.status, CASE
                 WHEN t.title ILIKE 'Valorant Champions 20%%' THEN 'champions'
                 WHEN t.title ILIKE '%%masters%%' THEN 'masters'
                 ELSE 'regional'
@@ -628,7 +706,7 @@ def season_achievements(cursor, year):
         SELECT e.id, e.kind, p.team_id, COALESCE(r.placement_text, CASE
             WHEN p.team_id = f.team1_id THEN CASE WHEN f.score1 > f.score2 THEN '1st' ELSE '2nd' END
             WHEN p.team_id = f.team2_id THEN CASE WHEN f.score2 > f.score1 THEN '1st' ELSE '2nd' END
-        END)
+        END), e.title, e.logo_url, e.region, e.status
         FROM events e LEFT JOIN participants p ON p.tournament_id = e.id
         LEFT JOIN team_event_results r
           ON r.tournament_id = e.id AND r.team_id = p.team_id AND r.prize IS NOT NULL
@@ -638,16 +716,38 @@ def season_achievements(cursor, year):
     )
     rows = cursor.fetchall()
     international_events = {
-        event_id: kind for event_id, kind, _, _ in rows if kind != "regional"
+        event_id: kind for event_id, kind, *_ in rows if kind != "regional"
     }
     international_max = sum(PLACEMENT_POINTS[kind][0] for kind in international_events.values())
+    completed_fields = {}
+    for event_id, kind, team_id, placement, _, _, _, status in rows:
+        if kind != "regional" and status == "completed" and team_id is not None:
+            completed_fields.setdefault(event_id, {})[team_id] = placement_rank(placement)
+    placement_bands = {}
+    for event_id, field in completed_fields.items():
+        ranked = sorted(rank for rank in field.values() if rank is not None)
+        # Infer the unplaced band only when the published standings fill every slot
+        # through the last verified finish, including tied finishes.
+        if not ranked or len(ranked) == len(field) or any(
+            rank != ranked.count(rank) + sum(other < rank for other in ranked)
+            for rank in set(ranked)
+        ):
+            continue
+        expected_size = 16 if international_events[event_id] == "champions" else 12
+        if len(field) == expected_size:
+            placement_bands[event_id] = [len(ranked) + 1, expected_size]
     results = {}
-    for event_id, kind, team_id, placement in rows:
-        if team_id is None or (kind == "regional" and placement_rank(placement) is None):
+    for event_id, kind, team_id, placement, title, logo_url, region, _ in rows:
+        if team_id is None or (
+            kind == "regional" and placement_rank(placement) is None
+            and "lock//in" not in title.lower()
+        ):
             continue
         results.setdefault(team_id, []).append({
             "event_id": event_id, "kind": kind, "placement": placement,
             "points": achievement_points(kind, placement),
+            "title": title, "logo_url": logo_url, "region": region,
+            "placement_band": placement_bands.get(event_id) if placement_rank(placement) is None else None,
         })
     return {
         team_id: {
@@ -698,6 +798,7 @@ def team_power_rankings(year=2026):
                     WHERE region IS NOT NULL
                       AND (
                           region ILIKE '%%america%%'
+                          OR region IN ('Brazil', 'LATAM')
                           OR region ILIKE '%%emea%%'
                           OR region ILIKE '%%europe%%'
                           OR region ILIKE '%%africa%%'
@@ -712,6 +813,7 @@ def team_power_rankings(year=2026):
                     WHERE region IS NOT NULL
                       AND (
                           region ILIKE '%%america%%'
+                          OR region IN ('Brazil', 'LATAM')
                           OR region ILIKE '%%emea%%'
                           OR region ILIKE '%%europe%%'
                           OR region ILIKE '%%africa%%'
@@ -967,7 +1069,10 @@ def player_power_rankings(year=2026):
                            SUM(COALESCE(stats.kills, 0) * eligible.event_weight) AS kills,
                            SUM(COALESCE(stats.deaths, 0) * eligible.event_weight) AS deaths,
                            COUNT(DISTINCT game.id) FILTER (WHERE eligible.event_kind <> 'regional') AS international_maps,
-                           AVG(stats.rating) FILTER (WHERE eligible.event_kind <> 'regional') AS international_rating
+                           AVG(stats.rating) FILTER (WHERE eligible.event_kind <> 'regional') AS international_rating,
+                           AVG(stats.headshot_percentage) AS headshot_percentage,
+                           SUM(stats.kills) AS raw_kills, SUM(stats.deaths) AS raw_deaths,
+                           ARRAY_AGG(stats.agent) AS agent_picks
                     FROM player_stats stats
                     JOIN games game ON game.id = stats.game_id
                     JOIN eligible_matches eligible ON eligible.id = game.match_id
@@ -980,11 +1085,17 @@ def player_power_rankings(year=2026):
                        totals.maps_played, totals.rating, totals.acs, totals.kast,
                        totals.adr, totals.kills, totals.deaths,
                        COALESCE(roster_team.canonical_name, observed_team.canonical_name),
-                       totals.international_maps, totals.international_rating
+                       totals.international_maps, totals.international_rating,
+                       totals.headshot_percentage, totals.raw_kills, totals.raw_deaths, totals.agent_picks,
+                       CASE WHEN roster_team.canonical_name IS NOT NULL THEN roster_team.logo_url
+                            ELSE observed_team.logo_url END,
+                       CASE WHEN roster_team.canonical_name IS NOT NULL THEN roster_team.logo_local_path
+                            ELSE observed_team.logo_local_path END,
+                       COALESCE(roster_team.team_id, observed_team.team_id)
                 FROM player_totals totals
                 JOIN players player ON player.player_id = totals.player_id
                 LEFT JOIN LATERAL (
-                    SELECT team.canonical_name
+                    SELECT team.canonical_name, team.logo_url, team.logo_local_path, team.team_id
                     FROM roster_memberships membership
                     JOIN teams team ON team.team_id = membership.team_id
                     WHERE membership.player_id = player.player_id
@@ -993,7 +1104,7 @@ def player_power_rankings(year=2026):
                     LIMIT 1
                 ) roster_team ON TRUE
                 LEFT JOIN LATERAL (
-                    SELECT team.canonical_name
+                    SELECT team.canonical_name, team.logo_url, team.logo_local_path, team.team_id
                     FROM match_players appearance
                     JOIN teams team ON team.team_id = appearance.team_id
                     JOIN matches match ON match.id = appearance.match_id
@@ -1030,7 +1141,13 @@ def player_power_rankings(year=2026):
                     "deaths": row[12],
                     "international_maps": row[14],
                     "international_rating": row[15],
+                    "headshot_percentage": row[16],
+                    "kd": float(row[17] / row[18]) if row[17] is not None and row[18] else None,
+                    **agent_profile(row[19]),
                     "team": row[13],
+                    "team_logo_url": row[20],
+                    "team_logo_local_path": row[21],
+                    "team_id": row[22],
                 }
                 for row in cursor.fetchall()
             ]
@@ -1045,7 +1162,8 @@ def events_for_season(year):
                 SELECT tournament.id, tournament.title, tournament.status,
                        tournament.url, tournament.region,
                        tournament.start_date, tournament.end_date,
-                       (SELECT COUNT(*) FROM matches WHERE tournament_id = tournament.id)
+                       (SELECT COUNT(*) FROM matches WHERE tournament_id = tournament.id),
+                       tournament.logo_url
                 FROM tournaments tournament
                 LEFT JOIN seasons season ON season.season_id = tournament.season_id
                 WHERE tournament.tier = 'tier1' AND season.year = %s
@@ -1063,9 +1181,48 @@ def events_for_season(year):
                     "start_date": row[5],
                     "end_date": row[6],
                     "matches_imported": row[7],
+                    "logo_url": row[8],
                 }
                 for row in cursor.fetchall()
             ]
+
+
+def regional_strength(teams, international_events):
+    region_aliases = {
+        "Americas": "americas", "North America": "americas", "South America": "americas",
+        "Brazil": "americas", "LATAM": "americas", "EMEA": "emea", "Europe": "emea",
+        "Pacific": "pacific", "Asia-Pacific": "pacific", "China": "china",
+    }
+    affiliations = {team["id"]: region_aliases.get(team["region"]) for team in teams}
+    totals = {}
+    with connect() as connection, connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT team1_id, team2_id, team1_score, team2_score, tournament_id
+            FROM matches
+            WHERE tournament_id = ANY(%s)
+              AND lower(status) IN ('final', 'completed', 'complete')
+              AND team1_score IS NOT NULL AND team2_score IS NOT NULL
+            """,
+            ([event["id"] for event in international_events],),
+        )
+        champions = {event["id"] for event in international_events
+                     if event["title"].lower().startswith("valorant champions 20")}
+        for team1, team2, score1, score2, event_id in cursor.fetchall():
+            first, second = affiliations.get(team1), affiliations.get(team2)
+            if not first or not second or first == second:
+                continue
+            weight = CHAMPIONS_EVENT_WEIGHT if event_id in champions else MASTERS_EVENT_WEIGHT
+            result = 0.5 if score1 == score2 else float(score1 > score2)
+            for region, points in ((first, result), (second, 1 - result)):
+                total = totals.setdefault(region, {"points": 0, "weight": 0, "matches": 0})
+                total["points"] += weight * points
+                total["weight"] += weight
+                total["matches"] += 1
+    return {
+        region: {"score": round(100 * total["points"] / total["weight"], 1), "matches": total["matches"]}
+        for region, total in totals.items()
+    }
 
 
 def upcoming_matches(year):
@@ -1129,7 +1286,7 @@ def get_response(path, query):
     try:
         if path == "/":
             return static_response("index.html")
-        elif path in {"/app.css", "/app.js", "/theme.js"} or path.startswith("/assets/"):
+        elif path in {"/app.css", "/app.js", "/theme.js", "/favicon.svg"} or path.startswith("/assets/"):
             return static_response(path.lstrip("/"))
         elif path.startswith("/vct-images/"):
             image_path = path.removeprefix("/vct-images/")
@@ -1162,11 +1319,20 @@ def get_response(path, query):
             year = int(query.get("year", ["2026"])[0])
             if not 2022 <= year <= 2026:
                 raise ValueError("Choose a season from 2022 to 2026.")
+            teams = team_power_rankings(year)
+            international_events = [
+                event for event in events_for_season(year)
+                if "masters" in event["title"].lower()
+                or "lock//in" in event["title"].lower()
+                or event["title"].lower().startswith("valorant champions 20")
+            ]
             return json_response(
                 200,
                 {
                     "year": year,
-                    "teams": team_power_rankings(year),
+                    "teams": teams,
+                    "international_events": international_events,
+                    "regional_strength": regional_strength(teams, international_events),
                     "formula": {
                         **TEAM_POWER_WEIGHTS,
                         "placement_points": PLACEMENT_POINTS,
@@ -1245,7 +1411,10 @@ def get_response(path, query):
             player_match = PLAYER_ID_PATTERN.fullmatch(path)
             team_match = TEAM_ID_PATTERN.fullmatch(path)
             if player_match:
-                details = player_details(int(player_match.group(1)))
+                year = int(query.get("year", ["2026"])[0])
+                if not 2022 <= year <= 2026:
+                    raise ValueError("Choose a season from 2022 to 2026.")
+                details = player_details(int(player_match.group(1)), year)
                 return json_response(
                     200 if details else 404,
                     details or {"error": "Player not found."},
