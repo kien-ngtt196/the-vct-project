@@ -1,3 +1,42 @@
+import re
+
+
+TEAM_POWER_WEIGHTS = {
+    "international_achievement": 0.40,
+    "regional_achievement": 0.15,
+    "season_results": 0.20,
+    "recent_performance": 0.10,
+    "in_game_execution": 0.10,
+    "opponent_strength": 0.05,
+}
+PLACEMENT_POINTS = {
+    "champions": (36, 29, 22, 14, 8),
+    "masters": (22, 17, 13, 8, 4),
+    "regional": (10, 7, 4, 2, 0),
+}
+
+
+def placement_rank(text):
+    match = re.fullmatch(
+        r"\s*(\d+)(?:st|nd|rd|th)?(?:\s*[-–—]\s*(\d+)(?:st|nd|rd|th)?)?\s*",
+        text or "", re.IGNORECASE,
+    )
+    return int(match[2] or match[1]) if match else None
+
+
+def achievement_points(event_kind, placement):
+    rank = placement_rank(placement)
+    points = PLACEMENT_POINTS[event_kind]
+    for limit, value in zip((1, 2, 4, 8), points):
+        if rank is not None and 0 < rank <= limit:
+            return value
+    return points[-1]
+
+
+def shrink_rate(rate, count, prior):
+    return (rate * count + 0.5 * prior) / (count + prior)
+
+
 def calculate_team_power(team_stats):
     ratings = []
     for stats in team_stats:
@@ -55,11 +94,16 @@ def calculate_team_power(team_stats):
             + 0.4 * round_win_rate
             + 0.2 * kd_strength
         )
-        base_power_score = 100 * (
-            0.35 * match_win_rate
-            + 0.25 * recent_performance_rate
-            + 0.25 * execution_score
-            + 0.15 * opponent_strength_rate
+        components = {
+            "international_achievement": stats.get("international_achievement", 0),
+            "regional_achievement": stats.get("regional_achievement", 0),
+            "season_results": shrink_rate(match_win_rate, match_count, 5),
+            "recent_performance": shrink_rate(recent_performance_rate, min(match_count, 5), 3),
+            "in_game_execution": execution_score,
+            "opponent_strength": opponent_strength_rate,
+        }
+        base_power_score = 100 * sum(
+            TEAM_POWER_WEIGHTS[key] * value for key, value in components.items()
         )
 
         ratings.append(
@@ -82,22 +126,15 @@ def calculate_team_power(team_stats):
                 "deaths": deaths,
                 "kd_strength": round(kd_strength, 4),
                 "execution_score": round(execution_score, 4),
+                "score_breakdown": {
+                    key: round(100 * TEAM_POWER_WEIGHTS[key] * value, 2)
+                    for key, value in components.items()
+                },
                 "round_differential": rounds_for - rounds_against,
                 "unscaled_power_score": round(base_power_score, 1),
-                "power_score": base_power_score,
+                "power_score": round(base_power_score, 1),
             }
         )
-
-    highest_score = max(
-        (team["power_score"] for team in ratings),
-        default=0,
-    )
-    if highest_score > 0:
-        for team in ratings:
-            team["power_score"] = round(
-                team["power_score"] / highest_score * 100,
-                1,
-            )
 
     return sorted(
         ratings,
@@ -153,16 +190,16 @@ def calculate_player_power(player_stats):
             }
         )
 
-    highest_score = max(
-        (player["power_score"] for player in ratings),
-        default=0,
-    )
-    if highest_score > 0:
+    total_maps = sum(player["maps_played"] for player in ratings)
+    if total_maps:
+        baseline = sum(
+            player["power_score"] * player["maps_played"] for player in ratings
+        ) / total_maps
         for player in ratings:
-            player["power_score"] = round(
-                player["power_score"] / highest_score * 100,
-                1,
-            )
+            maps = player["maps_played"]
+            score = (maps * player["power_score"] + 10 * baseline) / (maps + 10)
+            player["power_score"] = round(score, 1)
+            player["unscaled_power_score"] = player["power_score"]
 
     return sorted(
         ratings,
