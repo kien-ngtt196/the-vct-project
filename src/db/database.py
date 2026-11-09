@@ -6,10 +6,15 @@ from dotenv import load_dotenv
 
 
 ROOT = Path(__file__).resolve().parents[2]
-load_dotenv(ROOT / ".env")
+ENV_FILE = ".env.neon" if os.getenv("VCT_USE_NEON") == "1" else ".env"
+load_dotenv(ROOT / ENV_FILE)
 
 
 def connect():
+    database_url = os.getenv("DATABASE_URL")
+    if database_url:
+        return psycopg2.connect(database_url, connect_timeout=5)
+
     password = os.getenv("VCT_DB_PASSWORD")
     if not password:
         raise RuntimeError(

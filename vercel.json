@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "fastapi",
+  "regions": ["sin1"],
+  "functions": {
+    "app.py": {
+      "excludeFiles": "{.env*,.neon/**,data/**,tests/**,prompts/**,src/core/**}"
+    }
+  }
+}

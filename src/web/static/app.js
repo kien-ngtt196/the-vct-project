@@ -214,8 +214,9 @@ function createValorantFallback(className) {
   return fallback;
 }
 
-function addImage(parent, url, className, alt) {
-  const safeUrl = safeImageUrl(url);
+function addImage(parent, urls, className, alt) {
+  const candidates = [...new Set([urls].flat().map(safeImageUrl).filter(Boolean))];
+  const safeUrl = candidates.shift();
   if (safeUrl) {
     const image = document.createElement("img");
     image.className = className;
@@ -223,7 +224,11 @@ function addImage(parent, url, className, alt) {
     image.alt = alt;
     image.loading = "lazy";
     image.referrerPolicy = "no-referrer";
-    image.onerror = () => image.replaceWith(createValorantFallback(image.className));
+    image.onerror = () => {
+      const nextUrl = candidates.shift();
+      if (nextUrl) image.src = nextUrl;
+      else image.replaceWith(createValorantFallback(image.className));
+    };
     parent.append(image);
   } else {
     parent.append(createValorantFallback(className));
@@ -237,7 +242,7 @@ function renderSearchResult(item) {
   button.addEventListener("click", () => loadProfile(item));
   addImage(
     button,
-    item.image_local_path || item.image_url,
+    [item.image_local_path, item.image_url],
     "result-avatar",
     `${item.name} ${item.type} image`,
   );
@@ -330,7 +335,7 @@ function renderHomeLeader(item, type, rank) {
   image.className = "home-leader-image";
   addImage(
     image,
-    item.image_local_path || item.image_url,
+    [item.image_local_path, item.image_url],
     "home-leader-avatar",
     `${item.name} ${type} image`,
   );
@@ -432,7 +437,7 @@ function renderPlayer(player) {
   photo.className = "card-photo-wrap";
   addImage(
     photo,
-    player.image_local_path || player.image_url,
+    [player.image_local_path, player.image_url],
     "card-photo",
     `${player.name} portrait`,
   );
@@ -582,7 +587,7 @@ function renderTeam(team) {
   header.className = "team-profile-head";
   addImage(
     header,
-    team.image_local_path || team.image_url,
+    [team.image_local_path, team.image_url],
     "team-avatar",
     `${team.name} logo`,
   );
@@ -660,7 +665,7 @@ function renderTeam(team) {
         player.id,
         "player",
         player.name,
-        player.image_local_path || player.image_url,
+        [player.image_local_path, player.image_url],
         player.role || "Player",
         "roster-profile-button",
       );
@@ -686,7 +691,7 @@ function renderTeam(team) {
         player.id,
         "player",
         player.name,
-        player.image_local_path || player.image_url,
+        [player.image_local_path, player.image_url],
         null,
         "roster-profile-button",
       );
@@ -825,7 +830,7 @@ function renderPowerTeam(team, rank, year) {
     team.id,
     "team",
     team.name,
-    team.image_local_path || team.image_url,
+    [team.image_local_path, team.image_url],
     null,
     "rank-team-button",
     year,
@@ -868,7 +873,7 @@ function renderPowerPlayer(player, rank) {
     player.id,
     "player",
     player.name,
-    player.image_local_path || player.image_url,
+    [player.image_local_path, player.image_url],
     player.nationality,
     "rank-player-button",
   );

@@ -38,6 +38,21 @@ After the match import, run
 `python -m src.db.sync_vlr_profiles --historical-events` to refresh event
 placements, roster evidence, and VLR profile images.
 
+## Vercel deployment
+
+Import the repository root as a FastAPI project. The root `app.py` serves the
+same routes as the local Python server. The function runs in Singapore to
+match the project's hosted PostgreSQL region.
+
+Set `DATABASE_URL` in Vercel to the pooled PostgreSQL connection string for
+the deployment environment, then redeploy. Preview deployments can use a
+separate database branch. Restore or migrate the hosted database separately
+and check `/api/health`, the tournament archive, and both ranking pages.
+
+The deployment includes checked-in artwork. If an image cached on a developer's
+machine is absent, the frontend tries its source URL. Locally sourced portraits
+without a usable source URL need separate hosting to appear online.
+
 ## What is included
 
 - Player/team search, VLR profile links and images, recent map stats, clickable
