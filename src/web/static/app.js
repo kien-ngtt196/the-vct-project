@@ -2,13 +2,16 @@ const searchInput = document.querySelector("#search-input");
 const searchStatus = document.querySelector("#search-status");
 const searchResults = document.querySelector("#search-results");
 const profileView = document.querySelector("#profile-view");
-const powerForm = document.querySelector("#power-form");
-const powerResult = document.querySelector("#power-result");
 const powerRankings = document.querySelector("#power-rankings");
+const teamRankingSeason = document.querySelector("#team-ranking-season");
+const playerRankingSeason = document.querySelector("#player-ranking-season");
 const homeTopTeams = document.querySelector("#home-top-teams");
 const homeTopPlayers = document.querySelector("#home-top-players");
 const roadmapRegions = document.querySelector("#roadmap-regions");
 const roadmapNote = document.querySelector("#roadmap-note");
+const archiveSeason = document.querySelector("#archive-season");
+const archiveStatus = document.querySelector("#archive-status");
+const archiveEvents = document.querySelector("#archive-events");
 const themeToggle = document.querySelector("#theme-toggle");
 const themeToggleLabel = document.querySelector("#theme-toggle-label");
 const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -19,7 +22,6 @@ const pageLinks = [...document.querySelectorAll("[data-view-target]")];
 
 let searchTimer;
 let searchVersion = 0;
-let powerTeams = [];
 const regions = [
   {
     key: "americas",
@@ -98,7 +100,39 @@ function showPage(view, scroll = true) {
     }
   });
   if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  if (view === "archive") loadArchive();
 }
+
+async function loadArchive() {
+  const year = archiveSeason.value;
+  archiveStatus.textContent = "Loading tournaments…";
+  archiveEvents.replaceChildren();
+  try {
+    const { events } = await getJson(`/api/events?year=${year}`);
+    if (archiveSeason.value !== year) return;
+    archiveStatus.textContent = `${events.length} Tier 1 events recorded for ${year}.`;
+    archiveEvents.replaceChildren(...events.map((event) => {
+      const item = document.createElement("li");
+      const url = safeSourceUrl(event.url);
+      if (url) {
+        const source = document.createElement("a");
+        source.href = url;
+        source.textContent = event.title;
+        source.target = "_blank";
+        source.rel = "noopener noreferrer";
+        item.append(source);
+      } else {
+        item.textContent = event.title;
+      }
+      item.append(` · ${event.matches_imported} matches imported`);
+      return item;
+    }));
+  } catch (error) {
+    if (archiveSeason.value === year) archiveStatus.textContent = error.message;
+  }
+}
+
+archiveSeason.addEventListener("change", loadArchive);
 
 pageLinks.forEach((link) => {
   link.addEventListener("click", (event) => {
@@ -165,7 +199,7 @@ async function getJson(path) {
   return payload;
 }
 
-function addValorantFallback(parent, className) {
+function createValorantFallback(className) {
   const fallback = document.createElement("span");
   fallback.className = `${className} result-fallback valorant-fallback`;
   fallback.setAttribute("role", "img");
@@ -177,7 +211,7 @@ function addValorantFallback(parent, className) {
   path.setAttribute("d", "M6 9h19l7 19 7-19h19L39 55H25z");
   mark.append(path);
   fallback.append(mark);
-  parent.append(fallback);
+  return fallback;
 }
 
 function addImage(parent, url, className, alt) {
@@ -189,13 +223,10 @@ function addImage(parent, url, className, alt) {
     image.alt = alt;
     image.loading = "lazy";
     image.referrerPolicy = "no-referrer";
-    image.onerror = () => {
-      addValorantFallback(image.parentElement, className);
-      image.remove();
-    };
+    image.onerror = () => image.replaceWith(createValorantFallback(image.className));
     parent.append(image);
   } else {
-    addValorantFallback(parent, className);
+    parent.append(createValorantFallback(className));
   }
 }
 
@@ -227,11 +258,11 @@ function renderSearchResult(item) {
   return button;
 }
 
-function makeProfileButton(id, type, name, imageUrl, meta, className) {
+function makeProfileButton(id, type, name, imageUrl, meta, className, year) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = className;
-  button.addEventListener("click", () => loadProfile({ type, id }));
+  button.addEventListener("click", () => loadProfile({ type, id, year }));
   addImage(
     button,
     imageUrl,
@@ -425,7 +456,7 @@ function renderPlayer(player) {
     ? `${Number(player.global_power.power_score).toFixed(1)} `
     : "— ";
   const ratingLabel = document.createElement("span");
-  ratingLabel.textContent = "GLOBAL PLAYER POWER · LEADER = 100";
+  ratingLabel.textContent = "GLOBAL PLAYER POWER · OUT OF 100";
   rating.append(ratingLabel);
   info.append(kicker, name, team, rating);
   top.append(photo, info);
@@ -573,6 +604,19 @@ function renderTeam(team) {
   }
   wrapper.append(header);
 
+  const seasonLabel = document.createElement("label");
+  seasonLabel.textContent = "Team history season ";
+  const seasonPicker = document.createElement("select");
+  for (let year = 2026; year >= 2022; year -= 1) {
+    seasonPicker.add(new Option(String(year), String(year)));
+  }
+  seasonPicker.value = String(team.year);
+  seasonPicker.addEventListener("change", () => {
+    loadProfile({ id: team.id, type: "team", year: seasonPicker.value });
+  });
+  seasonLabel.append(seasonPicker);
+  wrapper.append(seasonLabel);
+
   if (team.stats) {
     const teamStats = document.createElement("div");
     teamStats.className = "card-stats team-stats";
@@ -583,7 +627,7 @@ function renderTeam(team) {
       - team.stats.maps_won
       - team.stats.maps_drawn;
     teamStats.append(
-      makeStat("POWER · LEADER = 100", Number(team.stats.power_score).toFixed(1)),
+      makeStat("POWER POINTS · OUT OF 100", Number(team.stats.power_score).toFixed(1)),
       makeStat("MATCH RECORD", `${team.stats.matches_won}–${losses}–${team.stats.matches_drawn}`),
       makeStat("MAP RECORD", `${team.stats.maps_won}–${mapLosses}–${team.stats.maps_drawn}`),
       makeStat("ROUND DIFF", `${team.stats.round_differential > 0 ? "+" : ""}${team.stats.round_differential}`),
@@ -632,7 +676,7 @@ function renderTeam(team) {
 
   const playerHeading = document.createElement("h4");
   playerHeading.className = "subheading";
-  playerHeading.textContent = "Players observed in 2026 matches";
+  playerHeading.textContent = `Players observed in ${team.year} matches`;
   wrapper.append(playerHeading);
   if (team.observed_players.length) {
     team.observed_players.forEach((player) => {
@@ -660,7 +704,7 @@ function renderTeam(team) {
 
   const tournamentHeading = document.createElement("h4");
   tournamentHeading.className = "subheading";
-  tournamentHeading.textContent = "2026 tournament results & prizes";
+  tournamentHeading.textContent = `${team.year} tournament results & prizes`;
   wrapper.append(tournamentHeading);
   if (team.tournaments.length) {
     team.tournaments.forEach((event) => {
@@ -694,7 +738,7 @@ function renderTeam(team) {
   } else {
     const note = document.createElement("p");
     note.className = "muted";
-    note.textContent = "No tier-one event participation is recorded for 2026.";
+    note.textContent = `No tier-one event participation is recorded for ${team.year}.`;
     wrapper.append(note);
   }
 
@@ -735,7 +779,8 @@ async function loadProfile(item) {
   profileView.append(loading);
   try {
     const kind = item.type === "player" ? "players" : "teams";
-    const details = await getJson(`/api/${kind}/${encodeURIComponent(item.id)}`);
+    const season = item.year ? `?year=${encodeURIComponent(item.year)}` : "";
+    const details = await getJson(`/api/${kind}/${encodeURIComponent(item.id)}${season}`);
     if (item.type === "player") renderPlayer(details);
     else renderTeam(details);
   } catch (error) {
@@ -769,7 +814,7 @@ function renderScoreMeter(container, score) {
   container.append(readout, track);
 }
 
-function renderPowerTeam(team, rank) {
+function renderPowerTeam(team, rank, year) {
   const row = document.createElement("tr");
   row.className = "power-rank-row";
   const position = document.createElement("td");
@@ -783,6 +828,7 @@ function renderPowerTeam(team, rank) {
     team.image_local_path || team.image_url,
     null,
     "rank-team-button",
+    year,
   );
   identity.querySelector(".result-avatar")?.classList.replace("result-avatar", "rank-team-logo");
   identity.querySelector(".result-name")?.classList.add("power-rank-name");
@@ -790,6 +836,10 @@ function renderPowerTeam(team, rank) {
   const scoreCell = document.createElement("td");
   scoreCell.className = "power-rank-score";
   renderScoreMeter(scoreCell, team.power_score);
+  const achievement = team.score_breakdown;
+  if (achievement) {
+    scoreCell.title = `Achievement points: ${achievement.international_achievement}/40 international, ${achievement.regional_achievement}/15 regional`;
+  }
   const record = document.createElement("td");
   record.className = "power-rank-record";
   const matchLosses = team.matches_played - team.matches_won - team.matches_drawn;
@@ -843,101 +893,41 @@ function renderPowerPlayer(player, rank) {
   const kast = document.createElement("td");
   kast.className = "power-rank-component";
   kast.textContent = player.kast == null ? "—" : `${Number(player.kast).toFixed(1)}%`;
-  row.append(position, playerCell, team, scoreCell, maps, rating, acs, kast);
+  const internationalMaps = document.createElement("td");
+  internationalMaps.className = "power-rank-component";
+  internationalMaps.textContent = String(player.international_maps);
+  const internationalRating = document.createElement("td");
+  internationalRating.className = "power-rank-component";
+  internationalRating.textContent = player.international_rating == null
+    ? "—" : Number(player.international_rating).toFixed(2);
+  row.append(position, playerCell, team, scoreCell, maps, rating, internationalMaps, internationalRating, acs, kast);
   return row;
 }
 
-function renderPowerDetails(team) {
-  const card = document.createElement("article");
-  card.className = "power-team-card";
-  const heading = document.createElement("div");
-  heading.className = "power-team-heading";
-  const name = document.createElement("h3");
-  name.textContent = team.name;
-  const score = document.createElement("strong");
-  score.className = "power-team-score";
-  score.textContent = team.power_score.toFixed(1);
-  const scoreLabel = document.createElement("span");
-  scoreLabel.textContent = "POWER";
-  score.append(scoreLabel);
-  heading.append(name, score);
-
-  const record = document.createElement("p");
-  record.className = "power-team-record";
-  const matchLosses = team.matches_played - team.matches_won - team.matches_drawn;
-  const mapLosses = team.maps_played - team.maps_won - team.maps_drawn;
-  record.textContent = `${team.matches_won}W–${matchLosses}L–${team.matches_drawn}D (${team.matches_played} matches) · ${team.maps_won}W–${mapLosses}L–${team.maps_drawn}D (${team.maps_played} maps) · ${team.round_differential > 0 ? "+" : ""}${team.round_differential} rounds · ${team.kills} K / ${team.deaths} D`;
-
-  const components = document.createElement("div");
-  components.className = "power-components";
-  [
-    ["Season results · 35%", team.match_win_rate],
-    ["Recent form · 25%", team.recent_performance_rate],
-    ["In-game execution · 25%", team.execution_score],
-    ["Opponent strength · 15%", team.opponent_strength_rate],
-  ].forEach(([label, rate]) => {
-    const row = document.createElement("div");
-    row.className = "power-component";
-    const title = document.createElement("span");
-    title.textContent = label;
-    const value = document.createElement("strong");
-    value.textContent = formatRate(rate);
-    row.append(title, value);
-    components.append(row);
-  });
-  card.append(heading, record, components);
-  return card;
-}
-
-function renderPowerComparison() {
-  const firstId = document.querySelector("#team-one").value;
-  const secondId = document.querySelector("#team-two").value;
-  const first = powerTeams.find((team) => String(team.id) === firstId);
-  const second = powerTeams.find((team) => String(team.id) === secondId);
-  if (!first || !second) return;
-  if (first.id === second.id) {
-    powerResult.textContent = "Choose two different teams to compare their power ratings.";
-    return;
-  }
-
-  const comparison = document.createElement("div");
-  comparison.className = "power-comparison";
-  comparison.append(renderPowerDetails(first), renderPowerDetails(second));
-  const difference = document.createElement("p");
-  difference.className = "power-difference";
-  const gap = Math.abs(first.power_score - second.power_score).toFixed(1);
-  difference.textContent = first.power_score === second.power_score
-    ? "Equal 2026 power scores."
-    : `${first.power_score > second.power_score ? first.name : second.name} leads by ${gap} power points. This compares 2026 results; it does not predict a match.`;
-  powerResult.replaceChildren(comparison, difference);
-}
-
 async function loadPowerRankings() {
-  const first = document.querySelector("#team-one");
-  const second = document.querySelector("#team-two");
+  const year = teamRankingSeason.value;
   try {
-    const payload = await getJson("/api/power-rankings");
-    powerTeams = payload.teams;
-    renderHomeLeaders(homeTopTeams, powerTeams, "team");
-    document.querySelectorAll('[data-count="teams"]').forEach((counter) => {
-      counter.textContent = String(powerTeams.length);
-    });
-    [first, second].forEach((select, selectIndex) => {
-      select.replaceChildren(new Option("Choose a 2026 team…", ""));
-      powerTeams.forEach((team) => {
-        const option = new Option(team.name, team.id);
-        option.textContent = `${team.name} · ${team.power_score.toFixed(1)}`;
-        if (selectIndex === 1 && String(team.id) === first.value) option.disabled = true;
-        select.add(option);
+    const payload = await getJson(`/api/power-rankings?year=${year}`);
+    if (teamRankingSeason.value !== year) return;
+    const powerTeams = payload.teams;
+    if (year === "2026") {
+      renderHomeLeaders(homeTopTeams, powerTeams, "team");
+      document.querySelectorAll('[data-count="teams"]').forEach((counter) => {
+        counter.textContent = String(powerTeams.length);
       });
-    });
+    }
     powerRankings.replaceChildren(
-      ...powerTeams.map((team, index) => renderPowerTeam(team, index + 1)),
+      ...powerTeams.map((team, index) => renderPowerTeam(team, index + 1, year)),
     );
+    if (!powerTeams.length) {
+      const cell = powerRankings.insertRow().insertCell();
+      cell.colSpan = 7;
+      cell.className = "table-message";
+      cell.textContent = "No eligible team results have been imported for this season.";
+    }
   } catch (error) {
-    renderHomeLeaders(homeTopTeams, [], "team", error.message);
-    [first, second].forEach((select) => select.replaceChildren(new Option("Data unavailable", "")));
-    powerResult.textContent = error.message;
+    if (teamRankingSeason.value !== year) return;
+    if (year === "2026") renderHomeLeaders(homeTopTeams, [], "team", error.message);
     const row = document.createElement("tr");
     const message = document.createElement("td");
     message.className = "table-message";
@@ -949,32 +939,41 @@ async function loadPowerRankings() {
 }
 
 async function loadPlayerRankings() {
+  const year = playerRankingSeason.value;
   const tableBody = document.querySelector("#player-rankings");
   try {
-    const payload = await getJson("/api/player-power-rankings");
-    document.querySelectorAll('[data-count="players"]').forEach((counter) => {
-      counter.textContent = String(payload.players.length);
-    });
-    renderHomeLeaders(homeTopPlayers, payload.players, "player");
+    const payload = await getJson(`/api/player-power-rankings?year=${year}`);
+    if (playerRankingSeason.value !== year) return;
+    if (year === "2026") {
+      document.querySelectorAll('[data-count="players"]').forEach((counter) => {
+        counter.textContent = String(payload.players.length);
+      });
+      renderHomeLeaders(homeTopPlayers, payload.players, "player");
+    }
     tableBody.replaceChildren(
       ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1)),
     );
+    if (!payload.players.length) {
+      const cell = tableBody.insertRow().insertCell();
+      cell.colSpan = 10;
+      cell.className = "table-message";
+      cell.textContent = "No players meet the five-map minimum for this season yet.";
+    }
   } catch (error) {
-    renderHomeLeaders(homeTopPlayers, [], "player", error.message);
+    if (playerRankingSeason.value !== year) return;
+    if (year === "2026") renderHomeLeaders(homeTopPlayers, [], "player", error.message);
     const row = document.createElement("tr");
     const message = document.createElement("td");
     message.className = "table-message";
-    message.colSpan = 8;
+    message.colSpan = 10;
     message.textContent = error.message;
     row.append(message);
     tableBody.replaceChildren(row);
   }
 }
 
-powerForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  renderPowerComparison();
-});
+teamRankingSeason.addEventListener("change", loadPowerRankings);
+playerRankingSeason.addEventListener("change", loadPlayerRankings);
 
 async function loadRoadmap() {
   try {

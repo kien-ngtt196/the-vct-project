@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app.css?v=23">
-    <script src="/app.js?v=18" defer></script>
+    <link rel="stylesheet" href="/app.css?v=24">
+    <script src="/app.js?v=25" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -22,6 +22,7 @@
         <a href="#home" data-view-target="home">Home</a>
         <a href="#teams" data-view-target="teams">Team rankings</a>
         <a href="#players" data-view-target="players">Player rankings</a>
+        <a href="#archive" data-view-target="archive">Tournament archive</a>
         <a href="#watchlist" data-view-target="watchlist">2027 roadmap</a>
       </nav>
       <div class="header-actions">
@@ -34,6 +35,22 @@
     </header>
 
     <main id="app-main">
+      <section class="page-view home-workspace" data-page-panel="archive" hidden>
+        <div class="home-section-heading">
+          <div>
+            <p class="eyebrow">TIER 1 · 2022–2026</p>
+            <h2>Tournament archive</h2>
+          </div>
+        </div>
+        <label>Season
+          <select id="archive-season">
+            <option>2026</option><option>2025</option><option>2024</option>
+            <option>2023</option><option>2022</option>
+          </select>
+        </label>
+        <p id="archive-status" role="status"></p>
+        <ul id="archive-events"></ul>
+      </section>
       <section class="page-view home-view" data-page-panel="home">
       <section class="hero">
         <div class="hero-copy-block">
@@ -130,18 +147,24 @@
 
       <section class="page-view feature-view teams-view" data-page-panel="teams" hidden>
         <header class="feature-page-heading team-page-heading">
-          <p class="eyebrow">THE GLOBAL FIELD · 2026</p>
+          <p class="eyebrow">THE GLOBAL FIELD</p>
           <h1>Team power,<br><span>in context.</span></h1>
-          <p>Compare the results and form behind every position. Select a team for its full scouting file.</p>
+          <p>Explore the results and form behind each position. Select a team for its full scouting file.</p>
         </header>
       <section class="rankings-layout" id="power-rankings-section">
         <section class="panel ranking-panel" aria-labelledby="power-title">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">GLOBAL POWER · 2026</p>
+              <p class="eyebrow">GLOBAL POWER</p>
               <h2 id="power-title">Current standings</h2>
             </div>
-            <span class="model-badge">BASIC STATS · NOT A FORECAST</span>
+            <label>Season
+            <select id="team-ranking-season">
+              <option>2026</option><option>2025</option><option>2024</option>
+              <option>2023</option><option>2022</option>
+            </select>
+          </label>
+          <span class="model-badge">BASIC STATS · NOT A FORECAST</span>
           </div>
           <div class="table-scroll">
             <table class="power-table">
@@ -157,12 +180,12 @@
                 </tr>
               </thead>
               <tbody id="power-rankings" aria-live="polite">
-                <tr><td class="table-message" colspan="7">Loading 2026 results…</td></tr>
+                <tr><td class="table-message" colspan="7">Loading team results…</td></tr>
               </tbody>
             </table>
           </div>
           <p class="source-note">
-            The strongest team is scaled to 100. Click a team to inspect its 2026
+            Team scores show earned points out of 100. Results reflect the matches imported so far. Click a team to inspect its season
             results, event finishes, available prizes, and roster.
           </p>
         </section>
@@ -176,61 +199,38 @@
               </div>
             </div>
             <p class="panel-copy">
-              A descriptive 2026 ranking, not a match probability or tournament prediction.
+              The ranking describes imported season results.
             </p>
             <div class="method-list">
               <div class="method-row">
                 <span class="method-icon" aria-hidden="true">01</span>
-                <div><strong>Season results <b>35%</b></strong><small>Completed match wins, weighted by event importance</small></div>
+                <div><strong>International achievement <b>40%</b></strong><small>Confirmed international appearances and final placements. Champions carries the most points.</small></div>
               </div>
               <div class="method-row">
                 <span class="method-icon" aria-hidden="true">02</span>
-                <div><strong>Recent form <b>25%</b></strong><small>Recency-weighted last five matches</small></div>
+                <div><strong>Regional achievement <b>15%</b></strong><small>Best three verified regional finishes.</small></div>
               </div>
               <div class="method-row">
                 <span class="method-icon" aria-hidden="true">03</span>
-                <div><strong>In-game execution <b>25%</b></strong><small>Weighted map wins (40%), round strength (40%), K/D (20%)</small></div>
+                <div><strong>Season results <b>20%</b></strong><small>Event-weighted results adjusted for small samples.</small></div>
               </div>
               <div class="method-row">
                 <span class="method-icon" aria-hidden="true">04</span>
-                <div><strong>Opponent strength <b>15%</b></strong><small>Event-weighted average 2026 opponent win rate</small></div>
+                <div><strong>Recent form <b>10%</b></strong><small>Up to five matches, adjusted for small samples.</small></div>
+              </div>
+              <div class="method-row">
+                <span class="method-icon" aria-hidden="true">05</span>
+                <div><strong>In-game execution <b>10%</b></strong><small>Map wins (40%), round share (40%), and K/D (20%).</small></div>
+              </div>
+              <div class="method-row">
+                <span class="method-icon" aria-hidden="true">06</span>
+                <div><strong>Opponent strength <b>5%</b></strong><small>Event-weighted opponent win rate.</small></div>
               </div>
             </div>
             <p class="data-caveat">
-              Event multipliers: Champions 3×, Masters 2×, regional 1×. Recent form
-              combines event importance with match recency. Tier is inferred from the
-              tournament title; unrecognized event types use regional weight.
+              Match weights are Champions 3×, Masters 2×, and regional 1×.
+              Placement and match coverage may be incomplete while imports run.
             </p>
-            <p class="data-caveat">
-              Team regions are inferred from the most frequent regional 2026 tier-one
-              tournament listing in VLR. Regional strength is not part of the score;
-              unknown metrics remain neutral rather than guessed.
-            </p>
-          </section>
-
-          <section class="panel power-panel" aria-labelledby="compare-title">
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">HEAD-TO-HEAD</p>
-                <h2 id="compare-title">Compare teams</h2>
-              </div>
-              <span class="model-badge">2026</span>
-            </div>
-            <form id="power-form">
-              <label class="select-label" for="team-one">Team one</label>
-              <select id="team-one" required>
-                <option value="">Loading teams…</option>
-              </select>
-              <div class="versus">VS</div>
-              <label class="select-label" for="team-two">Team two</label>
-              <select id="team-two" required>
-                <option value="">Loading teams…</option>
-              </select>
-              <button class="primary-button" type="submit">Compare power <span aria-hidden="true">↗</span></button>
-            </form>
-            <div id="power-result" class="power-result" aria-live="polite">
-              <p class="muted">Choose two teams to compare their season components.</p>
-            </div>
           </section>
 
         </aside>
@@ -239,14 +239,14 @@
 
       <section class="page-view feature-view players-view" data-page-panel="players" hidden>
         <header class="feature-page-heading player-page-heading">
-          <p class="eyebrow">THE PLAYERS SHAPING THE META · 2026</p>
+          <p class="eyebrow">THE PLAYERS SHAPING THE META</p>
           <h1>Individual<br><span>impact.</span></h1>
           <p>A source-backed view of player performance, weighted by event and ranked by the same season-wide model.</p>
         </header>
       <section class="panel player-ranking-panel" id="player-rankings-section" aria-labelledby="player-rankings-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">GLOBAL PLAYER POWER · 2026</p>
+            <p class="eyebrow">GLOBAL PLAYER POWER</p>
             <h2 id="player-rankings-title">Player standings</h2>
           </div>
           <div class="player-ranking-tools">
@@ -259,6 +259,12 @@
             <div id="search-status" class="ranking-search-status" role="status">Search players or teams</div>
             <div id="search-results" class="search-results ranking-search-results" hidden></div>
           </div>
+          <label>Season
+            <select id="player-ranking-season">
+              <option>2026</option><option>2025</option><option>2024</option>
+              <option>2023</option><option>2022</option>
+            </select>
+          </label>
           <span class="model-badge">MINIMUM 5 MAPS</span>
         </div>
         <div class="table-scroll">
@@ -271,18 +277,20 @@
                 <th scope="col">Power</th>
                 <th scope="col">Maps</th>
                 <th scope="col">Rating</th>
+                <th scope="col">International maps</th>
+                <th scope="col">International rating</th>
                 <th scope="col">ACS</th>
                 <th scope="col">KAST</th>
               </tr>
             </thead>
             <tbody id="player-rankings" aria-live="polite">
-              <tr><td class="table-message" colspan="8">Loading 2026 player results…</td></tr>
+              <tr><td class="table-message" colspan="10">Loading player results…</td></tr>
             </tbody>
           </table>
         </div>
         <p class="source-note">
-          The strongest eligible player is scaled to 100. Ratings are event-weighted
-          averages; each player profile shows underlying 2026 stats and roster evidence.
+          Player scores show earned points out of 100. Ratings are event-weighted
+          averages. Map weights range from 1× for regional play to 3× for Champions playoffs. Smaller samples are pulled toward the season average. Player profiles show 2026 stats and roster evidence.
         </p>
       </section>
       </section>
