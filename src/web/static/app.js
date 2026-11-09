@@ -12,6 +12,9 @@ const roadmapNote = document.querySelector("#roadmap-note");
 const archiveSeason = document.querySelector("#archive-season");
 const archiveStatus = document.querySelector("#archive-status");
 const archiveEvents = document.querySelector("#archive-events");
+const archiveCircuit = document.querySelector("#archive-circuit");
+const archiveSearch = document.querySelector("#archive-search");
+let archivedEvents = [];
 const themeToggle = document.querySelector("#theme-toggle");
 const themeToggleLabel = document.querySelector("#theme-toggle-label");
 const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -48,12 +51,32 @@ const regions = [
     source: "https://www.vlr.gg/events/?region=24",
   },
 ];
-const roadmapStages = [
-  ["Open Qualifiers", "The open entry point for teams starting their regional run."],
-  ["Regional Cups", "Regional events build toward international qualification."],
-  ["Masters", "The strongest teams meet on the international stage."],
-  ["Champions", "The season culminates in the world championship."],
-];
+const methodPaths = {
+  trophy: "M8 3h8v5a4 4 0 0 1-8 0zm0 2H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 1v6m-4 3h8",
+  flag: "M5 21V3m0 2h13l-3 4 3 4H5",
+  chart: "M4 4v16h16M8 16v-4m5 4V8m5 8V5",
+  trend: "m3 17 6-6 4 3 7-8m-5 0h5v5",
+  target: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+  shield: "M12 3 4 6v5c0 5 4 8 8 10 4-2 8-5 8-10V6zm-4 9 3 3 5-6",
+};
+for (const element of document.querySelectorAll("[data-method-icon]")) {
+  element.append(lineGraphic("0 0 24 24", methodPaths[element.dataset.methodIcon]));
+}
+
+function lineGraphic(viewBox, pathData) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", viewBox);
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", pathData);
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "1.7");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+  svg.append(path);
+  return svg;
+}
 
 function applyTheme(theme, persist = false) {
   const isDark = theme === "dark";
@@ -103,36 +126,89 @@ function showPage(view, scroll = true) {
   if (view === "archive") loadArchive();
 }
 
+function eventKind(title) {
+  if (/^(?:valorant )?champions (?:20|austin)/i.test(title)) return "champions";
+  if (/\bmasters\b|lock\W*in/i.test(title)) return "masters";
+  return "regional";
+}
+
+function eventIcon(event) {
+  const kind = event.kind || eventKind(event.title || "");
+  const fallback = kind === "champions" ? "/favicon.svg" : kind === "masters"
+    ? "/vct-images/masters-mark.png" : "/vct-images/vct-mark.png";
+  return [event.logo_url, fallback];
+}
+
+function eventCard(event, detail) {
+  const card = document.createElement("article");
+  card.className = "event-tile";
+  const kind = event.kind || eventKind(event.title);
+  card.dataset.kind = kind;
+  addImage(card, eventIcon(event), "event-tile-logo", "");
+  const info = document.createElement("div");
+  const eyebrow = document.createElement("small");
+  eyebrow.className = "event-tile-label";
+  eyebrow.textContent = [kind === "regional" ? event.region || "Regional" : kind, event.year, event.status]
+    .filter(Boolean).join(" · ");
+  const url = safeSourceUrl(event.url);
+  const title = document.createElement(url ? "a" : "strong");
+  if (url) {
+    title.href = url;
+    title.target = "_blank";
+    title.rel = "noopener noreferrer";
+  }
+  title.className = "event-tile-title";
+  title.textContent = event.title;
+  const meta = document.createElement("small");
+  meta.className = "event-tile-detail";
+  meta.textContent = detail;
+  info.append(eyebrow, title, meta);
+  card.append(info);
+  return card;
+}
+
+function eventDates(event) {
+  const date = (value) => new Intl.DateTimeFormat("en", {
+    month: "short", day: "numeric", timeZone: "UTC",
+  }).format(new Date(value));
+  if (!event.start_date) return "Date to be announced";
+  return event.end_date && event.end_date !== event.start_date
+    ? `${date(event.start_date)} – ${date(event.end_date)}` : date(event.start_date);
+}
+
+function renderArchive() {
+  const term = archiveSearch.value.trim().toLowerCase();
+  const circuit = archiveCircuit.value;
+  const filtered = archivedEvents.filter((event) => {
+    const international = eventKind(event.title) !== "regional";
+    return (circuit === "all" || international === (circuit === "international"))
+      && `${event.title} ${event.region || ""}`.toLowerCase().includes(term);
+  });
+  const matches = filtered.reduce((sum, event) => sum + event.matches_imported, 0);
+  archiveStatus.textContent = `${filtered.length} of ${archivedEvents.length} events · ${matches.toLocaleString()} imported matches`;
+  archiveEvents.replaceChildren(...filtered.map((event) =>
+    eventCard(event, `${eventDates(event)} · ${event.matches_imported} matches imported`)
+  ));
+}
+
 async function loadArchive() {
   const year = archiveSeason.value;
   archiveStatus.textContent = "Loading tournaments…";
   archiveEvents.replaceChildren();
+  archivedEvents = [];
   try {
     const { events } = await getJson(`/api/events?year=${year}`);
     if (archiveSeason.value !== year) return;
-    archiveStatus.textContent = `${events.length} Tier 1 events recorded for ${year}.`;
-    archiveEvents.replaceChildren(...events.map((event) => {
-      const item = document.createElement("li");
-      const url = safeSourceUrl(event.url);
-      if (url) {
-        const source = document.createElement("a");
-        source.href = url;
-        source.textContent = event.title;
-        source.target = "_blank";
-        source.rel = "noopener noreferrer";
-        item.append(source);
-      } else {
-        item.textContent = event.title;
-      }
-      item.append(` · ${event.matches_imported} matches imported`);
-      return item;
-    }));
+    archivedEvents = events;
+    renderArchive();
   } catch (error) {
     if (archiveSeason.value === year) archiveStatus.textContent = error.message;
   }
 }
 
 archiveSeason.addEventListener("change", loadArchive);
+archiveCircuit.addEventListener("change", renderArchive);
+archiveSearch.addEventListener("input", renderArchive);
 
 pageLinks.forEach((link) => {
   link.addEventListener("click", (event) => {
@@ -169,12 +245,12 @@ function safeImageUrl(value) {
     const url = new URL(value, window.location.origin);
     if (
       url.origin === window.location.origin
-      && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vct-images/"))
+      && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vct-images/") || url.pathname === "/favicon.svg")
       && !url.pathname.split("/").includes("..")
     ) return url.href;
     if (url.protocol !== "https:") return null;
     if (!["vlr.gg", "www.vlr.gg", "owcdn.net"].includes(url.hostname)) return null;
-    if (url.pathname.endsWith("/sil.png")) return null;
+    if (/\/(sil|vlr)\.png$/i.test(url.pathname)) return null;
     return url.href;
   } catch {
     return null;
@@ -202,15 +278,10 @@ async function getJson(path) {
 function createValorantFallback(className) {
   const fallback = document.createElement("span");
   fallback.className = `${className} result-fallback valorant-fallback`;
-  fallback.setAttribute("role", "img");
-  fallback.setAttribute("aria-label", "VALORANT logo");
-  const mark = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  mark.setAttribute("viewBox", "0 0 64 64");
-  mark.setAttribute("aria-hidden", "true");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", "M6 9h19l7 19 7-19h19L39 55H25z");
-  mark.append(path);
-  fallback.append(mark);
+  const logo = document.createElement("img");
+  logo.src = "/vct-images/vct-mark.png";
+  logo.alt = "VCT logo";
+  fallback.append(logo);
   return fallback;
 }
 
@@ -426,158 +497,240 @@ function makeStat(label, value) {
   return wrapper;
 }
 
+function profileSection(title, ...children) {
+  const section = document.createElement("section");
+  section.className = "profile-section";
+  const heading = document.createElement("h4");
+  heading.className = "subheading";
+  heading.textContent = title;
+  section.append(heading, ...children);
+  return section;
+}
+
+function agentStrip(agents, detailed = false) {
+  const strip = document.createElement("div");
+  strip.className = detailed ? "agent-strip agent-strip-detailed" : "agent-strip";
+  for (const agent of agents || []) {
+    const item = document.createElement("div");
+    item.className = "agent-pick";
+    item.title = `${agent.name} · ${agent.maps} maps`;
+    addImage(item, agent.image, "agent-portrait", agent.name);
+    if (detailed) {
+      const label = document.createElement("strong");
+      label.textContent = agent.name;
+      const details = document.createElement("small");
+      details.textContent = [agent.role, `${agent.maps} maps`].filter(Boolean).join(" · ");
+      item.append(label, details);
+    }
+    strip.append(item);
+  }
+  if (!strip.childElementCount) strip.textContent = "—";
+  return strip;
+}
+
+function trophyShelf(trophies, player = false) {
+  const shelf = document.createElement("div");
+  shelf.className = "profile-trophies";
+  for (const event of trophies || []) {
+    const prize = event.prize && !/^(?:[-–—]+|\$0|0)$/.test(event.prize.trim()) ? event.prize : "";
+    const finish = { 1: "Winner", 2: "Runner-up", 3: "Third place" }[event.rank] || "Winner";
+    const card = eventCard(event, [
+      finish,
+      player ? event.team : "",
+      prize ? (player ? `Team prize ${prize}` : prize) : "",
+    ].filter(Boolean).join(" · "));
+    if (player) card.dataset.finish = String(event.rank);
+    shelf.append(card);
+  }
+  if (!shelf.childElementCount) shelf.textContent = player
+    ? "No verified Tier 1 podium finishes recorded yet."
+    : "No verified tournament wins recorded yet.";
+  return profileSection(player ? "Career achievements" : "Tournament wins", shelf);
+}
+
+const flagRegions = "ar au bd by be bm bo br bn bg kh ca co cr hr cu cz cl cn dk do eg ee fi fr de gr gt ht hk in id ir ie it jp kz kg la lv lb lt mo mk my mv mx md mn ma np nl nz no pk ps pe pl pt pr ph ro ru sa rs sg kr es lk se ch tw tr th ua gb us uz vn".split(" ");
+const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+const countryFlags = new Map(flagRegions.map((code) => [regionNames.of(code.toUpperCase()).toLowerCase(), code]));
+for (const [name, code] of Object.entries({
+  "bolivia, plurinational state of": "bo", "brunei darussalam": "bn", "czech republic": "cz",
+  england: "gb-eng", "hong kong": "hk", "iran, islamic republic of": "ir",
+  macao: "mo", macedonia: "mk", "moldova, republic of": "md", palestine: "ps",
+  "south korea": "kr", turkey: "tr", türkiye: "tr", wales: "gb-wls",
+})) countryFlags.set(name, code);
+
+function countryLabel(nationality) {
+  const label = document.createElement("span");
+  label.className = "country-label";
+  const code = countryFlags.get(nationality.trim().toLowerCase());
+  if (code) {
+    const flag = document.createElement("img");
+    flag.src = `/vct-images/flags/${code}.png`;
+    flag.alt = "";
+    flag.loading = "lazy";
+    flag.onerror = () => flag.remove();
+    label.append(flag);
+  }
+  label.append(nationality);
+  return label;
+}
+
+const competitiveMaps = new Set("summit corrode abyss sunset lotus pearl fracture breeze icebox ascent split haven bind".split(" "));
+
+function mapTile(rawMap) {
+  const name = (rawMap || "Map unavailable").replace(/\s+(?:PICK|DECIDER)\s*$/i, "").trim();
+  const tile = document.createElement("span");
+  tile.className = "map-tile";
+  const slug = name.toLowerCase();
+  if (competitiveMaps.has(slug)) {
+    const art = document.createElement("img");
+    art.src = `/vct-images/maps/${slug}.jpg`;
+    art.alt = "";
+    art.loading = "lazy";
+    art.onerror = () => art.remove();
+    tile.append(art);
+  }
+  const label = document.createElement("strong");
+  label.textContent = name;
+  tile.append(label);
+  return tile;
+}
+
+function matchTeam(name, urls) {
+  const team = document.createElement("span");
+  team.className = "match-team";
+  addImage(team, urls, "match-team-logo", "");
+  team.append(name || "Team unavailable");
+  return team;
+}
+
+function matchCard(match, ownTeam, mapResult = false) {
+  const link = safeSourceUrl(match.match_url);
+  const card = document.createElement(link ? "a" : "article");
+  card.className = "profile-match";
+  if (link) {
+    card.href = link;
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+  }
+  const event = document.createElement("span");
+  event.className = "profile-match-event";
+  addImage(event, eventIcon({ title: match.event, logo_url: match.event_logo_url }), "match-team-logo", "");
+  event.append(match.event || "Event unavailable");
+  const matchup = document.createElement("span");
+  matchup.className = "profile-matchup";
+  const score = document.createElement("strong");
+  score.className = "profile-match-score";
+  const { team_score: left, opponent_score: right } = match;
+  score.textContent = left == null || right == null ? "—" : `${left} : ${right}`;
+  if (left != null && right != null && left !== right) {
+    score.dataset.result = left > right ? "win" : "loss";
+    score.setAttribute("aria-label", `${left > right ? "Win" : "Loss"}, ${left} to ${right}`);
+  }
+  matchup.append(ownTeam, score, matchTeam(match.opponent, [match.opponent_logo_local_path, match.opponent_logo_url]));
+  const date = document.createElement("span");
+  date.className = "profile-match-date";
+  if (match.date) date.textContent = new Date(match.date).toLocaleDateString(undefined, {
+    month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
+  });
+  card.append(event, matchup, date);
+  const detail = document.createElement("div");
+  detail.className = "profile-match-detail";
+  if (mapResult) {
+    const performance = document.createElement("div");
+    performance.className = "match-performance";
+    performance.append(makeStat("RATING", metric(match.rating, 2)), makeStat("ACS", metric(match.acs, 0)));
+    if (match.agent_portrait?.image) {
+      const agent = document.createElement("span");
+      agent.title = match.agent_portrait.name;
+      addImage(agent, match.agent_portrait.image, "agent-portrait", match.agent_portrait.name);
+      detail.append(agent);
+    }
+    detail.prepend(mapTile(match.map));
+    detail.append(performance);
+  } else {
+    detail.append(...(match.maps || []).map(mapTile));
+  }
+  if (detail.childElementCount) card.append(detail);
+  return card;
+}
+
 function renderPlayer(player) {
   const card = document.createElement("article");
-  card.className = "player-card";
-  const recent = player.recent_maps || [];
+  card.className = "player-card formline-player";
   const stats = player.stats || {};
-  const top = document.createElement("div");
-  top.className = "card-top";
-  const photo = document.createElement("div");
-  photo.className = "card-photo-wrap";
-  addImage(
-    photo,
-    [player.image_local_path, player.image_url],
-    "card-photo",
-    `${player.name} portrait`,
-  );
-  const info = document.createElement("div");
-  info.className = "card-top-info";
-  const kicker = document.createElement("span");
-  kicker.className = "card-kicker";
-  kicker.textContent = player.nationality || "TIER ONE PLAYER";
+  const header = document.createElement("header");
+  header.className = "player-identity";
+  addImage(header, [player.image_local_path, player.image_url], "player-identity-photo", `${player.name} portrait`);
+  const identity = document.createElement("div");
   const name = document.createElement("h3");
   name.className = "card-name";
   name.textContent = player.name;
-  const observedTeam = recent.find((map) => map.team)?.team;
-  const team = document.createElement("span");
-  team.className = "card-team";
-  team.textContent = player.current_team
-    ? `${player.current_team} · ${player.current_status}`
-    : `${observedTeam || "Team not recorded"} · ${player.current_status}`;
-  const rating = document.createElement("div");
-  rating.className = "card-rating";
-  rating.textContent = player.global_power
-    ? `${Number(player.global_power.power_score).toFixed(1)} `
-    : "— ";
-  const ratingLabel = document.createElement("span");
-  ratingLabel.textContent = "GLOBAL PLAYER POWER · OUT OF 100";
-  rating.append(ratingLabel);
-  info.append(kicker, name, team, rating);
-  top.append(photo, info);
-
-  const statsPanel = document.createElement("div");
-  statsPanel.className = "card-stats";
-  const kills = Number(stats.kills) || 0;
-  const deaths = Number(stats.deaths) || 0;
-  statsPanel.append(
-    makeStat("2026 MAPS", String(stats.maps_played ?? 0)),
-    makeStat("AVG ACS", stats.acs == null ? "—" : Number(stats.acs).toFixed(1)),
-    makeStat("AVG RATING", stats.rating == null ? "—" : Number(stats.rating).toFixed(2)),
-    makeStat("KAST %", stats.kast == null ? "—" : Number(stats.kast).toFixed(1)),
-    makeStat("ADR", stats.adr == null ? "—" : Number(stats.adr).toFixed(1)),
-    makeStat("K/D", deaths ? (kills / deaths).toFixed(2) : "—"),
-    makeStat("KILLS", String(stats.kills ?? 0)),
-    makeStat("ASSISTS", String(stats.assists ?? 0)),
-    makeStat(
-      "HEADSHOT %",
-      stats.headshot_percentage == null
-        ? "—"
-        : Number(stats.headshot_percentage).toFixed(1),
-    ),
-    makeStat("FIRST KILLS", String(stats.first_kills ?? 0)),
+  const title = document.createElement("div");
+  title.className = "player-identity-title";
+  title.append(name);
+  const observed = player.recent_maps.find((row) => row.team);
+  const useCurrent = player.year === 2026 && player.current_team;
+  const teamName = useCurrent ? player.current_team : observed?.team;
+  if (teamName) {
+    const logos = useCurrent
+      ? [player.current_team_logo_local_path, player.current_team_logo_url]
+      : [observed.team_logo_local_path, observed.team_logo_url];
+    const team = document.createElement("span");
+    team.className = "player-identity-team";
+    addImage(team, logos, "identity-team-logo", "");
+    team.append(teamName);
+    title.append(team);
+  }
+  const badges = document.createElement("div");
+  badges.className = "player-identity-badges";
+  const role = document.createElement("span");
+  role.className = "profile-role";
+  role.textContent = player.role || "Role unclassified";
+  badges.append(role);
+  if (player.nationality) badges.append(countryLabel(player.nationality));
+  identity.append(title, badges);
+  header.append(identity, makeStat("POWER", metric(player.global_power?.power_score, 1)));
+  const overview = document.createElement("div");
+  overview.className = "card-stats";
+  const kd = stats.deaths ? stats.kills / stats.deaths : null;
+  overview.append(
+    makeStat("MAPS", String(stats.maps_played ?? 0)),
+    makeStat("RATING", metric(stats.rating, 2)),
+    makeStat("ACS", metric(stats.acs, 1)),
+    makeStat("ADR", metric(stats.adr, 1)),
+    makeStat("KAST", metric(stats.kast, 1, "%")),
+    makeStat("HS", metric(stats.headshot_percentage, 1, "%")),
+    makeStat("K/D", metric(kd, 2)),
   );
 
-  const foot = document.createElement("div");
-  foot.className = "card-foot";
-  const sample = document.createElement("span");
-  sample.textContent = `${stats.maps_played || 0} imported tier-one maps in 2026`;
-  const sourceUrl = safeSourceUrl(player.source_url);
-  if (sourceUrl) {
-    const source = document.createElement("a");
-    source.className = "source-link";
-    source.href = sourceUrl;
-    source.target = "_blank";
-    source.rel = "noopener noreferrer";
-    source.textContent = "VLR profile ↗";
-    foot.append(sample, source);
-  } else {
-    foot.append(sample);
+  const history = document.createElement("div");
+  history.className = "player-history";
+  for (const entry of player.observed_team_history) {
+    history.append(makeProfileButton(
+      entry.team_id, "team", entry.team, [entry.image_local_path, entry.image_url],
+      entry.years.join(" · "), "history-team-button", entry.years.at(-1),
+    ));
   }
-
-  const disclaimer = document.createElement("p");
-  disclaimer.className = "data-disclaimer";
-  disclaimer.textContent = player.roster_history.length
-    ? "Current status is based on the latest VLR team-profile listing. Event entries and match appearances are historical evidence, not contract records."
-    : "No current VLR roster listing is available. The latest match appearance is not a confirmed current team.";
-
-  card.append(top, statsPanel, foot, disclaimer);
-  const recentTitle = document.createElement("h4");
-  recentTitle.className = "subheading";
-  recentTitle.textContent = "Recent map rows";
-  const mapRows = document.createElement("div");
-  if (recent.length) {
-    recent.slice(0, 5).forEach((row) => {
-      const line = document.createElement("div");
-      line.className = "match-row";
-      const left = document.createElement("span");
-      left.textContent = `${row.map || "Map"} · ${row.team || "Team"}`;
-      const right = document.createElement("small");
-      right.textContent = [row.date ? new Date(row.date).toLocaleDateString() : "", row.acs ? `ACS ${row.acs}` : ""].filter(Boolean).join(" · ");
-      line.append(left, right);
-      mapRows.append(line);
-    });
-  } else {
-    const note = document.createElement("p");
-    note.className = "muted";
-    note.textContent = "No player-stat rows have been imported for this profile yet.";
-    mapRows.append(note);
+  if (!history.childElementCount) history.textContent = "No dated team appearances recorded.";
+  const maps = document.createElement("div");
+  maps.className = "profile-match-list";
+  for (const row of player.recent_maps.slice(0, 5)) {
+    maps.append(matchCard(row, matchTeam(row.team, [row.team_logo_local_path, row.team_logo_url]), true));
   }
-  card.append(recentTitle, mapRows);
-  const observedHeading = document.createElement("h4");
-  observedHeading.className = "subheading";
-  observedHeading.textContent = "Teams seen in matches";
-  card.append(observedHeading);
-  if (player.observed_team_history.length) {
-    player.observed_team_history.forEach((entry) => {
-      const line = document.createElement("div");
-      line.className = "match-row";
-      const dates = document.createElement("small");
-      dates.textContent = `${entry.matches} matches · ${entry.first_match ? new Date(entry.first_match).toLocaleDateString() : "date n/a"} – ${entry.last_match ? new Date(entry.last_match).toLocaleDateString() : "date n/a"}`;
-      const teamButton = makeProfileButton(
-        entry.team_id,
-        "team",
-        entry.team,
-        null,
-        `${entry.matches} matches`,
-        "history-team-button",
-      );
-      line.append(teamButton, dates);
-      card.append(line);
-    });
-  } else {
-    const note = document.createElement("p");
-    note.className = "muted";
-    note.textContent = "No dated match appearances are recorded yet.";
-    card.append(note);
-  }
-  if (player.roster_history.length) {
-    const rosterHeading = document.createElement("h4");
-    rosterHeading.className = "subheading";
-    rosterHeading.textContent = "Sourced roster records";
-    card.append(rosterHeading);
-    player.roster_history.forEach((entry) => {
-      const line = document.createElement("div");
-      line.className = "match-row";
-      const teamName = document.createElement("span");
-      teamName.textContent = entry.team;
-      const dateRange = document.createElement("small");
-      dateRange.textContent = `${entry.start_date || "start unknown"} – ${entry.end_date || "end unknown"} · ${entry.status}${entry.notes ? ` · ${entry.notes}` : ""}`;
-      line.append(teamName, dateRange);
-      card.append(line);
-    });
-  }
+  if (!maps.childElementCount) maps.textContent = "No maps imported for this season.";
+  card.append(
+    header,
+    profileSection("Season stats", overview),
+    trophyShelf(player.achievements || player.trophies, true),
+    profileSection("Most-played agents", agentStrip(player.top_agents, true)),
+    profileSection("Team history · recorded appearances", history),
+    profileSection("Recent maps", maps),
+  );
   profileView.replaceChildren(card);
+}
+
+function metric(value, digits, suffix = "") {
+  return value == null ? "—" : `${Number(value).toFixed(digits)}${suffix}`;
 }
 
 function renderTeam(team) {
@@ -707,6 +860,8 @@ function renderTeam(team) {
     wrapper.append(note);
   }
 
+  wrapper.append(trophyShelf(team.trophies));
+
   const tournamentHeading = document.createElement("h4");
   tournamentHeading.className = "subheading";
   tournamentHeading.textContent = `${team.year} tournament results & prizes`;
@@ -752,19 +907,12 @@ function renderTeam(team) {
   matchHeading.textContent = "Recent matches";
   wrapper.append(matchHeading);
   if (team.recent_matches.length) {
+    const matches = document.createElement("div");
+    matches.className = "profile-match-list";
     team.recent_matches.forEach((match) => {
-      const row = document.createElement("div");
-      row.className = "match-row";
-      const opponent = document.createElement("span");
-      opponent.textContent = match.opponent || "Opponent unknown";
-      const score = document.createElement("small");
-      const date = match.date ? new Date(match.date).toLocaleDateString() : "";
-      score.textContent = match.team1_score === null
-        ? [match.status || "Scheduled", date, match.event].filter(Boolean).join(" · ")
-        : `${match.team1_score} – ${match.team2_score}${match.won === null ? "" : match.won ? " · W" : " · L"} · ${date}${match.event ? ` · ${match.event}` : ""}`;
-      row.append(opponent, score);
-      wrapper.append(row);
+      matches.append(matchCard(match, matchTeam(team.name, [team.image_local_path, team.image_url])));
     });
+    wrapper.append(matches);
   } else {
     const note = document.createElement("p");
     note.className = "muted";
@@ -796,10 +944,6 @@ async function loadProfile(item) {
   }
 }
 
-function formatRate(rate) {
-  return `${(Number(rate) * 100).toFixed(1)}%`;
-}
-
 function renderScoreMeter(container, score) {
   const value = Number(score);
   const readout = document.createElement("div");
@@ -819,7 +963,7 @@ function renderScoreMeter(container, score) {
   container.append(readout, track);
 }
 
-function renderPowerTeam(team, rank, year) {
+function renderPowerTeam(team, rank, year, internationalSlots) {
   const row = document.createElement("tr");
   row.className = "power-rank-row";
   const position = document.createElement("td");
@@ -849,20 +993,51 @@ function renderPowerTeam(team, rank, year) {
   record.className = "power-rank-record";
   const matchLosses = team.matches_played - team.matches_won - team.matches_drawn;
   record.textContent = `${team.matches_won}–${matchLosses}–${team.matches_drawn}`;
-  const recent = document.createElement("td");
-  recent.className = "power-rank-component";
-  recent.textContent = formatRate(team.recent_performance_rate);
-  const execution = document.createElement("td");
-  execution.className = "power-rank-component";
-  execution.textContent = formatRate(team.execution_score);
-  const opponents = document.createElement("td");
-  opponents.className = "power-rank-component";
-  opponents.textContent = formatRate(team.opponent_strength_rate);
-  row.append(position, teamCell, scoreCell, record, recent, execution, opponents);
+  const events = team.achievement_events || [];
+  const results = new Map(events.map((event) => [String(event.event_id), event]));
+  row.append(position, teamCell, scoreCell, record,
+    achievementCell(internationalSlots.map((slot) => {
+      const result = results.get(String(slot.id));
+      return { ...result, ...slot, absent: !result };
+    }), true),
+    achievementCell(events.filter((event) => event.kind === "regional" && event.placement
+      && !internationalSlots.some((slot) => String(slot.id) === String(event.event_id)))));
   return row;
 }
 
-function renderPowerPlayer(player, rank) {
+const ordinalRules = new Intl.PluralRules("en", { type: "ordinal" });
+const ordinalSuffix = { one: "st", two: "nd", few: "rd", other: "th" };
+
+function achievementCell(events, international = false) {
+  const achievements = document.createElement("td");
+  const badges = document.createElement("div");
+  badges.className = "achievement-badges";
+  if (international) badges.classList.add("international-slots");
+  for (const event of events) {
+    const region = event.kind === "regional" ? getRegion(event.region) || getRegion(event.title) : null;
+    const band = event.placement_band?.map((rank) => `${rank}${ordinalSuffix[ordinalRules.select(rank)]}`);
+    const placement = event.absent ? "–" : band ? [...new Set(band)].join("–") : event.placement || "Unverified";
+    const badge = document.createElement("span");
+    badge.className = "achievement-badge";
+    const medal = /^(1|2|3)(?:st|nd|rd)?$/.exec(event.placement || "")?.[1];
+    badge.dataset.winner = String(medal === "1");
+    if (international) {
+      badge.dataset.medal = medal || "";
+      badge.dataset.absent = String(event.absent);
+    }
+    const outcome = event.absent ? "No recorded appearance" : `${band ? "Inferred finish range " : ""}${placement}`;
+    badge.title = `${event.title} · ${outcome}`;
+    addImage(badge, region ? [region.logo, ...eventIcon(event)] : eventIcon(event),
+      "achievement-icon", region ? `VCT ${region.name}` : event.title);
+    badge.append(placement);
+    badges.append(badge);
+  }
+  if (!badges.childElementCount) badges.textContent = "—";
+  achievements.append(badges);
+  return achievements;
+}
+
+function renderPowerPlayer(player, rank, year) {
   const row = document.createElement("tr");
   row.className = "power-rank-row";
   const position = document.createElement("td");
@@ -874,15 +1049,21 @@ function renderPowerPlayer(player, rank) {
     "player",
     player.name,
     [player.image_local_path, player.image_url],
-    player.nationality,
+    null,
     "rank-player-button",
+    year,
   );
   identity.querySelector(".result-avatar")?.classList.replace("result-avatar", "rank-player-image");
   identity.querySelector(".result-name")?.classList.add("power-rank-name");
+  if (player.nationality) identity.querySelector(".result-name").append(countryLabel(player.nationality));
   playerCell.append(identity);
   const team = document.createElement("td");
-  team.className = "power-rank-record";
-  team.textContent = player.team || "Not recorded";
+  if (player.team_id && player.team) {
+    team.append(makeProfileButton(player.team_id, "team", player.team,
+      [player.team_logo_local_path, player.team_logo_url], null, "player-ranking-team", year));
+  } else {
+    team.textContent = player.team || "Not recorded";
+  }
   const scoreCell = document.createElement("td");
   scoreCell.className = "power-rank-score";
   renderScoreMeter(scoreCell, player.power_score);
@@ -898,23 +1079,57 @@ function renderPowerPlayer(player, rank) {
   const kast = document.createElement("td");
   kast.className = "power-rank-component";
   kast.textContent = player.kast == null ? "—" : `${Number(player.kast).toFixed(1)}%`;
-  const internationalMaps = document.createElement("td");
-  internationalMaps.className = "power-rank-component";
-  internationalMaps.textContent = String(player.international_maps);
-  const internationalRating = document.createElement("td");
-  internationalRating.className = "power-rank-component";
-  internationalRating.textContent = player.international_rating == null
-    ? "—" : Number(player.international_rating).toFixed(2);
-  row.append(position, playerCell, team, scoreCell, maps, rating, internationalMaps, internationalRating, acs, kast);
+  const role = document.createElement("td");
+  role.className = "player-role";
+  role.textContent = player.role || "—";
+  role.title = Object.entries(player.role_maps || {}).map(([name, count]) => `${name}: ${count} maps`).join(" · ");
+  const agents = document.createElement("td");
+  agents.append(agentStrip(player.top_agents));
+  const headshots = document.createElement("td");
+  headshots.className = "power-rank-component";
+  headshots.textContent = metric(player.headshot_percentage, 1, "%");
+  const kd = document.createElement("td");
+  kd.className = "power-rank-component";
+  kd.textContent = metric(player.kd, 2);
+  row.append(position, playerCell, team, role, agents, scoreCell, maps, rating, headshots, kd, acs, kast);
   return row;
+}
+
+function renderRegionalStrength(scores, year) {
+  const grid = document.querySelector("#region-strength-scores");
+  grid.replaceChildren(...regions.map((region) => {
+    const row = document.createElement("div");
+    row.className = "region-strength-item";
+    row.dataset.region = region.key;
+    addImage(row, region.logo, "region-strength-logo", "");
+    const label = document.createElement("span");
+    label.textContent = region.name;
+    const score = scores[region.key];
+    const value = document.createElement("strong");
+    value.textContent = score ? metric(score.score, 1, " pts") : "—";
+    if (score) value.title = `${score.matches} international series · score out of 100`;
+    row.append(label, value);
+    return row;
+  }));
+  grid.setAttribute("aria-label", `Regional strength for ${year}`);
 }
 
 async function loadPowerRankings() {
   const year = teamRankingSeason.value;
+  const strengthGrid = document.querySelector("#region-strength-scores");
+  strengthGrid.textContent = "Loading scores…";
   try {
     const payload = await getJson(`/api/power-rankings?year=${year}`);
     if (teamRankingSeason.value !== year) return;
+    renderRegionalStrength(payload.regional_strength || {}, year);
     const powerTeams = payload.teams;
+    const events = payload.international_events || [];
+    const masters = events.filter((event) => eventKind(event.title) === "masters");
+    const internationalSlots = [
+      { title: "Masters 1", ...masters[0], kind: "masters" },
+      { title: "Masters 2", ...masters[1], kind: "masters" },
+      { title: "Champions", ...events.find((event) => eventKind(event.title) === "champions"), kind: "champions" },
+    ];
     if (year === "2026") {
       renderHomeLeaders(homeTopTeams, powerTeams, "team");
       document.querySelectorAll('[data-count="teams"]').forEach((counter) => {
@@ -922,21 +1137,22 @@ async function loadPowerRankings() {
       });
     }
     powerRankings.replaceChildren(
-      ...powerTeams.map((team, index) => renderPowerTeam(team, index + 1, year)),
+      ...powerTeams.map((team, index) => renderPowerTeam(team, index + 1, year, internationalSlots)),
     );
     if (!powerTeams.length) {
       const cell = powerRankings.insertRow().insertCell();
-      cell.colSpan = 7;
+      cell.colSpan = 6;
       cell.className = "table-message";
       cell.textContent = "No eligible team results have been imported for this season.";
     }
   } catch (error) {
     if (teamRankingSeason.value !== year) return;
+    strengthGrid.textContent = "Regional scores unavailable.";
     if (year === "2026") renderHomeLeaders(homeTopTeams, [], "team", error.message);
     const row = document.createElement("tr");
     const message = document.createElement("td");
     message.className = "table-message";
-    message.colSpan = 7;
+    message.colSpan = 6;
     message.textContent = error.message;
     row.append(message);
     powerRankings.replaceChildren(row);
@@ -956,11 +1172,11 @@ async function loadPlayerRankings() {
       renderHomeLeaders(homeTopPlayers, payload.players, "player");
     }
     tableBody.replaceChildren(
-      ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1)),
+      ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1, year)),
     );
     if (!payload.players.length) {
       const cell = tableBody.insertRow().insertCell();
-      cell.colSpan = 10;
+      cell.colSpan = 12;
       cell.className = "table-message";
       cell.textContent = "No players meet the five-map minimum for this season yet.";
     }
@@ -970,7 +1186,7 @@ async function loadPlayerRankings() {
     const row = document.createElement("tr");
     const message = document.createElement("td");
     message.className = "table-message";
-    message.colSpan = 10;
+    message.colSpan = 12;
     message.textContent = error.message;
     row.append(message);
     tableBody.replaceChildren(row);
@@ -982,85 +1198,52 @@ playerRankingSeason.addEventListener("change", loadPlayerRankings);
 
 async function loadRoadmap() {
   try {
-    const data = await getJson("/api/2027");
-    const events = data.events || [];
-    roadmapNote.textContent = events.length
-      ? `${events.length} 2027 event listing${events.length === 1 ? "" : "s"} found on VLR. Stages without a confirmed listing remain marked as unannounced.`
-      : "Riot’s 2027 format preview introduces Open Qualifiers, Cups, Masters, and Champions. Exact dates and regional brackets remain subject to official listings.";
-    roadmapRegions.replaceChildren(...regions.map((region) => {
-      const regionCard = document.createElement("article");
-      regionCard.className = "roadmap-region";
-      const regionHeading = document.createElement("header");
-      regionHeading.className = "roadmap-region-heading";
-      addImage(regionHeading, region.logo, "roadmap-region-icon", `${region.name} VCT event logo`);
-      const title = document.createElement("h3");
-      title.textContent = region.name;
-      const source = document.createElement("a");
-      source.href = region.source;
-      source.target = "_blank";
-      source.rel = "noopener noreferrer";
-      source.className = "roadmap-region-source";
-      source.textContent = "VLR ↗";
-      regionHeading.append(title, source);
-      regionCard.append(regionHeading);
-
-      const regionalEvents = events.filter((item) => getRegion(item.region)?.key === region.key);
-      const qualifierEvents = regionalEvents.filter((item) => /qualif|open/i.test(item.title || ""));
-      const cupEvents = regionalEvents.filter((item) =>
-        !/qualif|open|masters|champions/i.test(item.title || ""));
-      const globalEvents = [
-        events.filter((item) => /masters/i.test(item.title || "")),
-        events.filter((item) => /champions/i.test(item.title || "")),
-      ];
-      const stageEvents = [qualifierEvents, cupEvents, ...globalEvents];
-
-      roadmapStages.forEach(([stageName, description], index) => {
-        const stage = document.createElement("section");
-        stage.className = "roadmap-stage";
-        const stageHeading = document.createElement("div");
-        stageHeading.className = "roadmap-stage-heading";
-        const stageTitle = document.createElement("h4");
-        stageTitle.textContent = stageName;
-        const stageDescription = document.createElement("p");
-        stageDescription.textContent = description;
-        stageHeading.append(stageTitle, stageDescription);
-        stage.append(stageHeading);
-        const stageItems = stageEvents[index];
-        if (stageItems.length) {
-          stageItems.forEach((item) => {
-            const event = document.createElement("article");
-            event.className = "roadmap-event";
-            const eventTitle = document.createElement("strong");
-            const eventUrl = safeSourceUrl(item.url);
-            if (eventUrl) {
-              const link = document.createElement("a");
-              link.href = eventUrl;
-              link.target = "_blank";
-              link.rel = "noopener noreferrer";
-              link.textContent = item.title;
-              eventTitle.append(link);
-            } else {
-              eventTitle.textContent = item.title;
-            }
-            const eventDetails = document.createElement("small");
-            const dateRange = item.start_date && item.end_date
-              ? `${item.start_date} – ${item.end_date}`
-              : item.start_date || "";
-            eventDetails.textContent = [item.status, dateRange].filter(Boolean).join(" · ")
-              || "Date to be announced";
-            event.append(eventTitle, eventDetails);
-            stage.append(event);
-          });
-        } else {
-          const pending = document.createElement("p");
-          pending.className = "roadmap-pending";
-          pending.textContent = "Awaiting a confirmed listing";
-          stage.append(pending);
-        }
-        regionCard.append(stage);
-      });
-      return regionCard;
-    }));
+    const { events } = await getJson("/api/2027");
+    roadmapNote.textContent = "Four regional circuits feed three international stops. Dates reflect imported listings.";
+    const lanes = document.createElement("div");
+    lanes.className = "circuit-lanes";
+    for (const region of regions) {
+      const lane = document.createElement("section");
+      lane.className = "circuit-lane";
+      const label = document.createElement("h3");
+      label.textContent = region.name;
+      addImage(lane, region.logo, "circuit-logo", "");
+      lane.append(label);
+      const eventsForRegion = events.filter((event) =>
+        eventKind(event.title) === "regional" && getRegion(event.region)?.key === region.key
+      );
+      const phases = document.createElement("small");
+      phases.textContent = "Opens · Kickoff · Cups";
+      lane.append(phases);
+      if (eventsForRegion.length) {
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = `${eventsForRegion.length} listed events`;
+        details.append(summary, ...eventsForRegion.map((event) => eventCard(event, eventDates(event))));
+        lane.append(details);
+      }
+      lanes.append(lane);
+    }
+    const junction = lineGraphic("0 0 400 34", "M50 0v11h300V0M150 0v11m100-11v11m-50 0v23");
+    junction.setAttribute("preserveAspectRatio", "none");
+    junction.classList.add("circuit-junction");
+    const finals = document.createElement("section");
+    finals.className = "circuit-finals";
+    const heading = document.createElement("h3");
+    heading.textContent = "International circuit";
+    const stages = document.createElement("div");
+    stages.className = "circuit-stages";
+    for (const [title, matches] of [
+      ["Masters Seoul", /masters.*seoul/i],
+      ["Masters Valencia", /masters.*valencia/i],
+      ["Champions Austin", /^(?:valorant )?champions (?:20|austin)/i],
+    ]) {
+      const listed = events.find((event) => matches.test(event.title));
+      const event = { ...listed, title };
+      stages.append(eventCard(event, listed ? eventDates(listed) : "Dates unavailable in archive"));
+    }
+    finals.append(heading, stages);
+    roadmapRegions.replaceChildren(lanes, junction, finals);
   } catch (error) {
     roadmapNote.textContent = `Unable to load 2027 event listings: ${error.message}`;
   }
