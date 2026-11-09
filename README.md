@@ -29,18 +29,30 @@ serves a small search and 2026 team power-ranking web app.
 The legacy import entry point `python -m src.scraper.migrate_json_to_pg` remains
 available and forwards to the versioned importer.
 
+For a historical refresh, run `python -m src.scraper.main --backfill`.
+It uses the VLR Tier 1 event listing, starts with Masters Reykjavík 2022,
+and writes and imports a snapshot after each event. The full run can take
+substantial time because requests are throttled. Start the web app separately
+and use the season picker on a team profile to inspect imports as they land.
+After the match import, run
+`python -m src.db.sync_vlr_profiles --historical-events` to refresh event
+placements, roster evidence, and VLR profile images.
+
 ## What is included
 
 - Player/team search, VLR profile links and images, recent map stats, clickable
   team/player profiles, team event participation, sourced roster listings, and
   team match history.
-- A transparent 2026 global team ranking combining season results (35%), recent
-  form (25%), in-game execution (25%), and opponent strength (15%). It describes
+- A global team ranking with a season selector for 2022–2026, combining
+  international achievement (40%), regional achievement (15%), season
+  results (20%), recent form (10%), in-game execution (10%), and opponent
+  strength (5%). It describes
   season performance; it weights Champions 3×, Masters 2×, and regional
-  matches 1×, then scales the current leader to 100. The player ranking uses
-  weighted 2026 rating, ACS, KAST, ADR, and K/D, requires at least five maps,
-  and also scales its leader to 100. Team region labels are inferred from the
-  most frequent regional 2026 tier-one tournament region in VLR data. Neither
+  matches 1×, and displays earned points out of 100. The player ranking uses
+  weighted rating, ACS, KAST, ADR, and K/D, requires at least five maps,
+  and displays the sample-adjusted score out of 100. Both rankings use completed Tier 1 matches
+  in the selected season. Team region labels are inferred from the most frequent
+  regional Tier 1 tournament region in VLR data for that season. Neither
   ranking predicts match outcomes.
 - Explicitly sourced roster-tenure records and separately stored observed
   match participation, so an appearance is never mislabeled as a current

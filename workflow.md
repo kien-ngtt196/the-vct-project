@@ -27,7 +27,7 @@ src/db/import_vlr.py -- idempotent event/match/map/player-stat import
         +--> VLR team/event profile enrichment and local image assets
                   |
                   v
-          leaderboard and comparison
+          leaderboard
 ```
 
 The scraper uses VLR.gg's `tier=60` event listing, stores that source scope as
@@ -147,54 +147,44 @@ Run commands from the repository root in PowerShell.
 - External player images/profile links are restricted in the UI to VLR-owned
   hostnames. A missing or blocked image gets a neutral fallback.
 
-## 2026 global team ranking
+## Global team ranking
 
-The app does not generate match probabilities or tournament forecasts. The
-global ranking is a descriptive 0–100 summary of completed 2026 tier-one
-results only:
+Rankings use completed Tier 1 matches from the selected season. International
+achievement contributes 40%, regional achievement 15%, season match results 20%,
+recent form 10%, in-game execution 10%, and opponent strength 5%.
 
-1. Season match results contribute 35%; each match has an event multiplier and
-   a draw counts as half a win. Champions matches count 3×, Masters 2×, and
-   regional events 1×. The event type is inferred from the tournament title:
-   titles containing `Champions` or `Masters` get those weights; other tier-one
-   events use the regional weight.
-2. Recent form contributes 25%, using the last five completed matches with
-   recency weights from 5 (most recent) down to 1 (oldest), multiplied by the
-   event-importance weight.
-3. In-game execution contributes 25%: 40% event-weighted map win rate, 40%
-   event-weighted normalized round strength, and 20% event-weighted normalized
-   K/D strength (`kills / (kills + deaths)`).
-4. Opponent strength contributes 15%, using the event-weighted average 2026
-   match win rate of opponents.
-5. Each component is normalized from 0 to 1. The final score is
-   `100 * (0.35 * season_results + 0.25 * recent_form + 0.25 * execution + 0.15 * opponent_strength)`.
-   Missing component data uses a neutral 0.5 rather than a guessed value.
+For each international event, a winner, runner-up, top-four finisher, top-eight
+finisher, or other confirmed participant earns 36/29/22/14/8 points at Champions
+and 22/17/13/8/4 at Masters. The denominator is the sum of maximum points across
+the season's international calendar. Regional placements earn 10/7/4/2 points
+for the same placement bands and the best three finishes count against a
+30-point maximum. Published final standings are the primary source. A unique
+completed regional grand final can establish first and second place. Group
+seeds are excluded from placement scoring.
 
-After computing this component score, each team's displayed score is divided
-by the highest score in the current ranking and multiplied by 100. Therefore
-the current leader is always 100; values are relative to the 2026 teams present
-in the database, not fixed ratings across refreshes.
+Match results, execution and opponent strength use event multipliers of
+Champions 3×, Masters 2×, and regional 1×. A draw is half a win. Recent form
+uses up to five matches with additional recency weights from 5 down to 1.
+Season win rate and recent form are pulled toward 50% using priors of five and
+three actual series respectively. Execution blends map wins (40%), round share
+(40%) and kills divided by kills plus deaths (20%).
 
-The leaderboard exposes component rates and match record beside each score.
-Regional-strength and event-stage factors beyond the tournament-tier
-multipliers are not included because the current source data does not provide
-reliable team-region and stage labels. Gold metrics are not applicable to
-Valorant. Opponent strength is only a basic average win-rate adjustment. The
-ranking is not a forecast, does not account for roster changes, and is not an
-official rating. All player and team performance views are scoped to
-calendar-year 2026; the 2027 watchlist is only sourced event metadata and is
-not included in the power calculation.
+Team scores display earned points out of 100. Coverage may be partial during the backfill, and
+missing finishes receive only verified participation credit where applicable.
 
-## 2026 global player ranking
+## Global player ranking
 
-Players with at least five completed 2026 tier-one maps are ranked using their
-event-weighted per-map averages. Rating contributes 35% (normalized against
-1.2), ACS 25% (against 300), KAST 20% (against 100), ADR 10% (against 150),
-and `kills / (kills + deaths)` 10%. The first four component rates are capped
-at 1.0; the resulting score is then normalized so the highest-ranked player
-is 100. Champion and Masters maps use the same event weights as the team
-ranking. This is a relative season-performance summary, not an official player
-rating or a prediction.
+Players qualify with five actual maps in the selected season. The score uses
+weighted rating (35%), ACS (25%), KAST (20%), ADR (10%), and kills divided by
+kills plus deaths (10%). The first four rates are capped at 1.0 against
+reference values of 1.2 rating, 300 ACS, 100 KAST, and 150 ADR. The score is
+pulled toward the season's map-weighted player average with a ten-map prior.
+
+Regional maps count 1×, Masters maps 1.75×, and Champions maps 2.5×. Recognized
+bracket matches count 1.25×, 2.25×, and 3× respectively. The stage bonus uses
+recognizable VLR match URL suffixes. Other matches use the event's base weight.
+International map count and raw average international rating are reported
+separately. The sample-adjusted player score is displayed out of 100.
 
 ## 2027 schedule and roster policy
 
