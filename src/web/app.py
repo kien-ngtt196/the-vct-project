@@ -1101,183 +1101,187 @@ def upcoming_matches(year):
             ]
 
 
+RESPONSE_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Content-Security-Policy": (
+        "default-src 'self'; img-src 'self' https://vlr.gg https://www.vlr.gg "
+        "https://owcdn.net data:; style-src 'self' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; script-src 'self'; "
+        "connect-src 'self'; object-src 'none'; base-uri 'none'"
+    ),
+}
+
+
+def json_response(status, payload):
+    return status, json.dumps(payload, default=str).encode("utf-8"), "application/json; charset=utf-8"
+
+
+def static_response(relative_path, base_directory=STATIC_DIR):
+    path = (base_directory / relative_path).resolve()
+    if not path.is_relative_to(base_directory.resolve()) or not path.is_file():
+        return json_response(404, {"error": "Not found."})
+    content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    return 200, path.read_bytes(), content_type
+
+
+def get_response(path, query):
+    try:
+        if path == "/":
+            return static_response("index.html")
+        elif path in {"/app.css", "/app.js", "/theme.js"} or path.startswith("/assets/"):
+            return static_response(path.lstrip("/"))
+        elif path.startswith("/vct-images/"):
+            image_path = path.removeprefix("/vct-images/")
+            if Path(image_path).suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+                return json_response(404, {"error": "Not found."})
+            else:
+                return static_response(image_path, VCT_IMAGE_DIR)
+        elif path == "/api/health":
+            with connect() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT 1")
+            return json_response(200, {"status": "ok", "database": "connected"})
+        elif path == "/api/events":
+            year = int(query.get("year", ["2026"])[0])
+            if not 2022 <= year <= 2026:
+                raise ValueError("Choose a season from 2022 to 2026.")
+            return json_response(200, {"year": year, "events": events_for_season(year)})
+        elif path == "/api/search":
+            entity_type = query.get("type", ["all"])[0]
+            limit = min(50, max(1, int(query.get("limit", ["20"])[0])))
+            return json_response(
+                200,
+                {
+                    "results": search_entities(
+                        query.get("q", [""])[0], entity_type, limit
+                    )
+                },
+            )
+        elif path == "/api/power-rankings":
+            year = int(query.get("year", ["2026"])[0])
+            if not 2022 <= year <= 2026:
+                raise ValueError("Choose a season from 2022 to 2026.")
+            return json_response(
+                200,
+                {
+                    "year": year,
+                    "teams": team_power_rankings(year),
+                    "formula": {
+                        **TEAM_POWER_WEIGHTS,
+                        "placement_points": PLACEMENT_POINTS,
+                        "recent_matches": 5,
+                        "regional_strength_included": False,
+                        "execution_weights": {
+                            "map_win_rate": 0.4,
+                            "round_strength": 0.4,
+                            "kd_strength": 0.2,
+                        },
+                        "event_weights": {
+                            "champions": CHAMPIONS_EVENT_WEIGHT,
+                            "masters": MASTERS_EVENT_WEIGHT,
+                            "regional": REGIONAL_EVENT_WEIGHT,
+                        },
+                        "score_scaling": (
+                            "The displayed score is the sum of earned component points out of 100."
+                        ),
+                        "event_classification": (
+                            "Tournament title containing Champions or Masters; "
+                            "otherwise regional."
+                        ),
+                    },
+                },
+            )
+        elif path == "/api/player-power-rankings":
+            year = int(query.get("year", ["2026"])[0])
+            if not 2022 <= year <= 2026:
+                raise ValueError("Choose a season from 2022 to 2026.")
+            return json_response(
+                200,
+                {
+                    "year": year,
+                    "players": player_power_rankings(year),
+                    "formula": {
+                        "rating": 0.35,
+                        "acs": 0.25,
+                        "kast": 0.2,
+                        "adr": 0.1,
+                        "kd_strength": 0.1,
+                        "minimum_maps": 5,
+                        "score_scaling": (
+                            "The displayed score is the sample-adjusted player score out of 100."
+                        ),
+                        "event_weights": {
+                            kind: {"base": weights[0], "bracket": weights[1]}
+                            for kind, weights in PLAYER_EVENT_WEIGHTS.items()
+                        },
+                        "sample_prior_maps": 10,
+                    },
+                },
+            )
+        elif path == "/api/2027":
+            events = events_for_season(2027)
+            matches = upcoming_matches(2027)
+            if not events and not matches:
+                message = (
+                    "No 2027 tier-one event or fixture records are in the current dataset."
+                )
+            elif events and not matches:
+                message = (
+                    "VLR lists the event below, but no fixtures are recorded yet."
+                )
+            else:
+                message = "Showing only 2027 events and fixtures listed in the imported source data."
+            return json_response(
+                200,
+                {
+                    "year": 2027,
+                    "events": events,
+                    "matches": matches,
+                    "message": message,
+                },
+            )
+        else:
+            player_match = PLAYER_ID_PATTERN.fullmatch(path)
+            team_match = TEAM_ID_PATTERN.fullmatch(path)
+            if player_match:
+                details = player_details(int(player_match.group(1)))
+                return json_response(
+                    200 if details else 404,
+                    details or {"error": "Player not found."},
+                )
+            elif team_match:
+                year = int(query.get("year", ["2026"])[0])
+                if not 2022 <= year <= 2026:
+                    raise ValueError("Choose a season from 2022 to 2026.")
+                details = team_details(int(team_match.group(1)), year)
+                return json_response(
+                    200 if details else 404,
+                    details or {"error": "Team not found."},
+                )
+            else:
+                return json_response(404, {"error": "Not found."})
+    except ValueError as error:
+        return json_response(400, {"error": str(error)})
+    except (psycopg2.Error, RuntimeError):
+        LOG.exception("VCT API database request failed")
+        return json_response(503, {"error": "Database unavailable."})
+
+
+
 class VCTRequestHandler(BaseHTTPRequestHandler):
     server_version = "VCTStats/1.0"
 
-    def _send(self, status, body, content_type):
-        self.send_response(status)
-        self.send_header("Content-Type", content_type)
-        self.send_header("X-Content-Type-Options", "nosniff")
-        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
-        self.send_header(
-            "Content-Security-Policy",
-            "default-src 'self'; img-src 'self' https://vlr.gg https://www.vlr.gg "
-            "https://owcdn.net data:; "
-            "style-src 'self' https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com; script-src 'self'; "
-            "connect-src 'self'; object-src 'none'; base-uri 'none'",
-        )
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    def _send_json(self, status, payload):
-        body = json.dumps(payload, default=str).encode("utf-8")
-        self._send(status, body, "application/json; charset=utf-8")
-
-    def _static_file(self, relative_path, base_directory=STATIC_DIR):
-        path = (base_directory / relative_path).resolve()
-        if not path.is_relative_to(base_directory.resolve()) or not path.is_file():
-            self._send_json(404, {"error": "Not found."})
-            return
-        content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
-        self._send(200, path.read_bytes(), f"{content_type}; charset=utf-8")
-
     def do_GET(self):
         request = urlsplit(self.path)
-        path = unquote(request.path)
-        query = parse_qs(request.query)
-
-        try:
-            if path == "/":
-                self._static_file("index.html")
-            elif path in {"/app.css", "/app.js", "/theme.js"} or path.startswith("/assets/"):
-                self._static_file(path.lstrip("/"))
-            elif path.startswith("/vct-images/"):
-                image_path = path.removeprefix("/vct-images/")
-                if Path(image_path).suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
-                    self._send_json(404, {"error": "Not found."})
-                else:
-                    self._static_file(image_path, VCT_IMAGE_DIR)
-            elif path == "/api/health":
-                with connect() as connection:
-                    with connection.cursor() as cursor:
-                        cursor.execute("SELECT 1")
-                self._send_json(200, {"status": "ok", "database": "connected"})
-            elif path == "/api/events":
-                year = int(query.get("year", ["2026"])[0])
-                if not 2022 <= year <= 2026:
-                    raise ValueError("Choose a season from 2022 to 2026.")
-                self._send_json(200, {"year": year, "events": events_for_season(year)})
-            elif path == "/api/search":
-                entity_type = query.get("type", ["all"])[0]
-                limit = min(50, max(1, int(query.get("limit", ["20"])[0])))
-                self._send_json(
-                    200,
-                    {
-                        "results": search_entities(
-                            query.get("q", [""])[0], entity_type, limit
-                        )
-                    },
-                )
-            elif path == "/api/power-rankings":
-                year = int(query.get("year", ["2026"])[0])
-                if not 2022 <= year <= 2026:
-                    raise ValueError("Choose a season from 2022 to 2026.")
-                self._send_json(
-                    200,
-                    {
-                        "year": year,
-                        "teams": team_power_rankings(year),
-                        "formula": {
-                            **TEAM_POWER_WEIGHTS,
-                            "placement_points": PLACEMENT_POINTS,
-                            "recent_matches": 5,
-                            "regional_strength_included": False,
-                            "execution_weights": {
-                                "map_win_rate": 0.4,
-                                "round_strength": 0.4,
-                                "kd_strength": 0.2,
-                            },
-                            "event_weights": {
-                                "champions": CHAMPIONS_EVENT_WEIGHT,
-                                "masters": MASTERS_EVENT_WEIGHT,
-                                "regional": REGIONAL_EVENT_WEIGHT,
-                            },
-                            "score_scaling": (
-                                "The displayed score is the sum of earned component points out of 100."
-                            ),
-                            "event_classification": (
-                                "Tournament title containing Champions or Masters; "
-                                "otherwise regional."
-                            ),
-                        },
-                    },
-                )
-            elif path == "/api/player-power-rankings":
-                year = int(query.get("year", ["2026"])[0])
-                if not 2022 <= year <= 2026:
-                    raise ValueError("Choose a season from 2022 to 2026.")
-                self._send_json(
-                    200,
-                    {
-                        "year": year,
-                        "players": player_power_rankings(year),
-                        "formula": {
-                            "rating": 0.35,
-                            "acs": 0.25,
-                            "kast": 0.2,
-                            "adr": 0.1,
-                            "kd_strength": 0.1,
-                            "minimum_maps": 5,
-                            "score_scaling": (
-                                "The displayed score is the sample-adjusted player score out of 100."
-                            ),
-                            "event_weights": {
-                                kind: {"base": weights[0], "bracket": weights[1]}
-                                for kind, weights in PLAYER_EVENT_WEIGHTS.items()
-                            },
-                            "sample_prior_maps": 10,
-                        },
-                    },
-                )
-            elif path == "/api/2027":
-                events = events_for_season(2027)
-                matches = upcoming_matches(2027)
-                if not events and not matches:
-                    message = (
-                        "No 2027 tier-one event or fixture records are in the current dataset."
-                    )
-                elif events and not matches:
-                    message = (
-                        "VLR lists the event below, but no fixtures are recorded yet."
-                    )
-                else:
-                    message = "Showing only 2027 events and fixtures listed in the imported source data."
-                self._send_json(
-                    200,
-                    {
-                        "year": 2027,
-                        "events": events,
-                        "matches": matches,
-                        "message": message,
-                    },
-                )
-            else:
-                player_match = PLAYER_ID_PATTERN.fullmatch(path)
-                team_match = TEAM_ID_PATTERN.fullmatch(path)
-                if player_match:
-                    details = player_details(int(player_match.group(1)))
-                    self._send_json(
-                        200 if details else 404,
-                        details or {"error": "Player not found."},
-                    )
-                elif team_match:
-                    year = int(query.get("year", ["2026"])[0])
-                    if not 2022 <= year <= 2026:
-                        raise ValueError("Choose a season from 2022 to 2026.")
-                    details = team_details(int(team_match.group(1)), year)
-                    self._send_json(
-                        200 if details else 404,
-                        details or {"error": "Team not found."},
-                    )
-                else:
-                    self._send_json(404, {"error": "Not found."})
-        except ValueError as error:
-            self._send_json(400, {"error": str(error)})
-        except (psycopg2.Error, RuntimeError) as error:
-            LOG.exception("VCT API database request failed")
-            self._send_json(503, {"error": str(error)})
+        status, body, content_type = get_response(unquote(request.path), parse_qs(request.query))
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        for name, value in RESPONSE_HEADERS.items():
+            self.send_header(name, value)
+        self.end_headers()
+        self.wfile.write(body)
 
     def log_message(self, format_string, *args):
         LOG.info("%s - %s", self.address_string(), format_string % args)
