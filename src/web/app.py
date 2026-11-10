@@ -43,83 +43,46 @@ def competitive_match(alias):
     )
 
 
-def _player_search(cursor, query, limit):
+def _player_search(cursor, query, limit, year):
     cursor.execute(
         """
         SELECT p.player_id, p.canonical_name, p.image_url, p.image_local_path,
                p.nationality, p.source_url,
-               COALESCE(
-               (
-                   SELECT t.team_id
-                   FROM roster_memberships rm
-                   JOIN teams t ON t.team_id = rm.team_id
-                   WHERE rm.player_id = p.player_id AND rm.status = 'current'
-                   ORDER BY rm.updated_at DESC
-                   LIMIT 1
-               ),
-               (
-                   SELECT t.team_id
-                   FROM match_players mp
-                   JOIN teams t ON t.team_id = mp.team_id
-                   JOIN matches m ON m.id = mp.match_id
-                   JOIN tournaments tournament ON tournament.id = m.tournament_id
-                   LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
-                   WHERE mp.player_id = p.player_id
-                     AND m.match_date >= DATE '2026-01-01'
-                     AND m.match_date < DATE '2027-01-01'
-                     AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = 2026
-                   ORDER BY m.match_date DESC NULLS LAST
-                   LIMIT 1
-               )) AS last_team_id,
-               COALESCE(
-               (
-                   SELECT t.canonical_name
-                   FROM roster_memberships rm
-                   JOIN teams t ON t.team_id = rm.team_id
-                   WHERE rm.player_id = p.player_id AND rm.status = 'current'
-                   ORDER BY rm.updated_at DESC
-                   LIMIT 1
-               ),
-               (
-                   SELECT t.canonical_name
-                   FROM match_players mp
-                   JOIN teams t ON t.team_id = mp.team_id
-                   JOIN matches m ON m.id = mp.match_id
-                   JOIN tournaments tournament ON tournament.id = m.tournament_id
-                   LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
-                   WHERE mp.player_id = p.player_id
-                     AND m.match_date >= DATE '2026-01-01'
-                     AND m.match_date < DATE '2027-01-01'
-                     AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = 2026
-                   ORDER BY m.match_date DESC NULLS LAST
-                   LIMIT 1
-               )) AS last_team
+               COALESCE(current_team.team_id, season_team.team_id),
+               COALESCE(current_team.canonical_name, season_team.canonical_name)
         FROM players p
+        LEFT JOIN LATERAL (
+            SELECT t.team_id, t.canonical_name
+            FROM roster_memberships rm
+            JOIN teams t ON t.team_id = rm.team_id
+            WHERE %s = 2026 AND rm.player_id = p.player_id AND rm.status = 'current'
+            ORDER BY rm.updated_at DESC
+            LIMIT 1
+        ) current_team ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT t.team_id, t.canonical_name
+            FROM match_players mp
+            JOIN teams t ON t.team_id = mp.team_id
+            JOIN matches m ON m.id = mp.match_id
+            JOIN tournaments tournament ON tournament.id = m.tournament_id
+            LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
+            WHERE mp.player_id = p.player_id
+              AND m.match_date >= make_date(%s, 1, 1)
+              AND m.match_date < make_date(%s + 1, 1, 1)
+              AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = %s
+            ORDER BY m.match_date DESC, m.id DESC
+            LIMIT 1
+        ) season_team ON TRUE
         WHERE (p.canonical_name ILIKE %s
            OR EXISTS (
                SELECT 1 FROM player_aliases pa
                WHERE pa.player_id = p.player_id AND pa.alias_name ILIKE %s
            ))
-          AND (
-              EXISTS (
-              SELECT 1 FROM match_players mp
-              JOIN matches m ON m.id = mp.match_id
-              JOIN tournaments tournament ON tournament.id = m.tournament_id
-              LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
-              WHERE mp.player_id = p.player_id
-                AND m.match_date >= DATE '2026-01-01'
-                AND m.match_date < DATE '2027-01-01'
-                AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = 2026
-              )
-              OR EXISTS (
-                  SELECT 1 FROM roster_memberships rm
-                  WHERE rm.player_id = p.player_id AND rm.status = 'current'
-              )
-          )
+          AND (current_team.team_id IS NOT NULL OR season_team.team_id IS NOT NULL)
         ORDER BY p.canonical_name
         LIMIT %s
         """,
-        (f"%{query}%", f"%{query}%", limit),
+        (year, year, year, year, f"%{query}%", f"%{query}%", limit),
     )
     return [
         {
@@ -223,7 +186,9 @@ def _team_search(cursor, query, limit):
     ]
 
 
-def search_entities(query, entity_type="all", limit=20):
+def search_entities(query, entity_type="all", limit=20, year=2026):
+    if not 2022 <= year <= 2026:
+        raise ValueError("Choose a season from 2022 to 2026.")
     if entity_type not in {"all", "players", "teams"}:
         raise ValueError("type must be all, players, or teams.")
     if not query.strip():
@@ -232,7 +197,7 @@ def search_entities(query, entity_type="all", limit=20):
         with connection.cursor() as cursor:
             results = []
             if entity_type in {"all", "players"}:
-                results.extend(_player_search(cursor, query.strip(), limit))
+                results.extend(_player_search(cursor, query.strip(), limit, year))
             if entity_type in {"all", "teams"}:
                 results.extend(_team_search(cursor, query.strip(), limit))
     return results[:limit]
@@ -1335,7 +1300,8 @@ def get_response(path, query):
                 200,
                 {
                     "results": search_entities(
-                        query.get("q", [""])[0], entity_type, limit
+                        query.get("q", [""])[0], entity_type, limit,
+                        int(query.get("year", ["2026"])[0]),
                     )
                 },
             )

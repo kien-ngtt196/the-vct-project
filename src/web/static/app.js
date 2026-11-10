@@ -301,11 +301,11 @@ function addImage(parent, urls, className, alt) {
   }
 }
 
-function renderSearchResult(item) {
+function renderSearchResult(item, year) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "result-button";
-  button.addEventListener("click", () => loadProfile(item));
+  button.addEventListener("click", () => loadProfile({ ...item, year }));
   addImage(
     button,
     [item.image_local_path, item.image_url],
@@ -443,6 +443,7 @@ function renderHomeLeaders(container, items, type, errorMessage) {
 
 async function search() {
   const query = searchInput.value.trim();
+  const year = playerRankingSeason.value;
   const requestVersion = ++searchVersion;
   searchResults.replaceChildren();
   if (!query) {
@@ -453,14 +454,14 @@ async function search() {
   searchResults.hidden = false;
   searchStatus.textContent = "Searching indexed VLR results…";
   try {
-    const payload = await getJson(`/api/search?q=${encodeURIComponent(query)}&limit=20`);
+    const payload = await getJson(`/api/search?q=${encodeURIComponent(query)}&limit=20&year=${year}`);
     if (requestVersion !== searchVersion || query !== searchInput.value.trim()) return;
     if (!payload.results.length) {
       searchStatus.textContent = "No matching player or team in the imported data.";
       return;
     }
     searchStatus.textContent = `${payload.results.length} matching result${payload.results.length === 1 ? "" : "s"}.`;
-    searchResults.replaceChildren(...payload.results.map(renderSearchResult));
+    searchResults.replaceChildren(...payload.results.map((item) => renderSearchResult(item, year)));
   } catch (error) {
     if (requestVersion !== searchVersion || query !== searchInput.value.trim()) return;
     searchStatus.textContent = error.message;
@@ -1204,7 +1205,10 @@ async function loadPlayerRankings() {
 }
 
 teamRankingSeason.addEventListener("change", loadPowerRankings);
-playerRankingSeason.addEventListener("change", loadPlayerRankings);
+playerRankingSeason.addEventListener("change", () => {
+  loadPlayerRankings();
+  search();
+});
 
 async function loadRoadmap() {
   try {
