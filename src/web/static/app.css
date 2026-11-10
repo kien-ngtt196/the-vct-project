@@ -2406,7 +2406,7 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
   filter: brightness(0) saturate(100%) invert(68%) sepia(93%) saturate(3195%) hue-rotate(146deg) brightness(97%);
 }
 
-.profile-view :is(.event-tile-logo, .profile-match-event .match-team-logo):is(
+:is(.event-tile-logo, .profile-match-event .match-team-logo):is(
   [src$="/vct-images/vct-mark.png"],
   [src="https://owcdn.net/img/6009f963577f4.png"]
 ) {

@@ -113,7 +113,7 @@ function eventIcon(event) {
   if (kind === "champions") return ["/champions-mark.svg", event.logo_url];
   if (kind === "regional") {
     const region = getRegion(event.region) || getRegion(event.title);
-    if (region?.key === "emea") return [region.logo, event.logo_url, "/vct-images/vct-mark.png"];
+    if (region) return [region.logo, event.logo_url, "/vct-images/vct-mark.png"];
   }
   const fallback = kind === "masters"
     ? "/vct-images/masters-mark.png" : "/vct-images/vct-mark.png";
@@ -1019,8 +1019,8 @@ function achievementCell(events, international = false) {
     if (event.absent) badge.dataset.absent = "true";
     const outcome = event.absent ? "No recorded appearance" : `${band ? "Inferred finish range " : ""}${placement}`;
     badge.title = `${event.title} · ${outcome}`;
-    const icons = event.kind === "masters" && !/lock\W*in/i.test(event.title) ? ["/vct-images/masters-mark.png", ...eventIcon(event)]
-      : region ? [region.logo, ...eventIcon(event)] : eventIcon(event);
+    const icons = event.kind === "masters" && !/lock\W*in/i.test(event.title)
+      ? ["/vct-images/masters-mark.png", ...eventIcon(event)] : eventIcon(event);
     addImage(badge, icons,
       "achievement-icon", region ? `VCT ${region.name}` : event.title);
     badge.append(placement);
