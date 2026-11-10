@@ -301,6 +301,9 @@ main { width: min(1380px, 94vw); }
 .power-table th:nth-child(3) { min-width: 90px; }
 .power-table th:nth-child(4) { min-width: 82px; }
 .power-table th:nth-child(n+5) { min-width: 86px; text-align: right; }
+.teams-view .power-table th:nth-child(n+5),
+.player-power-table th:nth-child(5),
+.player-power-table th:nth-child(6) { text-align: left; }
 .power-table th {
   padding: 11px 12px;
   color: #aeb3bd;
@@ -384,7 +387,7 @@ main { width: min(1380px, 94vw); }
   .ranking-panel { padding-top: 16px; }
   .ranking-panel > .section-heading { padding-right: 14px; padding-left: 14px; }
   .power-table th:first-child, .power-table td:first-child { padding-left: 14px; }
-  .power-table td { padding-right: 9px; padding-left: 9px; }
+  .power-table th:not(:first-child), .power-table td { padding-inline: 9px; }
   .search-panel { padding: 16px; }
 }
 
