@@ -527,28 +527,22 @@ function tournamentPrize(prize) {
   return prize && !/^(?:[-–—]+|\$0|0)$/.test(prize.trim()) ? prize : "";
 }
 
-function trophyShelf(trophies) {
-  const shelf = document.createElement("div");
-  shelf.className = "profile-trophies";
-  for (const event of trophies || []) {
-    shelf.append(eventCard(event, ["Winner", tournamentPrize(event.prize)].filter(Boolean).join(" · ")));
-  }
-  if (!shelf.childElementCount) shelf.textContent = "No verified tournament wins recorded yet.";
-  return profileSection("Tournament wins", shelf);
-}
-
-function playerAchievements(events) {
+function achievementTable(heading, events, { empty, showTeam = false, showResults = false }) {
   const container = document.createElement("div");
-  container.className = "player-achievements";
+  container.className = "profile-achievements";
   if (!events?.length) {
-    container.textContent = "No verified Tier 1 podium finishes recorded yet.";
-    return profileSection("Career achievements", container);
+    container.textContent = empty;
+    return profileSection(heading, container);
   }
 
   const table = document.createElement("table");
-  table.setAttribute("aria-label", "Career achievements");
+  table.setAttribute("aria-label", heading);
   const headings = table.createTHead().insertRow();
-  for (const label of ["Date", "Place", "Circuit", "Tournament", "Team", "Team prize"]) {
+  const columns = ["Date", "Place", "Circuit", "Tournament"];
+  if (showTeam) columns.push("Team");
+  if (showResults) columns.push("Record", "Event pool");
+  columns.push("Team prize");
+  for (const label of columns) {
     const column = document.createElement("th");
     column.scope = "col";
     column.textContent = label;
@@ -559,9 +553,12 @@ function playerAchievements(events) {
     const row = body.insertRow();
     row.insertCell().textContent = event.end_date || event.year || "—";
     const place = document.createElement("span");
-    place.className = "player-achievement-place";
-    place.dataset.medal = String(event.rank);
-    place.textContent = { 1: "1st", 2: "2nd", 3: "3rd" }[event.rank] || "—";
+    place.className = "profile-achievement-place";
+    const finish = event.placement?.trim() || { 1: "1st", 2: "2nd", 3: "3rd" }[event.rank];
+    const medal = /^(1|2|3)(?:st|nd|rd)?$/i.exec(finish || "")?.[1];
+    if (medal) place.dataset.medal = medal;
+    place.textContent = /^\d+$/.test(finish || "")
+      ? `${finish}${ordinalSuffix[ordinalRules.select(Number(finish))]}` : finish || "—";
     row.insertCell().append(place);
     const kind = eventKind(event.title);
     const region = getRegion(event.region) || getRegion(event.title);
@@ -569,7 +566,7 @@ function playerAchievements(events) {
       : /lock\W*in/i.test(event.title) ? "LOCK//IN" : kind === "masters" ? "Masters" : "Champions";
 
     const tournament = document.createElement("span");
-    tournament.className = "player-achievement-identity";
+    tournament.className = "profile-achievement-identity";
     addImage(tournament, eventIcon(event), "event-tile-logo", "");
     const url = safeSourceUrl(event.url);
     const title = document.createElement(url ? "a" : "span");
@@ -582,15 +579,16 @@ function playerAchievements(events) {
     tournament.append(title);
     row.insertCell().append(tournament);
 
-    const team = document.createElement("span");
-    team.className = "player-achievement-identity";
-    if (event.team) addImage(team, [event.team_logo_local_path, event.team_logo_url], "match-team-logo", "");
-    team.append(event.team || "—");
-    row.insertCell().append(team);
+    if (showTeam) row.insertCell().append(matchTeam(event.team, [event.team_logo_local_path, event.team_logo_url]));
+    if (showResults) {
+      const losses = event.matches_played - event.matches_won - event.matches_drawn;
+      row.insertCell().textContent = `${event.matches_won}W–${losses}L–${event.matches_drawn}D`;
+      row.insertCell().textContent = tournamentPrize(event.prize_pool) || "—";
+    }
     row.insertCell().textContent = tournamentPrize(event.prize) || "—";
   }
   container.append(table);
-  return profileSection("Career achievements", container);
+  return profileSection(heading, container);
 }
 
 const flagRegions = "ar au bd by be bm bo br bn bg kh ca co cr hr cu cz cl cn dk do eg ee fi fr de gr gt ht hk in id ir ie it jp kz kg la lv lb lt mo mk my mv mx md mn ma np nl nz no pk ps pe pl pt pr ph ro ru sa rs sg kr es lk se ch tw tr th ua gb us uz vn".split(" ");
@@ -766,7 +764,9 @@ function renderPlayer(player) {
   card.append(
     header,
     profileSection("Season stats", overview),
-    playerAchievements(player.achievements || player.trophies),
+    achievementTable("Career achievements", player.achievements || player.trophies, {
+      showTeam: true, empty: "No verified Tier 1 podium finishes recorded yet.",
+    }),
     profileSection("Most-played agents", agentStrip(player.top_agents, true)),
     profileSection("Team history · recorded appearances", history),
     profileSection("Recent maps", maps),
@@ -905,47 +905,14 @@ function renderTeam(team) {
     wrapper.append(note);
   }
 
-  wrapper.append(trophyShelf(team.trophies));
-
-  const tournamentHeading = document.createElement("h4");
-  tournamentHeading.className = "subheading";
-  tournamentHeading.textContent = `${team.year} tournament results & prizes`;
-  wrapper.append(tournamentHeading);
-  if (team.tournaments.length) {
-    team.tournaments.forEach((event) => {
-      const item = document.createElement("div");
-      item.className = "team-event-row";
-      const titleLine = document.createElement("div");
-      titleLine.className = "team-event-title";
-      const eventUrl = safeSourceUrl(event.url);
-      if (eventUrl) {
-        const link = document.createElement("a");
-        link.href = eventUrl;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = event.title;
-        titleLine.append(link);
-      } else {
-        titleLine.textContent = event.title;
-      }
-      item.append(titleLine);
-      const result = document.createElement("small");
-      const losses = event.matches_played - event.matches_won - event.matches_drawn;
-      result.textContent = [
-        event.placement || "Placement not listed by VLR",
-        `${event.matches_won}W–${losses}L–${event.matches_drawn}D`,
-        event.prize_pool ? `Event pool ${event.prize_pool}` : "",
-        event.prize ? `Team prize ${event.prize}` : "Team payout not listed by VLR",
-      ].filter(Boolean).join(" · ");
-      item.append(result);
-      wrapper.append(item);
-    });
-  } else {
-    const note = document.createElement("p");
-    note.className = "muted";
-    note.textContent = `No tier-one event participation is recorded for ${team.year}.`;
-    wrapper.append(note);
-  }
+  wrapper.append(
+    achievementTable("Tournament wins", team.trophies, {
+      empty: "No verified tournament wins recorded yet.",
+    }),
+    achievementTable(`${team.year} tournament results & prizes`, team.tournaments, {
+      showResults: true, empty: `No Tier 1 event participation is recorded for ${team.year}.`,
+    }),
+  );
 
   const matchHeading = document.createElement("h4");
   matchHeading.className = "subheading";

@@ -2169,21 +2169,21 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   font-size: .86rem;
   font-weight: 700;
 }
-.player-achievements {
+.profile-achievements {
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: var(--panel);
 }
-.player-achievements table { width: 100%; border-collapse: collapse; text-align: left; }
-.player-achievements :is(th, td) { padding: 9px 12px; white-space: nowrap; }
-.player-achievements th { background: var(--panel-raised); color: var(--muted); font-size: 11px; }
-.player-achievements td { border-top: 1px solid var(--line); font-size: 12px; }
-.player-achievements :is(th, td):last-child { text-align: right; }
-.player-achievement-identity { display: flex; align-items: center; gap: 8px; }
-.player-achievement-identity .event-tile-logo { flex: 0 0 24px; width: 24px; height: 24px; }
-.player-achievement-identity a { color: var(--red); text-underline-offset: 3px; }
-.player-achievement-place {
+.profile-achievements table { width: 100%; border-collapse: collapse; text-align: left; }
+.profile-achievements :is(th, td) { padding: 9px 12px; white-space: nowrap; }
+.profile-achievements th { background: var(--panel-raised); color: var(--muted); font-size: 11px; }
+.profile-achievements td { border-top: 1px solid var(--line); font-size: 12px; }
+.profile-achievements :is(th, td):last-child { text-align: right; }
+.profile-achievement-identity { display: flex; align-items: center; gap: 8px; }
+.profile-achievement-identity .event-tile-logo { flex: 0 0 24px; width: 24px; height: 24px; }
+.profile-achievement-identity a { color: var(--red); text-underline-offset: 3px; }
+.profile-achievement-place {
   display: inline-block;
   min-width: 37px;
   padding: 3px 6px;
@@ -2192,10 +2192,10 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   text-align: center;
   font-weight: 800;
 }
-.player-achievement-place[data-medal="1"] { color: #e9b94f; }
-.player-achievement-place[data-medal="2"] { color: #bacadb; }
-.player-achievement-place[data-medal="3"] { color: #d48a5c; }
-.player-achievements:not(:has(table)) { padding: 12px; color: var(--muted); }
+.profile-achievement-place[data-medal="1"] { color: #e9b94f; }
+.profile-achievement-place[data-medal="2"] { color: #bacadb; }
+.profile-achievement-place[data-medal="3"] { color: #d48a5c; }
+.profile-achievements:not(:has(table)) { padding: 12px; color: var(--muted); }
 .profile-section { padding: 12px; border: 1px solid var(--line); border-radius: 6px; }
 .profile-section .subheading { margin-top: 0; margin-bottom: 10px; }
 .profile-section .card-stats { margin: 0; }
@@ -2203,7 +2203,7 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
 .agent-strip-detailed .agent-pick { min-width: 82px; display: grid; gap: 3px; font-size: 12px; }
 .agent-strip-detailed .agent-portrait { width: 56px; height: 56px; }
 .agent-strip-detailed small { color: var(--muted); }
-.player-history, .profile-trophies { display: grid; gap: 8px; }
+.player-history { display: grid; gap: 8px; }
 .player-history { grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
 .roadmap-regions { display: block; }
 .circuit-lanes, .circuit-stages { display: grid; gap: 10px; }

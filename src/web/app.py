@@ -575,13 +575,13 @@ def team_details(team_id, year=2026):
                        ) AS matches_won,
                        COUNT(DISTINCT match.id) FILTER (
                            WHERE (match.team1_score = match.team2_score)
-                       ) AS matches_drawn
+                       ) AS matches_drawn,
+                       tournament.end_date, tournament.logo_url, tournament.region
                 FROM tournaments tournament
                 JOIN matches match ON match.tournament_id = tournament.id
                 LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                 LEFT JOIN team_event_results result
                   ON result.tournament_id = tournament.id AND result.team_id = %s
-                 AND result.prize IS NOT NULL
                 WHERE tournament.tier = 'tier1'
                   AND (match.team1_id = %s OR match.team2_id = %s)
                   AND COALESCE(
@@ -590,7 +590,7 @@ def team_details(team_id, year=2026):
                   ) = %s
                 GROUP BY tournament.id, tournament.title, tournament.url,
                          tournament.prize_pool, result.placement_text, result.prize
-                ORDER BY tournament.title
+                ORDER BY tournament.end_date DESC NULLS LAST, tournament.title
                 """,
                 (team_id, team_id, team_id, team_id, team_id, year),
             )
@@ -600,11 +600,14 @@ def team_details(team_id, year=2026):
                     "title": row[1],
                     "url": row[2],
                     "prize_pool": row[3],
-                    "placement": row[4],
+                    "placement": row[4] if placement_rank(row[4]) is not None else None,
                     "prize": row[5],
                     "matches_played": row[6],
                     "matches_won": row[7],
                     "matches_drawn": row[8],
+                    "end_date": row[9],
+                    "logo_url": row[10],
+                    "region": row[11],
                 }
                 for row in cursor.fetchall()
             ]
