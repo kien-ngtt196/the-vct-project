@@ -778,25 +778,6 @@ select:focus-visible, input:focus-visible { outline: 1px solid var(--cyan); outl
 .rankings-layout { grid-template-columns: minmax(0, 1.65fr) minmax(330px, .75fr); gap: 22px; }
 .site-header { gap: clamp(14px, 2vw, 30px); }
 .header-actions { display: flex; align-items: center; gap: 18px; }
-.theme-toggle {
-  display: inline-flex;
-  min-height: 34px;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 11px;
-  border: 1px solid #dfe3df;
-  border-radius: 5px;
-  background: transparent;
-  color: #53605a;
-  cursor: pointer;
-  font-size: 10px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-.theme-toggle:hover, .theme-toggle:focus-visible { border-color: #9abbb0; color: var(--red); }
-.theme-toggle:focus-visible { outline: 2px solid rgba(58,137,134,.55); outline-offset: 2px; }
-.theme-toggle span:first-child { color: var(--red); font-size: 14px; }
 
 .champions-feature { overflow: hidden; padding: 0; }
 .champions-image-link { position: relative; display: block; overflow: hidden; background: #202725; }
@@ -842,7 +823,6 @@ select:focus-visible, input:focus-visible { outline: 1px solid var(--cyan); outl
   .site-header { gap: 10px; }
   .header-actions { margin-left: auto; }
   .header-note { display: none; }
-  .theme-toggle { min-height: 32px; padding-inline: 9px; }
   .ranking-sidebar { grid-template-columns: 1fr; }
   .champions-feature { grid-column: auto; display: block; }
   .champions-image { height: auto; aspect-ratio: 1.9; }
@@ -1015,13 +995,6 @@ select:focus-visible, input:focus-visible { outline: 1px solid var(--cyan); outl
 :root[data-theme="dark"] .champions-image-tag { background: rgba(17,21,20,.88); }
 :root[data-theme="dark"] .champions-source { text-decoration-color: #68766e; }
 :root[data-theme="dark"] .site-footer { border-top-color: #39423e; }
-:root[data-theme="dark"] .theme-toggle { border-color: #414c46; color: #d1dad5; }
-:root[data-theme="dark"] .theme-toggle:hover,
-:root[data-theme="dark"] .theme-toggle:focus-visible { border-color: #83c9a7; color: #83c9a7; }
-
-@media (max-width: 700px) {
-  .theme-toggle { font-size: 9px; }
-}
 
 :root {
   color-scheme: light;

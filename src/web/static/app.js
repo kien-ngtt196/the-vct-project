@@ -15,9 +15,6 @@ const archiveEvents = document.querySelector("#archive-events");
 const archiveCircuit = document.querySelector("#archive-circuit");
 const archiveSearch = document.querySelector("#archive-search");
 let archivedEvents = [];
-const themeToggle = document.querySelector("#theme-toggle");
-const themeToggleLabel = document.querySelector("#theme-toggle-label");
-const themeColor = document.querySelector('meta[name="theme-color"]');
 const profileDialog = document.querySelector("#profile-dialog");
 const profileDialogTitle = document.querySelector("#profile-dialog-title");
 const pagePanels = [...document.querySelectorAll("[data-page-panel]")];
@@ -77,27 +74,6 @@ function lineGraphic(viewBox, pathData) {
   svg.append(path);
   return svg;
 }
-
-function applyTheme(theme, persist = false) {
-  const isDark = theme === "dark";
-  document.documentElement.dataset.theme = isDark ? "dark" : "light";
-  themeToggle.setAttribute("aria-pressed", String(isDark));
-  themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
-  themeToggleLabel.textContent = isDark ? "Light mode" : "Dark mode";
-  themeColor.content = isDark ? "#171b1a" : "#f5f5f2";
-  if (persist) {
-    try {
-      localStorage.setItem("vct-scout-theme", isDark ? "dark" : "light");
-    } catch (error) {
-      console.warn("Could not save the theme preference.", error);
-    }
-  }
-}
-
-applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
-themeToggle.addEventListener("click", () => {
-  applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true);
-});
 
 function viewFromHash() {
   const hash = window.location.hash.slice(1);
