@@ -1286,7 +1286,7 @@ def get_response(path, query):
     try:
         if path == "/":
             return static_response("index.html")
-        elif path in {"/app.css", "/app.js", "/theme.js", "/favicon.svg"} or path.startswith("/assets/"):
+        elif path in {"/app.css", "/app.js", "/theme.js", "/favicon.svg", "/champions-mark.svg"} or path.startswith("/assets/"):
             return static_response(path.lstrip("/"))
         elif path.startswith("/vct-images/"):
             image_path = path.removeprefix("/vct-images/")

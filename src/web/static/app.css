@@ -1517,7 +1517,11 @@ main { width: min(1480px, 94vw); }
 .feature-page-heading h1 span { color: #d3dad6; }
 .feature-page-heading > p:last-child { max-width: 560px; margin-bottom: 0; color: #d2d8d4; font-size: 12px; line-height: 1.6; }
 .team-page-heading { background-image: url("/vct-images/53144399553_8cb39b0208_o.jpg"); }
-.player-page-heading { background-image: url("/vct-images/EDG-Kangkang-1920x1281.webp"); background-position: 70% 35%; }
+.player-page-heading {
+  min-height: 265px;
+  background-image: url("/vct-images/EDG-Kangkang-1920x1281.webp");
+  background-position: 70% 11%;
+}
 .directory-page-heading { background-image: url("/vct-images/55597101270_4780e301ce_c.jpg"); }
 .watchlist-page-heading { background-image: url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg"); }
 .feature-view .rankings-layout { grid-template-columns: minmax(0, 1.65fr) minmax(310px, .75fr); }
@@ -1526,6 +1530,9 @@ main { width: min(1480px, 94vw); }
 .watchlist-view .future-panel { background-size: cover; }
 .watchlist-view .future-events { max-height: min(56vh, 620px); overflow-y: auto; overscroll-behavior: contain; }
 .site-footer { margin-top: 26px; padding: 18px 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.footer-links a { color: inherit; text-underline-offset: 3px; }
+.footer-links a:hover, .footer-links a:focus-visible { color: var(--red); }
 
 .profile-dialog {
   width: min(1000px, calc(100vw - 28px));
@@ -1968,7 +1975,7 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   border-radius: 10px;
   background:
     linear-gradient(rgba(248,249,246,.9), rgba(248,249,246,.94)),
-    url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg") center / cover;
+    url("/vct-images/arena-roadmap.jpg") center 42% / cover;
   box-shadow: 0 18px 48px rgba(18,24,21,.11);
 }
 .roadmap-heading {
@@ -2033,8 +2040,8 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
 :root[data-theme="dark"] .roadmap-panel {
   border-color: rgba(255,255,255,.12);
   background:
-    linear-gradient(rgba(25,30,28,.87), rgba(25,30,28,.93)),
-    url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg") center / cover;
+    linear-gradient(rgba(10,12,16,.74), rgba(10,12,16,.86)),
+    url("/vct-images/arena-roadmap.jpg") center 42% / cover;
 }
 :root[data-theme="dark"] .roadmap-region { border-color: #39423e; background: rgba(32,38,36,.86); }
 :root[data-theme="dark"] .roadmap-region-heading { border-color: #39423e; }
@@ -2093,6 +2100,16 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   gap: 12px;
   margin-top: 15px;
 }
+:root[data-theme="dark"] [data-page-panel="archive"] {
+  padding: clamp(16px, 3vw, 36px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(8, 8, 10, .78), #08080a 780px),
+    url("/vct-images/sentinels-archive.jpg") center top / 100% auto no-repeat,
+    #08080a;
+}
+:root[data-theme="dark"] .archive-grid .event-tile { background: rgba(18, 18, 18, .85); }
 .event-tile {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
@@ -2127,7 +2144,6 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   font-size: 11px;
   white-space: nowrap;
 }
-.achievement-badge[data-winner="true"] { border-color: #bc9452; }
 .achievement-icon { width: 17px; height: 17px; }
 .international-slots {
   display: grid;
@@ -2147,19 +2163,15 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   width: 22px;
   height: 22px;
   object-fit: contain;
-  filter: grayscale(1);
 }
-.international-slots [data-medal="1"] { --medal: #e7be72; }
-.international-slots [data-medal="2"] { --medal: #c6cdd5; }
-.international-slots [data-medal="3"] { --medal: #d58d59; }
-.international-slots [data-medal]:not([data-medal=""]) .achievement-icon {
-  padding: 2px;
-  border-radius: 50%;
-  background: var(--medal);
-  filter: none;
+.achievement-badge[data-medal="1"] { --medal: #e9b94f; }
+.achievement-badge[data-medal="2"] { --medal: #bacadb; }
+.achievement-badge[data-medal="3"] { --medal: #d48a5c; }
+.achievement-badges .achievement-badge[data-medal] {
+  border-color: var(--medal);
 }
 .international-slots [data-absent="true"] { color: var(--muted); }
-.international-slots [data-absent="true"] .achievement-icon { opacity: .4; }
+.international-slots [data-absent="true"] .achievement-icon { filter: grayscale(1); opacity: .4; }
 .agent-strip { flex-wrap: nowrap; }
 .agent-portrait { width: 27px; height: 27px; display: block; object-fit: contain; border-radius: 4px; background: var(--panel); }
 .player-role { font-size: 11px; white-space: nowrap; }
@@ -2328,16 +2340,29 @@ a.profile-match:hover, a.profile-match:focus-visible { border-color: var(--red);
 :root[data-theme="dark"] .valorant-fallback { color: var(--red); }
 .teams-view .rankings-layout { grid-template-columns: minmax(0, 1fr) 290px; gap: 16px; }
 .teams-view .ranking-sidebar { grid-template-columns: minmax(0, 1fr); }
-.teams-view .ranking-panel,
-:root[data-theme="dark"] .teams-view .ranking-panel {
+:is(.teams-view .ranking-panel, .players-view .player-ranking-panel),
+:root[data-theme="dark"] :is(.teams-view .ranking-panel, .players-view .player-ranking-panel) {
   background: var(--panel);
   border-color: var(--line);
   backdrop-filter: none;
 }
 .teams-view .power-table { min-width: 730px; }
-:root[data-theme="dark"] .teams-view .power-table th { background: var(--panel-raised); }
-:root[data-theme="dark"] .teams-view .power-table td { background: #101010; }
-:root[data-theme="dark"] .teams-view .power-table tbody tr:hover td { background: #1c1c1c; }
+:root[data-theme="dark"] :is(.teams-view, .players-view) .power-table th { background: var(--panel-raised); }
+:root[data-theme="dark"] :is(.teams-view, .players-view) .power-table td,
+:root[data-theme="dark"] :is(.teams-view, .players-view) .power-table tbody tr:hover td { background: transparent; }
+:root[data-theme="dark"] .teams-view .ranking-panel {
+  --standings-art: url("/vct-images/paper-rex-standings.jpg");
+}
+:root[data-theme="dark"] .players-view .player-ranking-panel {
+  --standings-art: url("/vct-images/nrg-standings.jpg");
+}
+:root[data-theme="dark"] :is(.teams-view .ranking-panel, .players-view .player-ranking-panel) {
+  background:
+    linear-gradient(rgba(12, 12, 14, .79), rgba(12, 12, 14, .91)),
+    var(--standings-art) center 35% / cover no-repeat,
+    var(--panel);
+}
+:root[data-theme="dark"] :is(.teams-view, .players-view) .power-table tbody tr:hover { background: rgba(255, 255, 255, .06); }
 .teams-view .methodology-panel {
   padding: 14px;
   background: var(--panel);
@@ -2377,7 +2402,41 @@ a.profile-match:hover, a.profile-match:focus-visible { border-color: var(--red);
 .region-strength-item { display: grid; grid-template-columns: 16px minmax(0, 1fr); align-items: center; gap: 2px 5px; font-size: 11px; }
 .region-strength-item strong { grid-column: 2; }
 .region-strength-logo { width: 16px; height: 16px; object-fit: contain; }
-:root[data-theme="dark"] .region-strength-item[data-region="emea"] .region-strength-logo { filter: invert(1); }
+img[src$="/vct-images/vlr-vct-emea-2027.png"] {
+  filter: brightness(0) saturate(100%) invert(93%) sepia(85%) saturate(1200%) hue-rotate(15deg) brightness(107%);
+}
+
+:root img[src*="/vct-images/team-marks/"],
+:root[data-theme="dark"] img[src*="/vct-images/team-marks/"] {
+  background: #202020 !important;
+}
+/* Use a light backing for dark marks without a suitable light variant. */
+:root[data-theme="dark"] img:is(
+  [src$="62bbeba74d5cb.png"],
+  [src$="64f9825408326.png"], [src$="6863ccdfabea7.png"],
+  [src$="65a17b313b131.png"], [src$="62875027c8e06.png"],
+  [src$="6a70722c7c24b.png"]
+),
+:root img[src$="/vct-images/team-marks/632be843b7d51.png"],
+:root[data-theme="dark"] img[src$="/vct-images/team-marks/632be843b7d51.png"] {
+  background: #fff !important;
+}
+:root[data-theme="dark"] img[src$="62fe0b8f6b084.png"],
+:root img[src$="627403a0d9e48.png"],
+:root[data-theme="dark"] img[src$="627403a0d9e48.png"] {
+  background: transparent !important;
+}
+:root img[src$="627403a0d9e48.png"] {
+  filter: brightness(0) saturate(100%) invert(68%) sepia(93%) saturate(3195%) hue-rotate(146deg) brightness(97%);
+}
+
+.profile-view :is(.event-tile-logo, .profile-match-event .match-team-logo):is(
+  [src$="/vct-images/vct-mark.png"],
+  [src="https://owcdn.net/img/6009f963577f4.png"]
+) {
+  filter: brightness(0) saturate(100%) invert(54%) sepia(89%) saturate(1250%) hue-rotate(128deg) brightness(90%);
+}
+
 
 @media (max-width: 1050px) {
   .teams-view .rankings-layout { grid-template-columns: minmax(0, 1fr); }

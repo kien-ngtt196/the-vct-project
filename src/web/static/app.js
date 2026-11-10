@@ -134,7 +134,12 @@ function eventKind(title) {
 
 function eventIcon(event) {
   const kind = event.kind || eventKind(event.title || "");
-  const fallback = kind === "champions" ? "/favicon.svg" : kind === "masters"
+  if (kind === "champions") return ["/champions-mark.svg", event.logo_url];
+  if (kind === "regional") {
+    const region = getRegion(event.region) || getRegion(event.title);
+    if (region?.key === "emea") return [region.logo, event.logo_url, "/vct-images/vct-mark.png"];
+  }
+  const fallback = kind === "masters"
     ? "/vct-images/masters-mark.png" : "/vct-images/vct-mark.png";
   return [event.logo_url, fallback];
 }
@@ -245,7 +250,8 @@ function safeImageUrl(value) {
     const url = new URL(value, window.location.origin);
     if (
       url.origin === window.location.origin
-      && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vct-images/") || url.pathname === "/favicon.svg")
+      && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vct-images/")
+        || ["/favicon.svg", "/champions-mark.svg"].includes(url.pathname))
       && !url.pathname.split("/").includes("..")
     ) return url.href;
     if (url.protocol !== "https:") return null;
@@ -285,8 +291,21 @@ function createValorantFallback(className) {
   return fallback;
 }
 
+// Alternate marks from Riot's VCT rankings, keyed by the original VLR logo ID.
+const alternateTeamMarks = new Set([
+  "5f3ca822464a3", "627403a0d9e48", "629f13085ead6", "62a411783d94d",
+  "62c82049253b2", "632be7626d6d9", "632be843b7d51", "632be9976b8fe",
+  "63a74624cc76a", "6466d79e1ed40", "657b2f3fcd199", "6670153fa9120",
+  "667462f046618", "67d59bfc9eb2a", "6a353ee73ab25",
+]);
+
 function addImage(parent, urls, className, alt) {
-  const candidates = [...new Set([urls].flat().map(safeImageUrl).filter(Boolean))];
+  const originals = [urls].flat().map(safeImageUrl).filter(Boolean);
+  const alternatives = originals.flatMap((url) => {
+    const id = /(?:\/|_)([a-f0-9]{13})\.png$/.exec(new URL(url).pathname)?.[1];
+    return alternateTeamMarks.has(id) ? [`/vct-images/team-marks/${id}.png`] : [];
+  });
+  const candidates = [...new Set([...alternatives, ...originals])];
   const safeUrl = candidates.shift();
   if (safeUrl) {
     const image = document.createElement("img");
@@ -1020,14 +1039,13 @@ function achievementCell(events, international = false) {
     const badge = document.createElement("span");
     badge.className = "achievement-badge";
     const medal = /^(1|2|3)(?:st|nd|rd)?$/.exec(event.placement || "")?.[1];
-    badge.dataset.winner = String(medal === "1");
-    if (international) {
-      badge.dataset.medal = medal || "";
-      badge.dataset.absent = String(event.absent);
-    }
+    if (medal) badge.dataset.medal = medal;
+    if (event.absent) badge.dataset.absent = "true";
     const outcome = event.absent ? "No recorded appearance" : `${band ? "Inferred finish range " : ""}${placement}`;
     badge.title = `${event.title} · ${outcome}`;
-    addImage(badge, region ? [region.logo, ...eventIcon(event)] : eventIcon(event),
+    const icons = event.kind === "masters" && !/lock\W*in/i.test(event.title) ? ["/vct-images/masters-mark.png", ...eventIcon(event)]
+      : region ? [region.logo, ...eventIcon(event)] : eventIcon(event);
+    addImage(badge, icons,
       "achievement-icon", region ? `VCT ${region.name}` : event.title);
     badge.append(placement);
     badges.append(badge);
@@ -1100,7 +1118,6 @@ function renderRegionalStrength(scores, year) {
   grid.replaceChildren(...regions.map((region) => {
     const row = document.createElement("div");
     row.className = "region-strength-item";
-    row.dataset.region = region.key;
     addImage(row, region.logo, "region-strength-logo", "");
     const label = document.createElement("span");
     label.textContent = region.name;
