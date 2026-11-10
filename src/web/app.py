@@ -31,6 +31,17 @@ PLAYER_EVENT_WEIGHTS = {
 
 LOG = logging.getLogger("vct.web")
 
+# Three historical exhibitions have generic VLR URL slugs.
+EXHIBITION_MATCH_IDS = ("180279", "321373", "450589")
+
+
+def competitive_match(alias):
+    ids = ", ".join(f"'{match_id}'" for match_id in EXHIBITION_MATCH_IDS)
+    return (
+        f"{alias}.id NOT IN ({ids}) "
+        f"AND COALESCE({alias}.url, '') !~* '(show-?match|all-star-match|exhibition)'"
+    )
+
 
 def _player_search(cursor, query, limit):
     cursor.execute(
@@ -670,7 +681,7 @@ def team_details(team_id, year=2026):
 
 def season_achievements(cursor, year):
     cursor.execute(
-        """
+        f"""
         WITH events AS (
             SELECT t.id, t.title, t.logo_url, t.region, t.status, CASE
                 WHEN t.title ILIKE 'Valorant Champions 20%%' THEN 'champions'
@@ -686,10 +697,14 @@ def season_achievements(cursor, year):
             CROSS JOIN LATERAL (VALUES (m.team1_id), (m.team2_id)) team(id)
             WHERE team.id IS NOT NULL
               AND lower(m.status) IN ('final', 'completed', 'complete')
+              AND {competitive_match('m')}
             UNION
             SELECT r.tournament_id, r.team_id
             FROM team_event_results r JOIN events e ON e.id = r.tournament_id
-            WHERE r.prize IS NOT NULL
+            JOIN teams t ON t.team_id = r.team_id
+            WHERE (r.prize IS NOT NULL OR r.placement_text IS NOT NULL)
+              -- FPX received compensation after withdrawing from Reykjavík.
+              AND NOT (r.tournament_id = '926' AND t.canonical_name = 'funplus phoenix')
         ),
         regional_finals AS (
             SELECT m.tournament_id, MAX(m.team1_id) AS team1_id,
@@ -709,7 +724,7 @@ def season_achievements(cursor, year):
         END), e.title, e.logo_url, e.region, e.status
         FROM events e LEFT JOIN participants p ON p.tournament_id = e.id
         LEFT JOIN team_event_results r
-          ON r.tournament_id = e.id AND r.team_id = p.team_id AND r.prize IS NOT NULL
+          ON r.tournament_id = e.id AND r.team_id = p.team_id
         LEFT JOIN regional_finals f ON f.tournament_id = e.id
         """,
         (year,),
@@ -720,8 +735,8 @@ def season_achievements(cursor, year):
     }
     international_max = sum(PLACEMENT_POINTS[kind][0] for kind in international_events.values())
     completed_fields = {}
-    for event_id, kind, team_id, placement, _, _, _, status in rows:
-        if kind != "regional" and status == "completed" and team_id is not None:
+    for event_id, kind, team_id, placement, title, _, _, status in rows:
+        if (kind != "regional" or "lock//in" in title.lower()) and status == "completed" and team_id is not None:
             completed_fields.setdefault(event_id, {})[team_id] = placement_rank(placement)
     placement_bands = {}
     for event_id, field in completed_fields.items():
@@ -733,7 +748,8 @@ def season_achievements(cursor, year):
             for rank in set(ranked)
         ):
             continue
-        expected_size = 16 if international_events[event_id] == "champions" else 12
+        kind = international_events.get(event_id)
+        expected_size = 16 if kind == "champions" else {"1188": 32, "1921": 8, "2281": 8}.get(event_id, 12)
         if len(field) == expected_size:
             placement_bands[event_id] = [len(ranked) + 1, expected_size]
     results = {}
@@ -783,6 +799,7 @@ def team_power_rankings(year=2026):
                     JOIN tournaments tournament ON tournament.id = m.tournament_id
                     LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                     WHERE tournament.tier = 'tier1'
+                      AND {competitive_match('m')}
                       AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = %s
                       AND m.match_date >= make_date(%s, 1, 1)
                       AND m.match_date < make_date(%s, 1, 1)
@@ -1022,6 +1039,7 @@ def player_power_rankings(year=2026):
                     JOIN tournaments tournament ON tournament.id = match.tournament_id
                     LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                     WHERE tournament.tier = 'tier1'
+                      AND {competitive_match('match')}
                       AND COALESCE(
                           event_season.year,
                           EXTRACT(YEAR FROM match.match_date)::INTEGER
@@ -1197,10 +1215,11 @@ def regional_strength(teams, international_events):
     totals = {}
     with connect() as connection, connection.cursor() as cursor:
         cursor.execute(
-            """
+            f"""
             SELECT team1_id, team2_id, team1_score, team2_score, tournament_id
-            FROM matches
+            FROM matches m
             WHERE tournament_id = ANY(%s)
+              AND {competitive_match('m')}
               AND lower(status) IN ('final', 'completed', 'complete')
               AND team1_score IS NOT NULL AND team2_score IS NOT NULL
             """,
