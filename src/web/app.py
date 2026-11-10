@@ -245,7 +245,8 @@ def tournament_honors(cursor, *, team_id=None, player_id=None):
     cursor.execute(
         """
         SELECT t.id, t.title, t.url, t.logo_url, s.year, r.prize,
-               r.placement_text, team.canonical_name, t.region
+               r.placement_text, team.canonical_name, t.region,
+               t.end_date, team.logo_url, team.logo_local_path
         FROM team_event_results r
         JOIN teams team ON team.team_id = r.team_id
         JOIN tournaments t ON t.id = r.tournament_id
@@ -265,7 +266,8 @@ def tournament_honors(cursor, *, team_id=None, player_id=None):
     )
     return [
         dict(id=row[0], title=row[1], url=row[2], logo_url=row[3], year=row[4], prize=row[5],
-             rank=placement_rank(row[6]), team=row[7], region=row[8])
+             rank=placement_rank(row[6]), team=row[7], region=row[8], end_date=row[9],
+             team_logo_url=row[10], team_logo_local_path=row[11])
         for row in cursor.fetchall()
     ]
 

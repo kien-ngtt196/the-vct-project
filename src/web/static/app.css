@@ -2169,7 +2169,33 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   font-size: .86rem;
   font-weight: 700;
 }
-.profile-trophies [data-finish="1"] { border-inline-start: 3px solid #c49442; }
+.player-achievements {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+}
+.player-achievements table { width: 100%; border-collapse: collapse; text-align: left; }
+.player-achievements :is(th, td) { padding: 9px 12px; white-space: nowrap; }
+.player-achievements th { background: var(--panel-raised); color: var(--muted); font-size: 11px; }
+.player-achievements td { border-top: 1px solid var(--line); font-size: 12px; }
+.player-achievements :is(th, td):last-child { text-align: right; }
+.player-achievement-identity { display: flex; align-items: center; gap: 8px; }
+.player-achievement-identity .event-tile-logo { flex: 0 0 24px; width: 24px; height: 24px; }
+.player-achievement-identity a { color: var(--red); text-underline-offset: 3px; }
+.player-achievement-place {
+  display: inline-block;
+  min-width: 37px;
+  padding: 3px 6px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 800;
+}
+.player-achievement-place[data-medal="1"] { color: #e9b94f; }
+.player-achievement-place[data-medal="2"] { color: #bacadb; }
+.player-achievement-place[data-medal="3"] { color: #d48a5c; }
+.player-achievements:not(:has(table)) { padding: 12px; color: var(--muted); }
 .profile-section { padding: 12px; border: 1px solid var(--line); border-radius: 6px; }
 .profile-section .subheading { margin-top: 0; margin-bottom: 10px; }
 .profile-section .card-stats { margin: 0; }

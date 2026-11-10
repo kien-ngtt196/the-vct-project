@@ -523,24 +523,74 @@ function agentStrip(agents, detailed = false) {
   return strip;
 }
 
-function trophyShelf(trophies, player = false) {
+function tournamentPrize(prize) {
+  return prize && !/^(?:[-–—]+|\$0|0)$/.test(prize.trim()) ? prize : "";
+}
+
+function trophyShelf(trophies) {
   const shelf = document.createElement("div");
   shelf.className = "profile-trophies";
   for (const event of trophies || []) {
-    const prize = event.prize && !/^(?:[-–—]+|\$0|0)$/.test(event.prize.trim()) ? event.prize : "";
-    const finish = { 1: "Winner", 2: "Runner-up", 3: "Third place" }[event.rank] || "Winner";
-    const card = eventCard(event, [
-      finish,
-      player ? event.team : "",
-      prize ? (player ? `Team prize ${prize}` : prize) : "",
-    ].filter(Boolean).join(" · "));
-    if (player) card.dataset.finish = String(event.rank);
-    shelf.append(card);
+    shelf.append(eventCard(event, ["Winner", tournamentPrize(event.prize)].filter(Boolean).join(" · ")));
   }
-  if (!shelf.childElementCount) shelf.textContent = player
-    ? "No verified Tier 1 podium finishes recorded yet."
-    : "No verified tournament wins recorded yet.";
-  return profileSection(player ? "Career achievements" : "Tournament wins", shelf);
+  if (!shelf.childElementCount) shelf.textContent = "No verified tournament wins recorded yet.";
+  return profileSection("Tournament wins", shelf);
+}
+
+function playerAchievements(events) {
+  const container = document.createElement("div");
+  container.className = "player-achievements";
+  if (!events?.length) {
+    container.textContent = "No verified Tier 1 podium finishes recorded yet.";
+    return profileSection("Career achievements", container);
+  }
+
+  const table = document.createElement("table");
+  table.setAttribute("aria-label", "Career achievements");
+  const headings = table.createTHead().insertRow();
+  for (const label of ["Date", "Place", "Circuit", "Tournament", "Team", "Team prize"]) {
+    const column = document.createElement("th");
+    column.scope = "col";
+    column.textContent = label;
+    headings.append(column);
+  }
+  const body = table.createTBody();
+  for (const event of events) {
+    const row = body.insertRow();
+    row.insertCell().textContent = event.end_date || event.year || "—";
+    const place = document.createElement("span");
+    place.className = "player-achievement-place";
+    place.dataset.medal = String(event.rank);
+    place.textContent = { 1: "1st", 2: "2nd", 3: "3rd" }[event.rank] || "—";
+    row.insertCell().append(place);
+    const kind = eventKind(event.title);
+    const region = getRegion(event.region) || getRegion(event.title);
+    row.insertCell().textContent = kind === "regional" ? region?.name || "Regional"
+      : /lock\W*in/i.test(event.title) ? "LOCK//IN" : kind === "masters" ? "Masters" : "Champions";
+
+    const tournament = document.createElement("span");
+    tournament.className = "player-achievement-identity";
+    addImage(tournament, eventIcon(event), "event-tile-logo", "");
+    const url = safeSourceUrl(event.url);
+    const title = document.createElement(url ? "a" : "span");
+    if (url) {
+      title.href = url;
+      title.target = "_blank";
+      title.rel = "noopener noreferrer";
+    }
+    title.textContent = event.title;
+    tournament.append(title);
+    row.insertCell().append(tournament);
+
+    const team = document.createElement("span");
+    team.className = "player-achievement-identity";
+    if (event.team) addImage(team, [event.team_logo_local_path, event.team_logo_url], "match-team-logo", "");
+    team.append(event.team || "—");
+    row.insertCell().append(team);
+    row.insertCell().textContent = tournamentPrize(event.prize) || "—";
+  }
+  container.append(table);
+  return profileSection("Career achievements", container);
 }
 
 const flagRegions = "ar au bd by be bm bo br bn bg kh ca co cr hr cu cz cl cn dk do eg ee fi fr de gr gt ht hk in id ir ie it jp kz kg la lv lb lt mo mk my mv mx md mn ma np nl nz no pk ps pe pl pt pr ph ro ru sa rs sg kr es lk se ch tw tr th ua gb us uz vn".split(" ");
@@ -716,7 +766,7 @@ function renderPlayer(player) {
   card.append(
     header,
     profileSection("Season stats", overview),
-    trophyShelf(player.achievements || player.trophies, true),
+    playerAchievements(player.achievements || player.trophies),
     profileSection("Most-played agents", agentStrip(player.top_agents, true)),
     profileSection("Team history · recorded appearances", history),
     profileSection("Recent maps", maps),
