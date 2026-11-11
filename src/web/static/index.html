@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app.css?v=54">
-    <script src="/app.js?v=47" defer></script>
+    <link rel="stylesheet" href="/app.css?v=56">
+    <script src="/app.js?v=50" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -302,24 +302,94 @@
       </section>
 
       <section class="page-view feature-view watchlist-view" data-page-panel="watchlist" hidden>
-        <header class="feature-page-heading watchlist-page-heading">
-          <p class="eyebrow">THE ROAD TO 2027</p>
-          <h1>One circuit.<br><span>Four regions.</span></h1>
-          <p>Follow each region from open entry to the international stage. International stops follow Riot’s calendar. Dates shown come from the tournament archive.</p>
-        </header>
         <section class="roadmap-panel" aria-labelledby="roadmap-title">
-          <div class="roadmap-heading">
-            <div>
-              <p class="eyebrow">OPEN QUALIFIERS → CUPS → MASTERS → CHAMPIONS</p>
-              <h2 id="roadmap-title">The 2027 circuit</h2>
-            </div>
-            <span class="model-badge">REGIONAL DATES · TO BE CONFIRMED</span>
+          <header class="roadmap-heading">
+            <h1 id="roadmap-title">VCT 2027 <span>Season</span></h1>
+            <p>Open qualifiers lead to territory tournaments and three global events.</p>
+            <a class="roadmap-source" href="https://valorantesports.com/en-US/season/117246370678200773" target="_blank" rel="noopener noreferrer">Riot’s season guide ↗</a>
+          </header>
+          <div class="roadmap-stages">
+            <section class="roadmap-phase">
+              <h2><button type="button" class="roadmap-stage-toggle" data-roadmap-stage="kickoff" aria-controls="roadmap-listings" aria-expanded="false">
+                <span>Kickoff Stage</span>
+              </button></h2>
+              <div class="roadmap-stop">
+                <time datetime="2026-10-31">Oct 31, 2026</time>
+                <h3>Kickoff Qualifiers</h3>
+                <p>15 regional circuits</p>
+              </div>
+              <span class="roadmap-connector" aria-hidden="true"></span>
+              <div class="roadmap-stop">
+                <time datetime="2027-01-11">Jan 11</time>
+                <h3>Kickoff</h3>
+                <p>Territory tournament</p>
+              </div>
+              <p class="roadmap-qualification">3 teams per territory</p>
+              <div class="roadmap-stop roadmap-global" data-kind="masters">
+                <time datetime="2027-02-20">Feb 20</time>
+                <img src="/vct-images/masters-mark.png" alt="" width="48" height="48">
+                <h3 data-roadmap-event="masters.*seoul">Masters Seoul</h3>
+                <p>Global event</p>
+              </div>
+            </section>
+            <section class="roadmap-phase">
+              <h2><button type="button" class="roadmap-stage-toggle" data-roadmap-stage="stage-1" aria-controls="roadmap-listings" aria-expanded="false">
+                <span>Stage 1</span>
+              </button></h2>
+              <div class="roadmap-stop">
+                <time datetime="2027-01-13">Jan 13</time>
+                <h3>Stage 1 Opens</h3>
+                <p>15 regional circuits</p>
+              </div>
+              <span class="roadmap-connector" aria-hidden="true"></span>
+              <div class="roadmap-stop">
+                <time datetime="2027-04-24">Apr 24</time>
+                <h3>Cup 1</h3>
+                <p>Territory tournament</p>
+              </div>
+              <p class="roadmap-qualification">3 teams per territory</p>
+              <div class="roadmap-stop roadmap-global" data-kind="masters">
+                <time datetime="2027-06-05">Jun 5</time>
+                <img src="/vct-images/masters-mark.png" alt="" width="48" height="48">
+                <h3 data-roadmap-event="masters.*valencia">Masters Valencia</h3>
+                <p>Global event</p>
+              </div>
+            </section>
+            <section class="roadmap-phase">
+              <h2><button type="button" class="roadmap-stage-toggle" data-roadmap-stage="stage-2" aria-controls="roadmap-listings" aria-expanded="false">
+                <span>Stage 2</span>
+              </button></h2>
+              <div class="roadmap-stop">
+                <time datetime="2027-04-29">Apr 29</time>
+                <h3>Stage 2 Opens</h3>
+                <p>15 regional circuits</p>
+              </div>
+              <span class="roadmap-connector" aria-hidden="true"></span>
+              <div class="roadmap-stop">
+                <time datetime="2027-08-07">Aug 7</time>
+                <h3>Cup 2</h3>
+                <p>Territory tournament</p>
+              </div>
+              <p class="roadmap-qualification">Cup 2 placements and points</p>
+              <div class="roadmap-stop roadmap-global" data-kind="champions">
+                <time datetime="2027-09-16">Sep 16</time>
+                <img src="/champions-mark.svg" alt="" width="48" height="48">
+                <h3 data-roadmap-event="^(?:valorant )?champions (?:20|austin)">Champions Austin</h3>
+                <p>Global event</p>
+              </div>
+            </section>
           </div>
-          <p class="roadmap-note" id="roadmap-note">Riot’s 2027 format preview introduces Open Qualifiers, Cups, Masters, and Champions. Exact dates and regional brackets remain subject to official listings.</p>
-          <div class="roadmap-regions" id="roadmap-regions" aria-live="polite"></div>
-          <a class="roadmap-source" href="https://valorantesports.com/en-US/season/117246370678200773" target="_blank" rel="noopener noreferrer">
-            RIOT GAMES · THE VCT IN 2027 ↗
-          </a>
+          <section class="roadmap-listings" id="roadmap-listings" aria-labelledby="roadmap-listings-title" hidden>
+            <h2 id="roadmap-listings-title"></h2>
+            <div id="roadmap-listings-content" aria-live="polite"></div>
+          </section>
+          <section class="roadmap-destination" aria-labelledby="roadmap-destination-title">
+            <h2 id="roadmap-destination-title">Qualifying for Champions Austin</h2>
+            <dl>
+              <div><dt>Cup 2 placement</dt><dd>Top 2 teams per territory</dd></div>
+              <div><dt>Championship points</dt><dd>Top 2 teams per territory</dd></div>
+            </dl>
+          </section>
         </section>
       </section>
 

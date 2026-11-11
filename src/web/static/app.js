@@ -7,8 +7,6 @@ const teamRankingSeason = document.querySelector("#team-ranking-season");
 const playerRankingSeason = document.querySelector("#player-ranking-season");
 const homeTopTeams = document.querySelector("#home-top-teams");
 const homeTopPlayers = document.querySelector("#home-top-players");
-const roadmapRegions = document.querySelector("#roadmap-regions");
-const roadmapNote = document.querySelector("#roadmap-note");
 const archiveSeason = document.querySelector("#archive-season");
 const archiveStatus = document.querySelector("#archive-status");
 const archiveEvents = document.querySelector("#archive-events");
@@ -22,6 +20,8 @@ const pageLinks = [...document.querySelectorAll("[data-view-target]")];
 
 let searchTimer;
 let searchVersion = 0;
+let teamRankingVersion = 0;
+let playerRankingVersion = 0;
 const regions = [
   {
     key: "americas",
@@ -1125,13 +1125,25 @@ function renderRegionalStrength(scores, year) {
   grid.setAttribute("aria-label", `Regional strength for ${year}`);
 }
 
+function showRankingMessage(tableBody, columns, text, loading = false) {
+  const row = document.createElement("tr");
+  const cell = row.insertCell();
+  cell.colSpan = columns;
+  cell.className = loading ? "table-message ranking-loading" : "table-message";
+  cell.textContent = text;
+  tableBody.replaceChildren(row);
+  tableBody.closest(".table-scroll").scrollTo(0, 0);
+}
+
 async function loadPowerRankings() {
   const year = teamRankingSeason.value;
+  const version = ++teamRankingVersion;
+  showRankingMessage(powerRankings, 6, `Loading ${year} team rankings…`, true);
   const strengthGrid = document.querySelector("#region-strength-scores");
   strengthGrid.textContent = "Loading scores…";
   try {
     const payload = await getJson(`/api/power-rankings?year=${year}`);
-    if (teamRankingSeason.value !== year) return;
+    if (version !== teamRankingVersion) return;
     renderRegionalStrength(payload.regional_strength || {}, year);
     const powerTeams = payload.teams;
     const events = payload.international_events || [];
@@ -1151,31 +1163,24 @@ async function loadPowerRankings() {
       ...powerTeams.map((team, index) => renderPowerTeam(team, index + 1, year, internationalSlots)),
     );
     if (!powerTeams.length) {
-      const cell = powerRankings.insertRow().insertCell();
-      cell.colSpan = 6;
-      cell.className = "table-message";
-      cell.textContent = "No eligible team results have been imported for this season.";
+      showRankingMessage(powerRankings, 6, "No eligible team results have been imported for this season.");
     }
   } catch (error) {
-    if (teamRankingSeason.value !== year) return;
+    if (version !== teamRankingVersion) return;
     strengthGrid.textContent = "Regional scores unavailable.";
     if (year === "2026") renderHomeLeaders(homeTopTeams, [], "team", error.message);
-    const row = document.createElement("tr");
-    const message = document.createElement("td");
-    message.className = "table-message";
-    message.colSpan = 6;
-    message.textContent = error.message;
-    row.append(message);
-    powerRankings.replaceChildren(row);
+    showRankingMessage(powerRankings, 6, error.message);
   }
 }
 
 async function loadPlayerRankings() {
   const year = playerRankingSeason.value;
+  const version = ++playerRankingVersion;
   const tableBody = document.querySelector("#player-rankings");
+  showRankingMessage(tableBody, 12, `Loading ${year} player rankings…`, true);
   try {
     const payload = await getJson(`/api/player-power-rankings?year=${year}`);
-    if (playerRankingSeason.value !== year) return;
+    if (version !== playerRankingVersion) return;
     if (year === "2026") {
       document.querySelectorAll('[data-count="players"]').forEach((counter) => {
         counter.textContent = String(payload.players.length);
@@ -1186,21 +1191,12 @@ async function loadPlayerRankings() {
       ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1, year)),
     );
     if (!payload.players.length) {
-      const cell = tableBody.insertRow().insertCell();
-      cell.colSpan = 12;
-      cell.className = "table-message";
-      cell.textContent = "No players meet the five-map minimum for this season yet.";
+      showRankingMessage(tableBody, 12, "No players meet the five-map minimum for this season yet.");
     }
   } catch (error) {
-    if (playerRankingSeason.value !== year) return;
+    if (version !== playerRankingVersion) return;
     if (year === "2026") renderHomeLeaders(homeTopPlayers, [], "player", error.message);
-    const row = document.createElement("tr");
-    const message = document.createElement("td");
-    message.className = "table-message";
-    message.colSpan = 12;
-    message.textContent = error.message;
-    row.append(message);
-    tableBody.replaceChildren(row);
+    showRankingMessage(tableBody, 12, error.message);
   }
 }
 
@@ -1211,56 +1207,86 @@ playerRankingSeason.addEventListener("change", () => {
 });
 
 async function loadRoadmap() {
+  const listings = document.querySelector("#roadmap-listings");
+  const content = document.querySelector("#roadmap-listings-content");
+  const listingsTitle = document.querySelector("#roadmap-listings-title");
+  const stageButtons = [...document.querySelectorAll("[data-roadmap-stage]")];
+  const stageTitles = {
+    kickoff: /\bkick[ -]?off\b/i,
+    "stage-1": /\b(?:stage|cups?|opens?)\s*1\b/i,
+    "stage-2": /\b(?:stage|cups?|opens?)\s*2\b/i,
+  };
+  let selectedStage = null;
+  let regionalEvents = null;
+  let listingsUnavailable = false;
+
+  function renderStageEvents() {
+    if (!selectedStage) return;
+    listingsTitle.textContent = `${selectedStage.querySelector("span").textContent} events`;
+    if (!regionalEvents) {
+      content.textContent = listingsUnavailable
+        ? "Regional event listings are currently unavailable."
+        : "Loading regional events…";
+      return;
+    }
+    const pattern = stageTitles[selectedStage.dataset.roadmapStage];
+    const groups = regions.map((region) => {
+      const group = document.createElement("section");
+      group.className = "roadmap-event-group";
+      const heading = document.createElement("h3");
+      addImage(heading, region.logo, "roadmap-region-mark", "");
+      heading.append(region.name);
+      const events = regionalEvents.filter((event) =>
+        pattern.test(event.title) && (getRegion(event.region) || getRegion(event.title))?.key === region.key
+      );
+      group.append(heading);
+      if (events.length) {
+        group.append(...events.map((event) => eventCard(event, eventDates(event))));
+      } else {
+        const empty = document.createElement("p");
+        empty.textContent = "No events listed yet.";
+        group.append(empty);
+      }
+      return group;
+    });
+    content.replaceChildren(...groups);
+  }
+
+  for (const button of stageButtons) {
+    const marks = document.createElement("span");
+    marks.className = "roadmap-stage-marks";
+    marks.setAttribute("aria-hidden", "true");
+    for (const region of regions) addImage(marks, region.logo, "roadmap-region-mark", "");
+    button.append(marks);
+    button.addEventListener("click", () => {
+      selectedStage = selectedStage === button ? null : button;
+      for (const stage of stageButtons) stage.setAttribute("aria-expanded", String(stage === selectedStage));
+      listings.hidden = !selectedStage;
+      if (!selectedStage) return;
+      renderStageEvents();
+      listings.scrollIntoView({ block: "nearest" });
+    });
+  }
+
   try {
     const { events } = await getJson("/api/2027");
-    roadmapNote.textContent = "Four regional circuits feed three international stops. Dates reflect imported listings.";
-    const lanes = document.createElement("div");
-    lanes.className = "circuit-lanes";
-    for (const region of regions) {
-      const lane = document.createElement("section");
-      lane.className = "circuit-lane";
-      const label = document.createElement("h3");
-      label.textContent = region.name;
-      addImage(lane, region.logo, "circuit-logo", "");
-      lane.append(label);
-      const eventsForRegion = events.filter((event) =>
-        eventKind(event.title) === "regional" && getRegion(event.region)?.key === region.key
-      );
-      const phases = document.createElement("small");
-      phases.textContent = "Opens · Kickoff · Cups";
-      lane.append(phases);
-      if (eventsForRegion.length) {
-        const details = document.createElement("details");
-        const summary = document.createElement("summary");
-        summary.textContent = `${eventsForRegion.length} listed events`;
-        details.append(summary, ...eventsForRegion.map((event) => eventCard(event, eventDates(event))));
-        lane.append(details);
-      }
-      lanes.append(lane);
+    regionalEvents = events.filter((event) => eventKind(event.title) === "regional");
+    for (const heading of document.querySelectorAll("[data-roadmap-event]")) {
+      const match = new RegExp(heading.dataset.roadmapEvent, "i");
+      const event = events.find((entry) => match.test(entry.title));
+      const url = safeSourceUrl(event?.url);
+      if (!url) continue;
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = heading.textContent;
+      heading.replaceChildren(link);
     }
-    const junction = lineGraphic("0 0 400 34", "M50 0v11h300V0M150 0v11m100-11v11m-50 0v23");
-    junction.setAttribute("preserveAspectRatio", "none");
-    junction.classList.add("circuit-junction");
-    const finals = document.createElement("section");
-    finals.className = "circuit-finals";
-    const heading = document.createElement("h3");
-    heading.textContent = "International circuit";
-    const stages = document.createElement("div");
-    stages.className = "circuit-stages";
-    for (const [title, matches] of [
-      ["Masters Seoul", /masters.*seoul/i],
-      ["Masters Valencia", /masters.*valencia/i],
-      ["Champions Austin", /^(?:valorant )?champions (?:20|austin)/i],
-    ]) {
-      const listed = events.find((event) => matches.test(event.title));
-      const event = { ...listed, title };
-      stages.append(eventCard(event, listed ? eventDates(listed) : "Dates unavailable in archive"));
-    }
-    finals.append(heading, stages);
-    roadmapRegions.replaceChildren(lanes, junction, finals);
-  } catch (error) {
-    roadmapNote.textContent = `Unable to load 2027 event listings: ${error.message}`;
+  } catch {
+    listingsUnavailable = true;
   }
+  renderStageEvents();
 }
 
 loadPowerRankings();
