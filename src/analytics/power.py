@@ -14,6 +14,26 @@ PLACEMENT_POINTS = {
     "masters": (22, 17, 13, 8, 4),
     "regional": (10, 7, 4, 2, 0),
 }
+PLAYER_POWER_POINTS = {
+    "season_performance": 65,
+    "season_maps": 10,
+    "international_performance": 10,
+    "tournament_finishes": 15,
+}
+PLAYER_METRIC_WEIGHTS = {
+    "rating": (0.35, 1.2),
+    "acs": (0.25, 300),
+    "kast": (0.2, 100),
+    "adr": (0.1, 150),
+    "kd_strength": (0.1, 1),
+}
+PLAYER_SAMPLE_PRIOR_MAPS = 20
+PLAYER_VOLUME_CAP = 60
+PLAYER_INTERNATIONAL_PRIOR_MAPS = 6
+PLAYER_INTERNATIONAL_RATING_CEILING = 1.25
+PLAYER_EVENT_WIN_POINTS = {"champions": 12, "masters": 8, "regional": 3}
+PLAYER_EVENT_FULL_CREDIT_MAPS = 5
+PLAYER_FINISHES_COUNT = 3
 
 
 def placement_rank(text):
@@ -148,64 +168,75 @@ def calculate_team_power(team_stats):
 
 def calculate_player_power(player_stats):
     ratings = []
-    metric_weights = {
-        "rating": (0.35, 1.2),
-        "acs": (0.25, 300),
-        "kast": (0.2, 100),
-        "adr": (0.1, 150),
-    }
-
     for stats in player_stats:
         maps_played = int(stats.get("maps_played", 0))
         if maps_played <= 0:
             continue
 
-        components = {}
-        for metric, (_, ceiling) in metric_weights.items():
-            value = stats.get(metric)
-            rate = (
-                min(1.0, max(0.0, float(value) / ceiling))
-                if value is not None
-                else 0.5
-            )
-            components[metric] = rate
-
         kills = float(stats.get("kills") or 0)
         deaths = float(stats.get("deaths") or 0)
         kd_strength = kills / (kills + deaths) if kills + deaths else 0.5
-        base_power_score = 100 * (
-            sum(
-                metric_weights[metric][0] * components[metric]
-                for metric in metric_weights
-            )
-            + 0.1 * kd_strength
+        metrics = {**stats, "kd_strength": kd_strength}
+        performance = sum(
+            weight * min(1.0, max(0.0, float(metrics[metric]) / ceiling))
+            if metrics.get(metric) is not None else weight * 0.5
+            for metric, (weight, ceiling) in PLAYER_METRIC_WEIGHTS.items()
         )
-        ratings.append(
-            {
-                **stats,
-                "maps_played": maps_played,
-                "kd_strength": round(kd_strength, 4),
-                "unscaled_power_score": round(base_power_score, 1),
-                "power_score": base_power_score,
-            }
-        )
+        ratings.append((metrics, maps_played, performance))
 
-    total_maps = sum(player["maps_played"] for player in ratings)
-    if total_maps:
-        baseline = sum(
-            player["power_score"] * player["maps_played"] for player in ratings
-        ) / total_maps
-        for player in ratings:
-            maps = player["maps_played"]
-            score = (maps * player["power_score"] + 10 * baseline) / (maps + 10)
-            player["power_score"] = round(score, 1)
-            player["unscaled_power_score"] = player["power_score"]
+    if not ratings:
+        return []
+    baseline = sum(maps * performance for _, maps, performance in ratings) / sum(
+        maps for _, maps, _ in ratings
+    )
+    standings = []
+    for player, maps, performance in ratings:
+        prior = PLAYER_SAMPLE_PRIOR_MAPS
+        adjusted = (maps * performance + prior * baseline) / (maps + prior)
+        intl_maps = player.get("international_rated_maps", 0)
+        intl_rating = float(player.get("weighted_international_rating") or 0)
+        intl_rate = min(1.0, max(0.0, intl_rating / PLAYER_INTERNATIONAL_RATING_CEILING))
+        event_points = {}
+        for event in player.get("tournament_finishes", ()):
+            event_id = event["event_id"]
+            event_points[event_id] = max(event_points.get(event_id, 0), player_finish_points(event))
+        components = {
+            "season_performance": PLAYER_POWER_POINTS["season_performance"] * adjusted,
+            "season_maps": PLAYER_POWER_POINTS["season_maps"] * min(1.0, maps / PLAYER_VOLUME_CAP),
+            "international_performance": PLAYER_POWER_POINTS["international_performance"]
+            * intl_rate * intl_maps / (intl_maps + PLAYER_INTERNATIONAL_PRIOR_MAPS),
+            "tournament_finishes": min(
+                PLAYER_POWER_POINTS["tournament_finishes"],
+                sum(sorted(event_points.values(), reverse=True)[:PLAYER_FINISHES_COUNT]),
+            ),
+        }
+        score = round(sum(components.values()), 1)
+        standings.append({
+            **player,
+            "maps_played": maps,
+            "kd_strength": round(player["kd_strength"], 4),
+            "power_score": score,
+            "unscaled_power_score": score,
+            "power_components": {key: round(value, 2) for key, value in components.items()},
+        })
 
     return sorted(
-        ratings,
+        standings,
         key=lambda player: (
             -player["power_score"],
             -player["maps_played"],
             player["name"].casefold(),
         ),
     )
+
+
+def player_finish_points(event):
+    kind = event["kind"]
+    placement = event["placement"]
+    rank = placement_rank(placement)
+    if rank is None or rank <= 0:
+        return 0
+    maximum, *_, floor = PLACEMENT_POINTS[kind]
+    finish = (achievement_points(kind, placement) - floor) / (maximum - floor)
+    participation = min(1.0, event["maps"] / PLAYER_EVENT_FULL_CREDIT_MAPS)
+    return PLAYER_EVENT_WIN_POINTS[kind] * finish * participation

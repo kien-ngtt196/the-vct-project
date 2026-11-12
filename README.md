@@ -75,8 +75,10 @@ without a usable source URL need separate hosting to appear online.
   strength (5%). It describes
   season performance; it weights Champions 3×, Masters 2×, and regional
   matches 1×, and displays earned points out of 100. The player ranking uses
-  weighted rating, ACS, KAST, ADR, and K/D, requires at least five maps,
-  and displays the sample-adjusted score out of 100. Both rankings use completed Tier 1 matches
+  weighted rating, ACS, KAST, ADR, and K/D for sample-adjusted season performance
+  (65 points). It also scores maps played (10), international performance (10),
+  and verified tournament finishes (15), with a five-map minimum to qualify.
+  Both rankings use completed Tier 1 matches
   in the selected season. Team region labels are inferred from the most frequent
   regional Tier 1 tournament region in VLR data for that season. Neither
   ranking predicts match outcomes.

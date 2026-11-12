@@ -9,10 +9,13 @@ from urllib.parse import parse_qs, unquote, urlsplit
 import psycopg2
 
 from src.analytics.power import (
-    PLACEMENT_POINTS, TEAM_POWER_WEIGHTS, achievement_points,
+    PLACEMENT_POINTS, PLAYER_EVENT_FULL_CREDIT_MAPS, PLAYER_EVENT_WIN_POINTS, PLAYER_FINISHES_COUNT,
+    PLAYER_INTERNATIONAL_PRIOR_MAPS, PLAYER_INTERNATIONAL_RATING_CEILING, PLAYER_METRIC_WEIGHTS,
+    PLAYER_POWER_POINTS, PLAYER_SAMPLE_PRIOR_MAPS, PLAYER_VOLUME_CAP, TEAM_POWER_WEIGHTS, achievement_points,
     calculate_player_power, calculate_team_power, placement_rank,
 )
 from src.analytics.roles import agent_profile
+from src.analytics.simulator import simulator_catalog
 from src.db.database import connect
 
 
@@ -535,6 +538,25 @@ def team_details(team_id, year=2026):
 
             cursor.execute(
                 """
+                SELECT stats.player_id, ARRAY_AGG(stats.agent)
+                FROM player_stats stats
+                JOIN games game ON game.id = stats.game_id
+                JOIN matches match ON match.id = game.match_id
+                JOIN tournaments event ON event.id = match.tournament_id
+                LEFT JOIN seasons event_season ON event_season.season_id = event.season_id
+                WHERE stats.team_id = %s AND event.tier = 'tier1'
+                  AND stats.agent IS NOT NULL
+                  AND COALESCE(event_season.year, EXTRACT(YEAR FROM match.match_date)::INTEGER) = %s
+                GROUP BY stats.player_id
+                """,
+                (team_id, year),
+            )
+            observed_roles = {
+                player_id: agent_profile(agents)["role"] for player_id, agents in cursor.fetchall()
+            }
+
+            cursor.execute(
+                """
                 SELECT DISTINCT ON (rm.player_id)
                        rm.player_id, player.canonical_name, player.image_url,
                        player.image_local_path, rm.notes, rm.source_url
@@ -648,7 +670,7 @@ def team_details(team_id, year=2026):
                 "name": row[1],
                 "image_url": row[2],
                 "image_local_path": row[3],
-                "role": row[4],
+                "role": observed_roles.get(row[0]) if not row[4] or row[4].lower() == "player" else row[4],
                 "source_url": row[5],
             }
             for row in current_roster
@@ -660,6 +682,7 @@ def team_details(team_id, year=2026):
                 "image_url": row[2],
                 "image_local_path": row[3],
                 "last_seen": row[4],
+                "role": observed_roles.get(row[0]),
             }
             for row in observed_players
         ],
@@ -1012,17 +1035,25 @@ def team_power_rankings(year=2026):
 
 
 def player_power_rankings(year=2026):
+    return player_power_by_season((year,))[year]
+
+
+def player_power_by_season(years):
+    match_year = "COALESCE(event_season.year, EXTRACT(YEAR FROM match.match_date)::INTEGER)"
     with connect() as connection:
         with connection.cursor() as cursor:
             cursor.execute(
                 f"""
                 WITH season_matches AS MATERIALIZED (
-                    SELECT match.id, match.match_date,
-                           {ranking_match('match', 'tournament.title', year)} AS is_ranked,
+                    SELECT match.id, match.match_date, tournament.id AS event_id, {match_year} AS year,
+                           CASE WHEN {match_year} = 2021
+                                THEN ({ranking_match('match', 'tournament.title', 2021)})
+                                ELSE ({ranking_match('match', 'tournament.title', 2026)}) END AS is_ranked,
                            lower(match.status) IN ('final', 'completed', 'complete') AS is_finished,
                            CASE
                                WHEN tournament.title ILIKE 'Valorant Champions 20%%' THEN 'champions'
-                               WHEN {masters_event("tournament.title", year)} THEN 'masters'
+                               WHEN CASE WHEN {match_year} = 2021 THEN ({masters_event("tournament.title", 2021)})
+                                    ELSE ({masters_event("tournament.title", 2026)}) END THEN 'masters'
                                ELSE 'regional'
                            END AS event_kind,
                            match.url ~* '-(gf|[ulm]bf|ub[qs]f|[ulm]r[0-9]+|playoffs|grand-final)/?$' AS bracket_match
@@ -1030,15 +1061,13 @@ def player_power_rankings(year=2026):
                     JOIN tournaments tournament ON tournament.id = match.tournament_id
                     LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                     WHERE tournament.tier = 'tier1'
-                      AND COALESCE(
-                          event_season.year,
-                          EXTRACT(YEAR FROM match.match_date)::INTEGER
-                      ) = %s
+                      AND {match_year} = ANY(%s)
                       AND match.match_date >= make_date(%s, 1, 1)
                       AND match.match_date < make_date(%s, 1, 1)
+                      AND EXTRACT(YEAR FROM match.match_date)::INTEGER = {match_year}
                 ),
                 eligible_matches AS (
-                    SELECT id, event_kind,
+                    SELECT id, event_id, event_kind, year,
                            CASE event_kind
                                WHEN 'champions' THEN CASE WHEN bracket_match THEN {PLAYER_EVENT_WEIGHTS['champions'][1]} ELSE {PLAYER_EVENT_WEIGHTS['champions'][0]} END
                                WHEN 'masters' THEN CASE WHEN bracket_match THEN {PLAYER_EVENT_WEIGHTS['masters'][1]} ELSE {PLAYER_EVENT_WEIGHTS['masters'][0]} END
@@ -1047,54 +1076,80 @@ def player_power_rankings(year=2026):
                     FROM season_matches
                     WHERE is_ranked AND is_finished
                 ),
+                player_maps AS MATERIALIZED (
+                    SELECT stats.player_id, stats.team_id, game.id AS map_id,
+                           eligible.event_id, eligible.event_kind, eligible.event_weight, eligible.year,
+                           stats.rating, stats.acs, stats.kast_percentage, stats.adr,
+                           stats.kills, stats.deaths, stats.headshot_percentage, stats.agent
+                    FROM eligible_matches eligible
+                    JOIN games game ON game.match_id = eligible.id
+                    JOIN player_stats stats ON stats.game_id = game.id
+                    WHERE stats.player_id IS NOT NULL
+                ),
+                event_maps AS (
+                    SELECT year, player_id, team_id, event_id, COUNT(DISTINCT map_id) AS maps
+                    FROM player_maps
+                    WHERE team_id IS NOT NULL
+                    GROUP BY year, player_id, team_id, event_id
+                ),
+                event_appearances AS (
+                    SELECT year, player_id, JSON_AGG(JSON_BUILD_ARRAY(team_id, event_id, maps)) AS events
+                    FROM event_maps
+                    GROUP BY year, player_id
+                ),
                 player_totals AS (
-                    SELECT stats.player_id,
-                           COUNT(DISTINCT game.id) AS maps_played,
-                           SUM(stats.rating * eligible.event_weight)
+                    SELECT stats.year, stats.player_id,
+                           COUNT(DISTINCT map_id) AS maps_played,
+                           SUM(stats.rating * stats.event_weight)
                                / NULLIF(
-                                   SUM(eligible.event_weight)
+                                   SUM(stats.event_weight)
                                        FILTER (WHERE stats.rating IS NOT NULL),
                                    0
                                ) AS rating,
-                           SUM(stats.acs * eligible.event_weight)
+                           SUM(stats.acs * stats.event_weight)
                                / NULLIF(
-                                   SUM(eligible.event_weight)
+                                   SUM(stats.event_weight)
                                        FILTER (WHERE stats.acs IS NOT NULL),
                                    0
                                ) AS acs,
-                           SUM(stats.kast_percentage * eligible.event_weight)
+                           SUM(stats.kast_percentage * stats.event_weight)
                                / NULLIF(
-                                   SUM(eligible.event_weight)
+                                   SUM(stats.event_weight)
                                        FILTER (WHERE stats.kast_percentage IS NOT NULL),
                                    0
                                ) AS kast,
-                           SUM(stats.adr * eligible.event_weight)
+                           SUM(stats.adr * stats.event_weight)
                                / NULLIF(
-                                   SUM(eligible.event_weight)
+                                   SUM(stats.event_weight)
                                        FILTER (WHERE stats.adr IS NOT NULL),
                                    0
                                ) AS adr,
-                           SUM(COALESCE(stats.kills, 0) * eligible.event_weight) AS kills,
-                           SUM(COALESCE(stats.deaths, 0) * eligible.event_weight) AS deaths,
-                           COUNT(DISTINCT game.id) FILTER (WHERE eligible.event_kind <> 'regional') AS international_maps,
-                           AVG(stats.rating) FILTER (WHERE eligible.event_kind <> 'regional') AS international_rating,
+                           SUM(COALESCE(stats.kills, 0) * stats.event_weight) AS kills,
+                           SUM(COALESCE(stats.deaths, 0) * stats.event_weight) AS deaths,
+                           COUNT(DISTINCT map_id) FILTER (WHERE event_kind <> 'regional') AS international_maps,
+                           AVG(stats.rating) FILTER (WHERE event_kind <> 'regional') AS international_rating,
+                           COUNT(DISTINCT map_id) FILTER (
+                               WHERE event_kind <> 'regional' AND stats.rating IS NOT NULL
+                           ) AS international_rated_maps,
+                           SUM(stats.rating * stats.event_weight) FILTER (WHERE event_kind <> 'regional')
+                               / NULLIF(SUM(stats.event_weight) FILTER (
+                                   WHERE event_kind <> 'regional' AND stats.rating IS NOT NULL
+                               ), 0) AS weighted_international_rating,
                            AVG(stats.headshot_percentage) AS headshot_percentage,
                            SUM(stats.kills) AS raw_kills, SUM(stats.deaths) AS raw_deaths,
                            ARRAY_AGG(stats.agent) AS agent_picks
-                    FROM player_stats stats
-                    JOIN games game ON game.id = stats.game_id
-                    JOIN eligible_matches eligible ON eligible.id = game.match_id
-                    WHERE stats.player_id IS NOT NULL
-                    GROUP BY stats.player_id
-                    HAVING COUNT(DISTINCT game.id) >= 5
+                    FROM player_maps stats
+                    GROUP BY stats.year, stats.player_id
+                    HAVING COUNT(DISTINCT map_id) >= 5
                 ),
                 observed_teams AS (
-                    SELECT DISTINCT ON (appearance.player_id) appearance.player_id, appearance.team_id
+                    SELECT DISTINCT ON (match.year, appearance.player_id)
+                           match.year, appearance.player_id, appearance.team_id
                     FROM season_matches match
                     JOIN match_players appearance ON appearance.match_id = match.id
                     WHERE appearance.team_id IS NOT NULL
-                      AND {'match.is_ranked' if year == 2021 else 'TRUE'}
-                    ORDER BY appearance.player_id, match.match_date DESC NULLS LAST
+                      AND (match.year <> 2021 OR match.is_ranked)
+                    ORDER BY match.year, appearance.player_id, match.match_date DESC NULLS LAST
                 )
                 SELECT player.player_id, player.canonical_name, player.image_url,
                        player.image_local_path, player.nationality, player.source_url,
@@ -1107,25 +1162,39 @@ def player_power_rankings(year=2026):
                             ELSE observed_team.logo_url END,
                        CASE WHEN roster_team.canonical_name IS NOT NULL THEN roster_team.logo_local_path
                             ELSE observed_team.logo_local_path END,
-                       COALESCE(roster_team.team_id, observed_team.team_id)
+                       COALESCE(roster_team.team_id, observed_team.team_id),
+                       totals.international_rated_maps, totals.weighted_international_rating, appearances.events,
+                       totals.year
                 FROM player_totals totals
                 JOIN players player ON player.player_id = totals.player_id
+                LEFT JOIN event_appearances appearances
+                  ON appearances.player_id = totals.player_id AND appearances.year = totals.year
                 LEFT JOIN LATERAL (
                     SELECT team.canonical_name, team.logo_url, team.logo_local_path, team.team_id
                     FROM roster_memberships membership
                     JOIN teams team ON team.team_id = membership.team_id
                     WHERE membership.player_id = player.player_id
-                      AND membership.status = 'current' AND %s = 2026
+                      AND membership.status = 'current' AND totals.year = 2026
                     ORDER BY membership.updated_at DESC
                     LIMIT 1
                 ) roster_team ON TRUE
-                LEFT JOIN observed_teams observed ON observed.player_id = player.player_id
+                LEFT JOIN observed_teams observed
+                  ON observed.player_id = player.player_id AND observed.year = totals.year
                 LEFT JOIN teams observed_team ON observed_team.team_id = observed.team_id
                 """,
-                (year, year, year + 1, year),
+                (list(years), min(years), max(years) + 1),
             )
-            players = [
-                {
+            rows = cursor.fetchall()
+            placements = {
+                (team_id, event["event_id"]): event
+                for year in years
+                for team_id, achievement in season_achievements(cursor, year).items()
+                for event in achievement["achievement_events"]
+                if (placement_rank(event["placement"]) or 0) > 0
+            }
+            players = {year: [] for year in years}
+            for row in rows:
+                players[row[26]].append({
                     "id": row[0],
                     "name": row[1],
                     "image_url": row[2],
@@ -1148,10 +1217,18 @@ def player_power_rankings(year=2026):
                     "team_logo_url": row[20],
                     "team_logo_local_path": row[21],
                     "team_id": row[22],
-                }
-                for row in cursor.fetchall()
-            ]
-    return calculate_player_power(players)
+                    "international_rated_maps": row[23],
+                    "weighted_international_rating": row[24],
+                    "tournament_finishes": [
+                        {
+                            "event_id": event_id, "kind": finish["kind"], "title": finish["title"],
+                            "placement": finish["placement"], "maps": maps,
+                        }
+                        for team_id, event_id, maps in (row[25] or [])
+                        if (finish := placements.get((team_id, event_id))) is not None
+                    ],
+                })
+    return {year: calculate_player_power(entries) for year, entries in players.items()}
 
 
 def events_for_season(year):
@@ -1287,7 +1364,8 @@ def get_response(path, query):
     try:
         if path == "/":
             return static_response("index.html")
-        elif path in {"/app.css", "/app.js", "/favicon.svg", "/champions-mark.svg"} or path.startswith("/assets/"):
+        elif path in {"/app.css", "/app.js", "/simulator.css", "/simulator-engine.js", "/simulator.js",
+                      "/favicon.svg", "/champions-mark.svg"} or path.startswith("/assets/"):
             return static_response(path.lstrip("/"))
         elif path.startswith("/vct-images/"):
             image_path = path.removeprefix("/vct-images/")
@@ -1300,6 +1378,13 @@ def get_response(path, query):
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT 1")
             return json_response(200, {"status": "ok", "database": "connected"})
+        elif path == "/api/simulator":
+            power = {
+                (year, player["id"]): player["power_score"]
+                for year, players in player_power_by_season(range(2021, 2027)).items()
+                for player in players
+            }
+            return json_response(200, simulator_catalog(ranking_match("m", "t.title", 2021), power))
         elif path == "/api/events":
             year = int(query.get("year", ["2026"])[0])
             if not 2021 <= year <= 2026:
@@ -1373,20 +1458,21 @@ def get_response(path, query):
                     "year": year,
                     "players": player_power_rankings(year),
                     "formula": {
-                        "rating": 0.35,
-                        "acs": 0.25,
-                        "kast": 0.2,
-                        "adr": 0.1,
-                        "kd_strength": 0.1,
+                        **{metric: weight for metric, (weight, _) in PLAYER_METRIC_WEIGHTS.items()},
+                        "component_points": PLAYER_POWER_POINTS,
                         "minimum_maps": 5,
-                        "score_scaling": (
-                            "The displayed score is the sample-adjusted player score out of 100."
-                        ),
+                        "score_scaling": "Players earn up to 100 points across four components.",
                         "event_weights": {
                             kind: {"base": weights[0], "bracket": weights[1]}
                             for kind, weights in PLAYER_EVENT_WEIGHTS.items()
                         },
-                        "sample_prior_maps": 10,
+                        "sample_prior_maps": PLAYER_SAMPLE_PRIOR_MAPS,
+                        "season_maps_full_credit": PLAYER_VOLUME_CAP,
+                        "international_prior_maps": PLAYER_INTERNATIONAL_PRIOR_MAPS,
+                        "international_rating_ceiling": PLAYER_INTERNATIONAL_RATING_CEILING,
+                        "event_win_points": PLAYER_EVENT_WIN_POINTS,
+                        "event_full_credit_maps": PLAYER_EVENT_FULL_CREDIT_MAPS,
+                        "counted_event_finishes": PLAYER_FINISHES_COUNT,
                     },
                 },
             )

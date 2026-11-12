@@ -9,8 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app.css?v=57">
-    <script src="/app.js?v=55" defer></script>
+    <link rel="stylesheet" href="/app.css?v=58">
+    <link rel="stylesheet" href="/simulator.css?v=4">
+    <script src="/app.js?v=60" defer></script>
+    <script src="/simulator-engine.js?v=2" defer></script>
+    <script src="/simulator.js?v=5" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -24,6 +27,7 @@
         <a href="#players" data-view-target="players">Player rankings</a>
         <a href="#archive" data-view-target="archive">Tournament archive</a>
         <a href="#watchlist" data-view-target="watchlist">2027 roadmap</a>
+        <a href="#simulator" data-view-target="simulator">Champions simulator</a>
       </nav>
       <div class="header-actions">
         <span class="header-note">INDEPENDENT VCT STATS</span>
@@ -300,8 +304,9 @@
           <span id="player-ranking-2021-note" hidden>2021 scores exclude preliminary qualifiers and include Last Chance Qualifiers. </span>
           Roles use at least five classified maps. Flex means the leading role is below 60% and a second role accounts for at least 25%.
           HS% averages reported map values. K/D uses total kills and deaths.
-          Player scores show earned points out of 100. Ratings are event-weighted
-          averages. Map weights range from 1× for regional play to 3× for Champions playoffs. Smaller samples are pulled toward the season average.
+          Power combines season performance (65 pts), maps played (10 pts), international performance
+          (10 pts), and verified tournament finishes (15 pts). Smaller samples count less.
+          Champions finishes earn the most, followed by Masters and regional events.
         </p>
       </section>
       </section>
@@ -396,6 +401,22 @@
             </dl>
           </section>
         </section>
+      </section>
+
+      <section class="page-view feature-view sim-page" data-page-panel="simulator" hidden>
+        <header class="sim-hero">
+          <div>
+            <p class="eyebrow">VCT FORMLINE · FANTASY DRAFT</p>
+            <h1>Champions Simulator</h1>
+            <p>Draft five players from 2021–2026 and take on historical Champions rosters. Draft stars reflect each player’s season power.</p>
+          </div>
+          <img src="/champions-mark.svg" alt="" width="76" height="76">
+        </header>
+        <div id="simulator-workspace"></div>
+        <p class="sim-footnote">
+          Results and player stats are simulated. Historical match stats inform player strength and agent picks.
+          <a href="https://valorantesports.com/en-US/season/115571062868511862/handbook/115571073559465084" target="_blank" rel="noopener noreferrer">Champions Shanghai format ↗</a>
+        </p>
       </section>
 
       <footer class="site-footer">

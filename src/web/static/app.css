@@ -2151,6 +2151,9 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
 .agent-strip { flex-wrap: nowrap; }
 .agent-portrait { width: 27px; height: 27px; display: block; object-fit: contain; border-radius: 4px; background: var(--panel); }
 .player-role { font-size: 11px; white-space: nowrap; }
+.role-badge { display: inline-flex; align-items: center; gap: .38em; }
+.role-icon { width: 1.15em; height: 1.15em; flex: none; }
+span.role-icon { background: currentColor; mask: var(--role-image) center / contain no-repeat; }
 .formline-player { display: grid; gap: 14px; }
 .player-identity {
   display: grid;

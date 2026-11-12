@@ -75,6 +75,21 @@ function lineGraphic(viewBox, pathData) {
   return svg;
 }
 
+function roleBadge(role, label = role) {
+  const badge = document.createElement("span");
+  badge.className = "role-badge";
+  const name = String(role || "").trim().toLowerCase();
+  if (["duelist", "controller", "initiator", "sentinel", "flex"].includes(name)) {
+    const icon = document.createElement("span");
+    icon.className = "role-icon";
+    icon.style.setProperty("--role-image", `url("/assets/roles/${name}.svg")`);
+    icon.setAttribute("aria-hidden", "true");
+    badge.append(icon);
+  }
+  badge.append(label);
+  return badge;
+}
+
 function viewFromHash() {
   const hash = window.location.hash.slice(1);
   const legacyViews = {
@@ -100,6 +115,7 @@ function showPage(view, scroll = true) {
   });
   if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
   if (view === "archive") loadArchive();
+  if (view === "simulator") document.dispatchEvent(new Event("simulator:open"));
 }
 
 function eventKind(title) {
@@ -224,6 +240,9 @@ function safeImageUrl(value) {
   if (!value) return null;
   try {
     const url = new URL(value, window.location.origin);
+    if (url.hostname === "owcdn.net" && url.pathname === "/img/6416950ce6638.png") {
+      return new URL("/assets/players/6713_6416950ce6638.png", window.location.origin).href;
+    }
     if (
       url.origin === window.location.origin
       && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vct-images/")
@@ -347,7 +366,7 @@ function makeProfileButton(id, type, name, imageUrl, meta, className, year) {
   if (meta) {
     const detail = document.createElement("small");
     detail.className = "result-meta";
-    detail.textContent = meta;
+    detail.append(meta);
     title.append(detail);
   }
   button.append(title);
@@ -730,7 +749,7 @@ function renderPlayer(player) {
   badges.className = "player-identity-badges";
   const role = document.createElement("span");
   role.className = "profile-role";
-  role.textContent = player.role || "Role unclassified";
+  role.append(roleBadge(player.role, player.role || "Role unclassified"));
   badges.append(role);
   if (player.nationality) badges.append(countryLabel(player.nationality));
   identity.append(title, badges);
@@ -866,7 +885,7 @@ function renderTeam(team) {
         "player",
         player.name,
         [player.image_local_path, player.image_url],
-        player.role || "Player",
+        roleBadge(player.role, player.role || "Player"),
         "roster-profile-button",
       );
       line.append(profile);
@@ -892,7 +911,7 @@ function renderTeam(team) {
         "player",
         player.name,
         [player.image_local_path, player.image_url],
-        null,
+        player.role ? roleBadge(player.role) : null,
         "roster-profile-button",
       );
       const date = document.createElement("small");
@@ -1094,7 +1113,7 @@ function renderPowerPlayer(player, rank, year) {
   kast.textContent = player.kast == null ? "—" : `${Number(player.kast).toFixed(1)}%`;
   const role = document.createElement("td");
   role.className = "player-role";
-  role.textContent = player.role || "—";
+  role.append(roleBadge(player.role, player.role || "—"));
   role.title = Object.entries(player.role_maps || {}).map(([name, count]) => `${name}: ${count} maps`).join(" · ");
   const agents = document.createElement("td");
   agents.append(agentStrip(player.top_agents));

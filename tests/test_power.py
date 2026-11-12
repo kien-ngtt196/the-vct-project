@@ -199,9 +199,33 @@ class TeamPowerTests(unittest.TestCase):
             ]
         )
         self.assertEqual(players[0]["name"], "Player One")
-        self.assertEqual(players[0]["power_score"], 84.2)
-        self.assertEqual(players[1]["power_score"], 60.8)
+        self.assertEqual(players[0]["power_score"], 53.9)
+        self.assertEqual(players[1]["power_score"], 43.7)
         self.assertEqual(players[1]["kd_strength"], 0.4)
+
+    def test_player_power_rewards_sustained_international_performance(self):
+        shared = {"acs": 240, "kast": 75, "adr": 145}
+        championship = {"event_id": "champions", "kind": "champions", "placement": "1st"}
+        players = calculate_player_power([
+            {
+                **shared, "name": "Early Exit", "maps_played": 8, "rating": 1.30,
+                "kills": 140, "deaths": 100, "international_rated_maps": 4,
+                "weighted_international_rating": 1.30,
+                "tournament_finishes": [{**championship, "placement": "13th–16th", "maps": 4}],
+            },
+            {
+                **shared, "name": "Champion", "maps_played": 60, "rating": 1.16,
+                "kills": 1200, "deaths": 1000, "international_rated_maps": 18,
+                "weighted_international_rating": 1.16,
+                "tournament_finishes": [
+                    {**championship, "maps": 17},
+                    {**championship, "maps": 1},
+                ],
+            },
+        ])
+        self.assertEqual([player["name"] for player in players], ["Champion", "Early Exit"])
+        self.assertEqual(players[0]["power_components"]["tournament_finishes"], 12)
+        self.assertEqual(players[1]["power_components"]["tournament_finishes"], 0)
 
     def test_teams_without_matches_are_not_ranked(self):
         self.assertEqual(
