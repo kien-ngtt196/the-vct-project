@@ -236,8 +236,9 @@
   }
 
   function draftStars(player) {
-    // A neutral simulator skill of 1.00 is the midpoint of the five tiers.
-    const rating = 1 + [0.85, 0.95, 1.05, 1.15].filter((threshold) => player.skill >= threshold).length;
+    // Each five-point step in season power adds half a star.
+    const thresholds = [0.80, 0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.15];
+    const rating = 1 + 0.5 * thresholds.filter((threshold) => player.skill >= threshold).length;
     const stars = node("span", "sim-stars");
     stars.setAttribute("role", "img");
     stars.setAttribute("aria-label", `Simulator strength: ${rating} out of 5 stars`);
@@ -245,8 +246,16 @@
       : `Season power: ${player.power_score.toFixed(1)} points · ${rating} out of 5 stars`;
     for (let index = 0; index < 5; index++) {
       const star = lineGraphic("0 0 24 24", "m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z");
-      if (index < rating) star.classList.add("sim-star-filled");
-      stars.append(star);
+      if (index + 0.5 === rating) {
+        const half = node("span", "sim-star-half");
+        const fill = star.cloneNode(true);
+        fill.classList.add("sim-star-filled");
+        half.append(star, fill);
+        stars.append(half);
+      } else {
+        if (index + 1 <= rating) star.classList.add("sim-star-filled");
+        stars.append(star);
+      }
     }
     return stars;
   }

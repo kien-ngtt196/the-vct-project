@@ -92,6 +92,8 @@
 .sim-region-options .sim-region-button[aria-pressed="true"] { background: #efd08e16; box-shadow: inset 0 0 0 1px #efd08e55; }
 .sim-stars { display: flex; gap: 2px; margin-top: 4px; color: #aaa08d; }
 .sim-stars svg { width: 1em; height: 1em; }
+.sim-star-half { position: relative; display: inline-flex; }
+.sim-star-half .sim-star-filled { position: absolute; inset: 0; clip-path: inset(0 50% 0 0); }
 .sim-stars .sim-star-filled { color: var(--sim-gold); }
 .sim-star-filled path { fill: currentColor; }
 
