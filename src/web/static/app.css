@@ -2210,6 +2210,17 @@ body { font-family: "Roboto", "Segoe UI", sans-serif; }
   color: var(--text);
   font-size: .9rem;
 }
+.ranking-more {
+  display: block;
+  margin: 12px auto;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+.ranking-more:hover, .ranking-more:focus-visible { border-color: currentColor; }
 .ranking-loading::before {
   content: "";
   display: inline-block;

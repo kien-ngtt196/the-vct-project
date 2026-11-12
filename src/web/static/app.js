@@ -1145,7 +1145,7 @@ async function loadPowerRankings() {
     const payload = await getJson(`/api/power-rankings?year=${year}`);
     if (version !== teamRankingVersion) return;
     renderRegionalStrength(payload.regional_strength || {}, year);
-    const powerTeams = payload.teams;
+    const powerTeams = payload.teams.slice(0, 100);
     const events = payload.international_events || [];
     const masters = events.filter((event) => eventKind(event.title) === "masters");
     const internationalSlots = [
@@ -1156,7 +1156,7 @@ async function loadPowerRankings() {
     if (year === "2026") {
       renderHomeLeaders(homeTopTeams, powerTeams, "team");
       document.querySelectorAll('[data-count="teams"]').forEach((counter) => {
-        counter.textContent = String(powerTeams.length);
+        counter.textContent = String(payload.teams.length);
       });
     }
     powerRankings.replaceChildren(
@@ -1177,22 +1177,35 @@ async function loadPlayerRankings() {
   const year = playerRankingSeason.value;
   const version = ++playerRankingVersion;
   const tableBody = document.querySelector("#player-rankings");
+  const more = document.querySelector("#player-rankings-more");
+  more.hidden = true;
+  more.onclick = null;
   showRankingMessage(tableBody, 12, `Loading ${year} player rankings…`, true);
   try {
     const payload = await getJson(`/api/player-power-rankings?year=${year}`);
     if (version !== playerRankingVersion) return;
+    const rankedPlayers = payload.players.slice(0, 500);
     if (year === "2026") {
       document.querySelectorAll('[data-count="players"]').forEach((counter) => {
         counter.textContent = String(payload.players.length);
       });
-      renderHomeLeaders(homeTopPlayers, payload.players, "player");
+      renderHomeLeaders(homeTopPlayers, rankedPlayers, "player");
     }
-    tableBody.replaceChildren(
-      ...payload.players.map((player, index) => renderPowerPlayer(player, index + 1, year)),
-    );
-    if (!payload.players.length) {
+    if (!rankedPlayers.length) {
       showRankingMessage(tableBody, 12, "No players meet the five-map minimum for this season yet.");
+      return;
     }
+    tableBody.replaceChildren();
+    let shown = 0;
+    const showMore = () => {
+      const nextPlayers = rankedPlayers.slice(shown, shown + 100);
+      tableBody.append(...nextPlayers.map((player, index) => renderPowerPlayer(player, shown + index + 1, year)));
+      shown += nextPlayers.length;
+      more.hidden = shown >= rankedPlayers.length;
+      more.textContent = `Show more players (${shown} of ${rankedPlayers.length})`;
+    };
+    more.onclick = showMore;
+    showMore();
   } catch (error) {
     if (version !== playerRankingVersion) return;
     if (year === "2026") renderHomeLeaders(homeTopPlayers, [], "player", error.message);

@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app.css?v=56">
-    <script src="/app.js?v=50" defer></script>
+    <link rel="stylesheet" href="/app.css?v=57">
+    <script src="/app.js?v=54" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -187,6 +187,7 @@
             </table>
           </div>
           <p class="source-note">
+            Standings show up to 100 teams per season.
             Team scores show earned points out of 100. Results reflect the matches imported so far. Click a team to inspect its season
             results, event finishes, available prizes, and roster.
           </p>
@@ -292,7 +293,9 @@
             </tbody>
           </table>
         </div>
+        <button type="button" class="ranking-more" id="player-rankings-more" hidden>Show more players</button>
         <p class="source-note">
+          Standings show up to 500 players per season.
           Roles use at least five classified maps. Flex means the leading role is below 60% and a second role accounts for at least 25%.
           HS% averages reported map values. K/D uses total kills and deaths.
           Player scores show earned points out of 100. Ratings are event-weighted
