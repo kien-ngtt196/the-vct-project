@@ -187,7 +187,7 @@ def parse_tournaments(html):
         logo_element = event.find("img")
         logo_url = normalize_url(logo_element.get("src") if logo_element else None)
         event_details = get_event_details(event_url)
-        season = season or event_details["season"]
+        season = season or extract_year_from_text(event_details["end_date"]) or event_details["season"]
         logo_url = logo_url or event_details["logo_url"]
 
         if season is None or season < MIN_EVENT_YEAR:
@@ -221,7 +221,7 @@ def parse_tournaments(html):
 
 def get_matches_page_url(tournament_url):
     cached_details = event_details_cache.get(tournament_url)
-    if cached_details is not None:
+    if cached_details is not None and cached_details.get("matches_page_url"):
         return cached_details.get("matches_page_url")
 
     response = safe_get(tournament_url)
@@ -279,7 +279,7 @@ def get_player_image(player_url):
     return image_url
 
 
-def parse_player(map_section):
+def parse_player(map_section, *, fetch_images=True):
     players = []
 
     player_rows = map_section.select(".ovw-row:not(.mod-head)")
@@ -288,6 +288,7 @@ def parse_player(map_section):
         name_element = player_row.select_one(".ovw-player-name")
         team_element = player_row.select_one(".ovw-player-tag")
         player_link_element = player_row.select_one(".ovw-player a[href^='/player/']")
+        profile_url = normalize_url(player_link_element.get("href") if player_link_element else None)
         nationality_element = player_row.select_one(".ovw-player .flag")
         agent_element = player_row.select_one(".ovw-agents .stats-sq img")
         rating_element = player_row.select_one("div[data-col='rating2'] .side.mod-both")
@@ -305,8 +306,8 @@ def parse_player(map_section):
         player_data = {
             'name': name_element.get_text(strip=True) if name_element else None,
             'team': team_element.get_text(strip=True) if team_element else None,
-            'profile_url': normalize_url(player_link_element.get("href") if player_link_element else None),
-            'image_url': get_player_image(normalize_url(player_link_element.get("href") if player_link_element else None)),
+            'profile_url': profile_url,
+            'image_url': get_player_image(profile_url) if fetch_images else None,
             'nationality': nationality_element.get("title") if nationality_element else None,
             'agent': agent_element.get("alt") if agent_element else None,
             'rating': rating_element.get_text(strip=True) if rating_element else None,
@@ -327,13 +328,14 @@ def parse_player(map_section):
     return players
 
 
-def parse_maps(soup):
+def parse_maps(soup, *, fetch_images=True):
     maps = []
 
     map_sections = soup.find_all(class_="vm-stats-game")
     for map_section in map_sections:
         game_id = map_section.get("data-game-id")
-        if (game_id == "all"): continue
+        if not game_id or game_id == "all":
+            continue
 
         game_header_element = map_section.find(class_="vm-stats-game-header")
         if game_header_element is None:
@@ -347,13 +349,13 @@ def parse_maps(soup):
             "game_id": game_id,
             "team1_score": team1_score_element.get_text(strip=True) if team1_score_element else None,
             "team2_score": team2_score_element.get_text(strip=True) if team2_score_element else None,
-            "players": parse_player(map_section)
+            "players": parse_player(map_section, fetch_images=fetch_images)
         }
         maps.append(map_data)
 
     return maps
 
-def parse_match(match_url):
+def parse_match(match_url, *, fetch_images=True):
     response = safe_get(match_url)
     if response is None:
         print(f"Skipping match page due to failed request: {match_url}")
@@ -374,15 +376,18 @@ def parse_match(match_url):
     if match_status:
         match_status = match_status.lower()
 
-    team1_element = soup.select_one(".match-header-link-name.mod-1 .wf-title-med")
-    team2_element = soup.select_one(".match-header-link-name.mod-2 .wf-title-med")
+    team1_element = soup.select_one(".match-header-link-name.mod-1 .wf-title-med, .match-header-link.mod-1 .wf-title-med")
+    team2_element = soup.select_one(".match-header-link-name.mod-2 .wf-title-med, .match-header-link.mod-2 .wf-title-med")
     team1_link_element = soup.select_one(".match-header-link.mod-1")
     team2_link_element = soup.select_one(".match-header-link.mod-2")
+    if not (match_id and match_status and team1_element and team2_element):
+        print(f"  -> Missing match header for {match_url}")
+        return None
 
     score_elements = soup.find_all("span", class_=re.compile(r"match-header-vs-score-(loser|winner)$"))
 
     date_element = soup.select_one(".moment-tz-convert")
-    match_date = date_element.get("data-utc-ts") if date_element else (date_element.get_text(strip=True) if date_element else None)
+    match_date = (date_element.get("data-utc-ts") or date_element.get_text(strip=True)) if date_element else None
 
     match = {
         "id": match_id,
@@ -398,10 +403,11 @@ def parse_match(match_url):
         "team2_logo_url": normalize_url(team2_link_element.find("img").get("src") if team2_link_element and team2_link_element.find("img") else None),
         "team1_score": score_elements[0].get_text(strip = True) if score_elements else None,
         "team2_score": score_elements[1].get_text(strip = True) if len(score_elements) > 1 else None,
-        "maps": parse_maps(soup) if match_status == "final" else [],
+        "maps": parse_maps(soup, fetch_images=fetch_images) if match_status == "final" else [],
     }
 
     return match
+
 
 def write_snapshot(tournaments, filename):
     output_dir = os.path.join("data", "raw")
@@ -418,9 +424,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape VLR.gg tier-one VALORANT events.")
     parser.add_argument(
         "--since",
-        default=f"{datetime.now(timezone.utc).year}-01-01",
+        default=None,
         help="Include matches on or after this UTC date (YYYY-MM-DD).",
     )
+    parser.add_argument("--through-year", type=int, help="Last season to include.")
     parser.add_argument("--max-pages", type=int, default=29)
     parser.add_argument("--page-delay", type=float, default=1.0)
     parser.add_argument("--match-delay", type=float, default=2.0)
@@ -429,18 +436,22 @@ if __name__ == "__main__":
         help="Import historical events one at a time, starting at Reykjavík 2022.",
     )
     args = parser.parse_args()
+    reykjavik_pilot = args.backfill and args.since is None
     if args.backfill:
-        from src.db.import_vlr import import_snapshot, is_tier_one_event
+        from src.db.import_vlr import has_complete_series_stats, import_snapshot, is_tier_one_event
 
-        args.since = "2022-04-10"
     now = datetime.now(timezone.utc)
+    start = args.since or ("2022-04-10" if args.backfill else f"{now.year}-01-01")
     timestamp = now.strftime("%Y%m%dT%H%M%SZ")
     try:
-        since = datetime.strptime(args.since, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        since = datetime.strptime(start, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     except ValueError:
         parser.error("--since must be a date in YYYY-MM-DD format")
     if args.max_pages < 1 or args.page_delay < 0 or args.match_delay < 0:
         parser.error("--max-pages must be positive and delays cannot be negative")
+
+    if args.through_year is not None and args.through_year < since.year:
+        parser.error("--through-year must be on or after the start season")
 
     tournaments = []
     seen_event_urls = set()
@@ -463,6 +474,8 @@ if __name__ == "__main__":
         for tournament in page_tournaments:
             if tournament["season"] >= since.year:
                 matching_year = True
+            if args.through_year is not None and tournament["season"] > args.through_year:
+                continue
             if tournament["url"] in seen_event_urls:
                 continue
 
@@ -487,10 +500,44 @@ if __name__ == "__main__":
 
         time.sleep(args.page_delay)
 
-    if args.backfill:
+    if reykjavik_pilot:
         if not any(event["id"] == "926" for event in tournaments):
             raise SystemExit("The Tier 1 listing did not reach Masters Reykjavík 2022.")
         tournaments.sort(key=lambda event: (event["id"] != "926", event["season"]))
+    if args.backfill and not tournaments:
+        raise SystemExit("No Tier 1 events found for the requested seasons.")
+    if args.backfill and not reykjavik_pilot:
+        from src.db.database import connect
+
+        with connect() as connection, connection.cursor() as cursor:
+            cursor.execute("""
+                WITH played_maps AS (
+                    SELECT g.match_id, g.id, COUNT(ps.player_id) AS player_count
+                    FROM games g LEFT JOIN player_stats ps ON ps.game_id = g.id
+                    WHERE g.team1_score IS NOT NULL AND g.team2_score IS NOT NULL
+                    GROUP BY g.match_id, g.id
+                ), series AS (
+                    SELECT match_id, COUNT(*) AS map_count, MIN(player_count) AS min_players
+                    FROM played_maps GROUP BY match_id
+                )
+                SELECT m.id, m.tournament_id,
+                       COALESCE(m.match_date IS NOT NULL AND m.team1_id IS NOT NULL
+                         AND m.team2_id IS NOT NULL AND (
+                           (lower(m.status) = 'final' AND series.map_count = m.team1_score + m.team2_score
+                            AND series.min_players >= 10)
+                           OR lower(m.status) LIKE 'forfeit%%'
+                         ), FALSE)
+                FROM matches m LEFT JOIN series ON series.match_id = m.id
+                WHERE m.tournament_id = ANY(%s)
+                """, ([event["id"] for event in tournaments],))
+            saved = cursor.fetchall()
+        existing_matches = {match_id for match_id, _, complete in saved if complete}
+        known_events = {event_id for _, event_id, _ in saved}
+        tournaments.sort(key=lambda event: (
+            event["id"] in known_events, event["season"], event["start_date"] or "",
+        ))
+    else:
+        existing_matches = set()
     incomplete_events = []
     for tournament in tournaments:
         print(f"Title: {tournament['title']}")
@@ -500,7 +547,7 @@ if __name__ == "__main__":
 
         matches_page_url = get_matches_page_url(tournament['url'])
         if matches_page_url is None:
-            if args.backfill and tournament["id"] == "926":
+            if reykjavik_pilot and tournament["id"] == "926":
                 raise SystemExit("Could not find the Reykjavík matches page.")
             if args.backfill:
                 incomplete_events.append(tournament["id"])
@@ -511,28 +558,39 @@ if __name__ == "__main__":
         match_links = get_match_links(matches_page_url)
         collected = 0
         failed = 0
+        incomplete_stats = []
         for match_number, match_link in enumerate(match_links, start=1):
-            if match_number == 1 or match_number % 10 == 0:
-                print(f"  Fetching match {match_number}/{len(match_links)}")
+            match_id = match_link.split("/")[3]
+            if match_id in existing_matches:
+                continue
+            print(f"  Fetching match {match_number}/{len(match_links)} ({match_id})")
             time.sleep(args.match_delay)
-            match_data = parse_match(match_link)
+            match_data = parse_match(match_link, fetch_images=not (args.backfill and args.through_year))
             if match_data is not None:
                 match_date = parse_vlr_date(match_data.get("date"))
+                if args.backfill and match_date is None:
+                    print(f"  -> Missing match date for {match_link}")
+                    failed += 1
+                    continue
                 if match_date is not None and match_date < since:
                     continue
                 if args.backfill and match_date is not None and match_date > now:
                     continue
                 tournament["matches"].append(match_data)
                 collected += 1
+                if args.backfill and match_data["status"] == "final" and not has_complete_series_stats(match_data):
+                    incomplete_stats.append(match_id)
             else:
                 failed += 1
         print(f"  Collected {collected} matches.")
+        if args.backfill and incomplete_stats:
+            print(f"  Final matches with incomplete map or player stats: {', '.join(incomplete_stats)}")
         if args.backfill and (failed or not match_links):
             incomplete_events.append(tournament["id"])
             print(f"  Incomplete listing or match details for event {tournament['id']}.")
-        if args.backfill and tournament["id"] == "926" and collected != 24:
+        if reykjavik_pilot and tournament["id"] == "926" and collected != 24:
             raise SystemExit(f"Reykjavík pilot collected {collected} of 24 series.")
-        if args.backfill and collected:
+        if args.backfill and match_links:
             path = write_snapshot(
                 [tournament], f"events_{timestamp}_{tournament['id']}.json"
             )

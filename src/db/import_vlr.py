@@ -144,6 +144,7 @@ def resolve_input_path(input_path=None):
     candidates = sorted(
         path for path in RAW_DIR.glob("events_*.json")
         if not path.name.endswith("_catalog.json")
+        and not re.fullmatch(r"events_\d{8}T\d{6}Z_\d+\.json", path.name)
     )
     if not candidates:
         raise FileNotFoundError(
@@ -171,6 +172,10 @@ def get_or_create_season(cursor, season):
     return cursor.fetchone()[0]
 
 
+def is_placeholder_media(url):
+    return not url or bool(re.search(r"/(?:sil|vlr)\.png(?:[?#]|$)", url, re.I))
+
+
 def get_or_create_team(cursor, name, source_url=None, logo_url=None):
     canonical = canonical_team_name(name)
     if not canonical:
@@ -184,7 +189,7 @@ def get_or_create_team(cursor, name, source_url=None, logo_url=None):
             logo_url = COALESCE(EXCLUDED.logo_url, teams.logo_url)
         RETURNING team_id
         """,
-        (canonical, source_url, logo_url),
+        (canonical, source_url, None if is_placeholder_media(logo_url) else logo_url),
     )
     team_id = cursor.fetchone()[0]
     cursor.execute(
@@ -203,6 +208,11 @@ def get_or_create_player(cursor, player):
     canonical = normalize_name(name)
     if not canonical:
         return None
+    profile_url = player.get("profile_url")
+    image_url = player.get("image_url")
+    if canonical == "f0rsaken" and re.search(r"/player/12088(?:/|$)", profile_url or ""):
+        # Rodrigo de Carli and Jason Susanto use the same in-game name.
+        canonical = "f0rsaken (brazil)"
     cursor.execute(
         """
         INSERT INTO players (canonical_name, source_url, image_url, nationality)
@@ -215,8 +225,8 @@ def get_or_create_player(cursor, player):
         """,
         (
             canonical,
-            player.get("profile_url"),
-            player.get("image_url"),
+            profile_url,
+            None if is_placeholder_media(image_url) else image_url,
             player.get("nationality"),
         ),
     )
@@ -507,12 +517,30 @@ def upsert_player_stats(cursor, player, game, match, season_id):
     )
 
 
+def has_complete_series_stats(match):
+    scores = [safe_int(match.get(key)) for key in ("team1_score", "team2_score")]
+    if None in scores:
+        return False
+    played = [
+        game for game in match.get("maps", [])
+        if all(safe_int(game.get(key)) is not None for key in ("team1_score", "team2_score"))
+    ]
+    return bool(played) and len(played) == sum(scores) and all(
+        len({normalize_name(p["name"]) for p in game.get("players", []) if p.get("name") and p.get("team")}) >= 10
+        for game in played
+    )
+
+
 def import_snapshot(input_path=None):
     snapshot_path = resolve_input_path(input_path)
     with snapshot_path.open("r", encoding="utf-8") as snapshot_file:
         tournaments = json.load(snapshot_file)
     if not isinstance(tournaments, list):
         raise ValueError("VLR snapshot must contain a list of tournaments.")
+    for event in tournaments:
+        for match in event.get("matches", []):
+            if not all(match.get(key) for key in ("id", "status", "team1", "team2")):
+                raise ValueError(f"Incomplete match header in {snapshot_path.name}: {match.get('url')!r}")
 
     initialize_database()
     connection = connect()
@@ -538,6 +566,7 @@ def import_snapshot(input_path=None):
                     str(match["id"])
                     for event in tournaments
                     for match in event.get("matches", [])
+                    if parse_match_date(match.get("date")) is not None and has_complete_series_stats(match)
                 ]
                 if match_ids:
                     cursor.execute(

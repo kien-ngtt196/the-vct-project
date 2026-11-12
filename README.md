@@ -38,6 +38,17 @@ After the match import, run
 `python -m src.db.sync_vlr_profiles --historical-events` to refresh event
 placements, roster evidence, and VLR profile images.
 
+To fill the 2021 and 2022 seasons, run:
+
+```powershell
+python -m src.scraper.main --backfill --since 2021-01-01 --through-year 2022
+python -m src.db.sync_vlr_profiles --historical-events --through-year 2022 --placements-only
+```
+
+The bounded backfill skips matches that already have player-map stats. It
+imports each event as it finishes, so it can be resumed with the same command.
+
+
 ## Vercel deployment
 
 Import the repository root as a FastAPI project. The root `app.py` serves the
@@ -58,7 +69,7 @@ without a usable source URL need separate hosting to appear online.
 - Player/team search, VLR profile links and images, recent map stats, clickable
   team/player profiles, team event participation, sourced roster listings, and
   team match history.
-- A global team ranking with a season selector for 2022–2026, combining
+- A global team ranking with a season selector for 2021–2026, combining
   international achievement (40%), regional achievement (15%), season
   results (20%), recent form (10%), in-game execution (10%), and opponent
   strength (5%). It describes

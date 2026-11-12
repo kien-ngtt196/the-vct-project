@@ -11,7 +11,9 @@ from curl_cffi.requests.exceptions import RequestException
 
 from src.analytics.power import placement_rank
 from src.db.database import connect
-from src.db.import_vlr import canonical_team_name, get_or_create_player, normalize_name
+from src.db.import_vlr import (
+    canonical_team_name, get_or_create_player, is_placeholder_media, normalize_name,
+)
 from src.db.initialize import initialize_database
 
 
@@ -89,7 +91,7 @@ def _image_url(value):
 
 
 def _is_placeholder_image(url):
-    return not url or urlsplit(url).path.endswith("/sil.png")
+    return is_placeholder_media(url)
 
 
 def _profile_id(url, pattern):
@@ -190,6 +192,8 @@ def _save_event_results(cursor, event, aliases, source_urls, *, placements_only=
 
         image = link.select_one("img") or link.parent.select_one("img")
         image_url = _image_url(image.get("src") if image else None)
+        if _is_placeholder_image(image_url):
+            image_url = None
         team_profiles[team_profile_id] = (team_id, profile_url, image_url)
 
     for row in soup.select(".wf-ptable--standings .row"):
@@ -393,7 +397,7 @@ def _scrape_team_profiles(cursor, teams, team_profiles):
         logo = soup.select_one(".team-header-logo img")
         logo_url = _image_url(logo.get("src") if logo else None)
         roster = _extract_roster(soup)
-        if logo_url:
+        if not _is_placeholder_image(logo_url):
             cursor.execute(
                 """
                 UPDATE teams
@@ -602,9 +606,11 @@ def _download_all_images(cursor, first_year=2026):
     return downloaded, len(team_images), len(player_images)
 
 
-def sync_vlr_profiles(download_images=True, historical_events=False, placements_only=False):
+def sync_vlr_profiles(
+    download_images=True, historical_events=False, placements_only=False, through_year=2026,
+):
     initialize_database()
-    first_year = 2022 if historical_events else 2026
+    first_year = 2021 if historical_events else 2026
     counts = {
         "events": 0,
         "team_profiles": 0,
@@ -623,12 +629,13 @@ def sync_vlr_profiles(download_images=True, historical_events=False, placements_
                     SELECT tournament.id, tournament.title, tournament.url
                     FROM tournaments tournament
                     JOIN seasons season ON season.season_id = tournament.season_id
-                    WHERE tournament.tier = 'tier1' AND season.year BETWEEN 2022 AND 2026
+                    WHERE tournament.tier = 'tier1' AND season.year BETWEEN %s AND %s
                       AND EXISTS (
                           SELECT 1 FROM matches WHERE tournament_id = tournament.id
                       )
                     ORDER BY season.year, tournament.start_date NULLS FIRST, tournament.id
-                    """
+                    """,
+                    (first_year, through_year),
                 )
                 events = cursor.fetchall()
             aliases, source_urls = _team_lookup(cursor)
@@ -680,15 +687,19 @@ def main():
     )
     parser.add_argument(
         "--historical-events", action="store_true",
-        help="Include event placements and roster evidence for imported 2022–2026 events.",
+        help="Include event placements and roster evidence for imported 2021–2026 events.",
     )
     parser.add_argument("--placements-only", action="store_true", help="Refresh final placements and prizes only.")
+    parser.add_argument("--through-year", type=int, choices=range(2021, 2027), default=2026)
     args = parser.parse_args()
+    if args.through_year != 2026 and not args.historical_events:
+        parser.error("--through-year requires --historical-events")
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     print(sync_vlr_profiles(
         download_images=not args.no_download,
         historical_events=args.historical_events,
         placements_only=args.placements_only,
+        through_year=args.through_year,
     ))
 
 

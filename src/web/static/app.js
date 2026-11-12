@@ -231,6 +231,7 @@ function safeImageUrl(value) {
       && !url.pathname.split("/").includes("..")
     ) return url.href;
     if (url.protocol !== "https:") return null;
+    if (url.hostname === "static.lolesports.com" && url.pathname.startsWith("/players/")) return url.href;
     if (!["vlr.gg", "www.vlr.gg", "owcdn.net"].includes(url.hostname)) return null;
     if (/\/(sil|vlr)\.png$/i.test(url.pathname)) return null;
     return url.href;
@@ -811,7 +812,7 @@ function renderTeam(team) {
   const seasonLabel = document.createElement("label");
   seasonLabel.textContent = "Team history season ";
   const seasonPicker = document.createElement("select");
-  for (let year = 2026; year >= 2022; year -= 1) {
+  for (let year = 2026; year >= 2021; year -= 1) {
     seasonPicker.add(new Option(String(year), String(year)));
   }
   seasonPicker.value = String(team.year);
@@ -1137,6 +1138,7 @@ function showRankingMessage(tableBody, columns, text, loading = false) {
 
 async function loadPowerRankings() {
   const year = teamRankingSeason.value;
+  document.querySelector("#team-ranking-2021-note").hidden = year !== "2021";
   const version = ++teamRankingVersion;
   showRankingMessage(powerRankings, 6, `Loading ${year} team rankings…`, true);
   const strengthGrid = document.querySelector("#region-strength-scores");
@@ -1175,6 +1177,7 @@ async function loadPowerRankings() {
 
 async function loadPlayerRankings() {
   const year = playerRankingSeason.value;
+  document.querySelector("#player-ranking-2021-note").hidden = year !== "2021";
   const version = ++playerRankingVersion;
   const tableBody = document.querySelector("#player-rankings");
   const more = document.querySelector("#player-rankings-more");

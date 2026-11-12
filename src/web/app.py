@@ -43,6 +43,24 @@ def competitive_match(alias):
     )
 
 
+def ranking_match(alias, tournament_title, year):
+    condition = competitive_match(alias)
+    if year == 2021:
+        condition += (
+            f" AND (COALESCE({alias}.series_name, '') !~* 'qualifier|^preliminary round$'"
+            f" OR {alias}.series_name ~* 'last chance'"
+            f" OR {tournament_title} ~* 'last chance qualifier')"
+        )
+    return condition
+
+
+def masters_event(title, year):
+    condition = f"{title} ILIKE '%%masters%%'"
+    if year == 2021:
+        condition += f" AND {title} !~* 'stage 1:[[:space:]]*masters'"
+    return condition
+
+
 def _player_search(cursor, query, limit, year):
     cursor.execute(
         """
@@ -187,8 +205,8 @@ def _team_search(cursor, query, limit):
 
 
 def search_entities(query, entity_type="all", limit=20, year=2026):
-    if not 2022 <= year <= 2026:
-        raise ValueError("Choose a season from 2022 to 2026.")
+    if not 2021 <= year <= 2026:
+        raise ValueError("Choose a season from 2021 to 2026.")
     if entity_type not in {"all", "players", "teams"}:
         raise ValueError("type must be all, players, or teams.")
     if not query.strip():
@@ -655,7 +673,7 @@ def season_achievements(cursor, year):
         WITH events AS (
             SELECT t.id, t.title, t.logo_url, t.region, t.status, CASE
                 WHEN t.title ILIKE 'Valorant Champions 20%%' THEN 'champions'
-                WHEN t.title ILIKE '%%masters%%' THEN 'masters'
+                WHEN {masters_event("t.title", year)} THEN 'masters'
                 ELSE 'regional'
             END AS kind
             FROM tournaments t JOIN seasons s USING (season_id)
@@ -667,7 +685,7 @@ def season_achievements(cursor, year):
             CROSS JOIN LATERAL (VALUES (m.team1_id), (m.team2_id)) team(id)
             WHERE team.id IS NOT NULL
               AND lower(m.status) IN ('final', 'completed', 'complete')
-              AND {competitive_match('m')}
+              AND {ranking_match('m', 'e.title', year)}
             UNION
             SELECT r.tournament_id, r.team_id
             FROM team_event_results r JOIN events e ON e.id = r.tournament_id
@@ -685,6 +703,7 @@ def season_achievements(cursor, year):
               AND lower(m.status) IN ('final', 'completed', 'complete')
               AND m.team1_id IS NOT NULL AND m.team2_id IS NOT NULL
               AND m.team1_score <> m.team2_score
+              AND {ranking_match('m', 'e.title', year) if year == 2021 else 'TRUE'}
             GROUP BY m.tournament_id
             HAVING COUNT(*) = 1
         )
@@ -762,14 +781,14 @@ def team_power_rankings(year=2026):
                            tournament.region,
                            CASE
                                WHEN tournament.title ILIKE 'Valorant Champions 20%%' THEN {CHAMPIONS_EVENT_WEIGHT}
-                               WHEN tournament.title ILIKE '%%masters%%' THEN {MASTERS_EVENT_WEIGHT}
+                               WHEN {masters_event("tournament.title", year)} THEN {MASTERS_EVENT_WEIGHT}
                                ELSE {REGIONAL_EVENT_WEIGHT}
                            END AS event_weight
                     FROM matches m
                     JOIN tournaments tournament ON tournament.id = m.tournament_id
                     LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                     WHERE tournament.tier = 'tier1'
-                      AND {competitive_match('m')}
+                      AND {ranking_match('m', 'tournament.title', year)}
                       AND COALESCE(event_season.year, EXTRACT(YEAR FROM m.match_date)::INTEGER) = %s
                       AND m.match_date >= make_date(%s, 1, 1)
                       AND m.match_date < make_date(%s, 1, 1)
@@ -997,11 +1016,13 @@ def player_power_rankings(year=2026):
         with connection.cursor() as cursor:
             cursor.execute(
                 f"""
-                WITH match_context AS (
-                    SELECT match.id,
+                WITH season_matches AS MATERIALIZED (
+                    SELECT match.id, match.match_date,
+                           {ranking_match('match', 'tournament.title', year)} AS is_ranked,
+                           lower(match.status) IN ('final', 'completed', 'complete') AS is_finished,
                            CASE
                                WHEN tournament.title ILIKE 'Valorant Champions 20%%' THEN 'champions'
-                               WHEN tournament.title ILIKE '%%masters%%' THEN 'masters'
+                               WHEN {masters_event("tournament.title", year)} THEN 'masters'
                                ELSE 'regional'
                            END AS event_kind,
                            match.url ~* '-(gf|[ulm]bf|ub[qs]f|[ulm]r[0-9]+|playoffs|grand-final)/?$' AS bracket_match
@@ -1009,14 +1030,12 @@ def player_power_rankings(year=2026):
                     JOIN tournaments tournament ON tournament.id = match.tournament_id
                     LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
                     WHERE tournament.tier = 'tier1'
-                      AND {competitive_match('match')}
                       AND COALESCE(
                           event_season.year,
                           EXTRACT(YEAR FROM match.match_date)::INTEGER
                       ) = %s
                       AND match.match_date >= make_date(%s, 1, 1)
                       AND match.match_date < make_date(%s, 1, 1)
-                      AND lower(COALESCE(match.status, '')) IN ('final', 'completed', 'complete')
                 ),
                 eligible_matches AS (
                     SELECT id, event_kind,
@@ -1025,7 +1044,8 @@ def player_power_rankings(year=2026):
                                WHEN 'masters' THEN CASE WHEN bracket_match THEN {PLAYER_EVENT_WEIGHTS['masters'][1]} ELSE {PLAYER_EVENT_WEIGHTS['masters'][0]} END
                                ELSE CASE WHEN bracket_match THEN {PLAYER_EVENT_WEIGHTS['regional'][1]} ELSE {PLAYER_EVENT_WEIGHTS['regional'][0]} END
                            END AS event_weight
-                    FROM match_context
+                    FROM season_matches
+                    WHERE is_ranked AND is_finished
                 ),
                 player_totals AS (
                     SELECT stats.player_id,
@@ -1067,6 +1087,14 @@ def player_power_rankings(year=2026):
                     WHERE stats.player_id IS NOT NULL
                     GROUP BY stats.player_id
                     HAVING COUNT(DISTINCT game.id) >= 5
+                ),
+                observed_teams AS (
+                    SELECT DISTINCT ON (appearance.player_id) appearance.player_id, appearance.team_id
+                    FROM season_matches match
+                    JOIN match_players appearance ON appearance.match_id = match.id
+                    WHERE appearance.team_id IS NOT NULL
+                      AND {'match.is_ranked' if year == 2021 else 'TRUE'}
+                    ORDER BY appearance.player_id, match.match_date DESC NULLS LAST
                 )
                 SELECT player.player_id, player.canonical_name, player.image_url,
                        player.image_local_path, player.nationality, player.source_url,
@@ -1091,26 +1119,10 @@ def player_power_rankings(year=2026):
                     ORDER BY membership.updated_at DESC
                     LIMIT 1
                 ) roster_team ON TRUE
-                LEFT JOIN LATERAL (
-                    SELECT team.canonical_name, team.logo_url, team.logo_local_path, team.team_id
-                    FROM match_players appearance
-                    JOIN teams team ON team.team_id = appearance.team_id
-                    JOIN matches match ON match.id = appearance.match_id
-                    JOIN tournaments tournament ON tournament.id = match.tournament_id
-                    LEFT JOIN seasons event_season ON event_season.season_id = tournament.season_id
-                    WHERE appearance.player_id = player.player_id
-                      AND tournament.tier = 'tier1'
-                      AND COALESCE(
-                          event_season.year,
-                          EXTRACT(YEAR FROM match.match_date)::INTEGER
-                      ) = %s
-                      AND match.match_date >= make_date(%s, 1, 1)
-                      AND match.match_date < make_date(%s, 1, 1)
-                    ORDER BY match.match_date DESC NULLS LAST
-                    LIMIT 1
-                ) observed_team ON TRUE
+                LEFT JOIN observed_teams observed ON observed.player_id = player.player_id
+                LEFT JOIN teams observed_team ON observed_team.team_id = observed.team_id
                 """,
-                (year, year, year + 1, year, year, year, year + 1),
+                (year, year, year + 1, year),
             )
             players = [
                 {
@@ -1290,8 +1302,8 @@ def get_response(path, query):
             return json_response(200, {"status": "ok", "database": "connected"})
         elif path == "/api/events":
             year = int(query.get("year", ["2026"])[0])
-            if not 2022 <= year <= 2026:
-                raise ValueError("Choose a season from 2022 to 2026.")
+            if not 2021 <= year <= 2026:
+                raise ValueError("Choose a season from 2021 to 2026.")
             return json_response(200, {"year": year, "events": events_for_season(year)})
         elif path == "/api/search":
             entity_type = query.get("type", ["all"])[0]
@@ -1307,14 +1319,17 @@ def get_response(path, query):
             )
         elif path == "/api/power-rankings":
             year = int(query.get("year", ["2026"])[0])
-            if not 2022 <= year <= 2026:
-                raise ValueError("Choose a season from 2022 to 2026.")
+            if not 2021 <= year <= 2026:
+                raise ValueError("Choose a season from 2021 to 2026.")
             teams = team_power_rankings(year)
             international_events = [
                 event for event in events_for_season(year)
-                if "masters" in event["title"].lower()
-                or "lock//in" in event["title"].lower()
-                or event["title"].lower().startswith("valorant champions 20")
+                if (
+                    ("masters" in event["title"].lower()
+                     and (year != 2021 or not re.search(r"stage 1:\s*masters", event["title"], re.I)))
+                    or "lock//in" in event["title"].lower()
+                    or event["title"].lower().startswith("valorant champions 20")
+                )
             ]
             return json_response(
                 200,
@@ -1350,8 +1365,8 @@ def get_response(path, query):
             )
         elif path == "/api/player-power-rankings":
             year = int(query.get("year", ["2026"])[0])
-            if not 2022 <= year <= 2026:
-                raise ValueError("Choose a season from 2022 to 2026.")
+            if not 2021 <= year <= 2026:
+                raise ValueError("Choose a season from 2021 to 2026.")
             return json_response(
                 200,
                 {
@@ -1402,8 +1417,8 @@ def get_response(path, query):
             team_match = TEAM_ID_PATTERN.fullmatch(path)
             if player_match:
                 year = int(query.get("year", ["2026"])[0])
-                if not 2022 <= year <= 2026:
-                    raise ValueError("Choose a season from 2022 to 2026.")
+                if not 2021 <= year <= 2026:
+                    raise ValueError("Choose a season from 2021 to 2026.")
                 details = player_details(int(player_match.group(1)), year)
                 return json_response(
                     200 if details else 404,
@@ -1411,8 +1426,8 @@ def get_response(path, query):
                 )
             elif team_match:
                 year = int(query.get("year", ["2026"])[0])
-                if not 2022 <= year <= 2026:
-                    raise ValueError("Choose a season from 2022 to 2026.")
+                if not 2021 <= year <= 2026:
+                    raise ValueError("Choose a season from 2021 to 2026.")
                 details = team_details(int(team_match.group(1)), year)
                 return json_response(
                     200 if details else 404,

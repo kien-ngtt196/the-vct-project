@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/app.css?v=57">
-    <script src="/app.js?v=54" defer></script>
+    <script src="/app.js?v=55" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -34,7 +34,7 @@
       <section class="page-view home-workspace" data-page-panel="archive" hidden>
         <div class="home-section-heading">
           <div>
-            <p class="eyebrow">TIER 1 · 2022–2026</p>
+            <p class="eyebrow">TIER 1 · 2021–2026</p>
             <h2>Tournament archive</h2>
           </div>
         </div>
@@ -42,7 +42,7 @@
           <label>Season
             <select id="archive-season">
               <option>2026</option><option>2025</option><option>2024</option>
-              <option>2023</option><option>2022</option>
+              <option>2023</option><option>2022</option><option>2021</option>
             </select>
           </label>
           <label>Circuit
@@ -164,7 +164,7 @@
             <label>Season
             <select id="team-ranking-season">
               <option>2026</option><option>2025</option><option>2024</option>
-              <option>2023</option><option>2022</option>
+              <option>2023</option><option>2022</option><option>2021</option>
             </select>
           </label>
           <span class="model-badge">BASIC STATS · NOT A FORECAST</span>
@@ -188,6 +188,7 @@
           </div>
           <p class="source-note">
             Standings show up to 100 teams per season.
+            <span id="team-ranking-2021-note" hidden>2021 scores exclude preliminary qualifiers and include Last Chance Qualifiers. </span>
             Team scores show earned points out of 100. Results reflect the matches imported so far. Click a team to inspect its season
             results, event finishes, available prizes, and roster.
           </p>
@@ -265,7 +266,7 @@
           <label>Season
             <select id="player-ranking-season">
               <option>2026</option><option>2025</option><option>2024</option>
-              <option>2023</option><option>2022</option>
+              <option>2023</option><option>2022</option><option>2021</option>
             </select>
           </label>
           <span class="model-badge">MINIMUM 5 MAPS</span>
@@ -296,6 +297,7 @@
         <button type="button" class="ranking-more" id="player-rankings-more" hidden>Show more players</button>
         <p class="source-note">
           Standings show up to 500 players per season.
+          <span id="player-ranking-2021-note" hidden>2021 scores exclude preliminary qualifiers and include Last Chance Qualifiers. </span>
           Roles use at least five classified maps. Flex means the leading role is below 60% and a second role accounts for at least 25%.
           HS% averages reported map values. K/D uses total kills and deaths.
           Player scores show earned points out of 100. Ratings are event-weighted

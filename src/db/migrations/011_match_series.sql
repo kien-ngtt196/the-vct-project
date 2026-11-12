@@ -1,0 +1,1 @@
+ALTER TABLE matches ADD COLUMN IF NOT EXISTS series_name TEXT;
