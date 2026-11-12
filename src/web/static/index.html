@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/app.css?v=58">
-    <link rel="stylesheet" href="/simulator.css?v=4">
+    <link rel="stylesheet" href="/simulator.css?v=5">
     <script src="/app.js?v=60" defer></script>
     <script src="/simulator-engine.js?v=2" defer></script>
-    <script src="/simulator.js?v=5" defer></script>
+    <script src="/simulator.js?v=6" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -410,7 +410,10 @@
             <h1>Champions Simulator</h1>
             <p>Draft five players from 2021–2026 and take on historical Champions rosters. Draft stars reflect each player’s season power.</p>
           </div>
-          <img src="/champions-mark.svg" alt="" width="76" height="76">
+          <div class="sim-hero-actions">
+            <img src="/champions-mark.svg" alt="" width="76" height="76">
+            <button type="button" class="sim-button" id="sim-guide-help" aria-haspopup="dialog">How to play</button>
+          </div>
         </header>
         <div id="simulator-workspace"></div>
         <p class="sim-footnote">

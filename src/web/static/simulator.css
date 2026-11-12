@@ -23,6 +23,8 @@
 .sim-hero h1 { margin: 8px 0; font-size: clamp(2rem, 5vw, 4.25rem); line-height: 1.05; letter-spacing: -.04em; }
 .sim-hero p:last-child { margin-bottom: 0; max-width: 52ch; color: #e2dbca; }
 .sim-hero img { width: clamp(42px, 7vw, 76px); height: auto; flex: 0 0 auto; }
+.sim-hero-actions { display: grid; justify-items: end; gap: 10px; flex: none; }
+.sim-hero-actions button { white-space: nowrap; }
 .sim-panel { min-width: 0; padding: 16px; border: 1px solid var(--sim-border); border-radius: 8px; background: var(--sim-panel); }
 .sim-panel h2 { margin: 0 0 12px; font-size: 1.2rem; color: #f3f0e9; }
 .sim-panel .eyebrow { margin: 0 0 6px; }
@@ -263,7 +265,7 @@
 .sim-stats .sim-user-stat { background: #2b251a; }
 .sim-stats .sim-agent-icons { flex-wrap: nowrap; }
 
-.sim-victory {
+.sim-victory, .sim-guide {
   --sim-gold: #efd08e;
   --sim-muted: #beb4a4;
   --sim-border: #645132;
@@ -276,7 +278,16 @@
   background: radial-gradient(ellipse at 50% 0%, #493820, #151311 67%);
   box-shadow: 0 24px 100px #000c;
 }
-.sim-victory::backdrop { background: #080707cc; }
+.sim-victory::backdrop, .sim-guide::backdrop { background: #080707cc; }
+.sim-guide { width: min(92vw, 510px); }
+.sim-guide-content { padding: clamp(18px, 5vw, 32px); }
+.sim-guide-content .eyebrow { margin: 14px 0 6px; color: var(--sim-gold); }
+.sim-guide-content h2 { margin: 0 0 8px; font-size: clamp(1.45rem, 5vw, 2rem); }
+.sim-guide-content h2:focus { outline: none; }
+.sim-guide-content h2 + p { min-height: 4.5em; margin: 0; color: var(--sim-muted); line-height: 1.5; }
+.sim-guide-content .sim-guide-mark { width: 30px; height: 30px; color: var(--sim-gold); }
+.sim-guide-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.sim-guide-actions .sim-guide-skip { margin-inline-end: auto; background: transparent; }
 .sim-victory-content { position: relative; z-index: 1; padding: clamp(16px, 4vw, 30px); }
 .sim-victory-content h2 { margin: 8px 0 14px; padding-right: 56px; font-size: clamp(1.4rem, 4vw, 2.4rem); }
 .sim-victory-content .eyebrow { color: var(--sim-gold); }
@@ -322,6 +333,8 @@
   .sim-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 570px) {
+  .sim-hero { flex-wrap: wrap; align-items: start; }
+  .sim-hero-actions { display: flex; align-items: center; }
   .sim-draft { grid-template-columns: 1fr; }
   .sim-draft > section { grid-row: 1; }
   .sim-draft-roster { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }

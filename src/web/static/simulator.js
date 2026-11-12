@@ -1,5 +1,6 @@
 (() => {
   const root = document.querySelector("#simulator-workspace");
+  const guideHelp = document.querySelector("#sim-guide-help");
   const model = ChampionsSim;
   const draft = [];
   let catalog;
@@ -13,6 +14,9 @@
   let selectedReplay;
   let playing = false;
   const imageChecks = new Map();
+  const guideKey = "vct-formline-simulator-guide-v1";
+  let guideSeen = false;
+  try { guideSeen = localStorage.getItem(guideKey) === "seen"; } catch {}
 
   const node = (tag, className, text) => {
     const element = document.createElement(tag);
@@ -55,6 +59,66 @@
     if (result.loser === teamId) scores[1]++;
     return scores;
   }, [0, 0]);
+
+  function showGuide() {
+    if (document.querySelector(".sim-guide[open]")) return;
+    const pages = [
+      {
+        title: "Draft your five",
+        text: "Pick a Duelist, Controller, Initiator, Sentinel, and Flex from past seasons. The stars show each player’s strength for that season.",
+        icon: buttonIcons["Team stats"],
+      },
+      {
+        title: "Choose a region and play",
+        text: "Pick a region to represent and start the tournament. Select Play next series to reveal the map draw, agent picks, and results.",
+        icon: playIcon,
+      },
+      {
+        title: "Follow your bracket",
+        text: "Check your next matchup after each series. Open Team stats for your record and replays, or Tournament stats to see how everyone performed.",
+        icon: buttonIcons.Playoffs,
+      },
+    ];
+    const dialog = node("dialog", "sim-guide");
+    dialog.setAttribute("aria-labelledby", "sim-guide-title");
+    dialog.setAttribute("aria-describedby", "sim-guide-description");
+    const content = node("div", "sim-guide-content");
+    let page = 0;
+    function renderPage() {
+      const { title, text, icon } = pages[page];
+      const mark = controlIcon(icon);
+      mark.classList.add("sim-guide-mark");
+      const heading = node("h2", "", title);
+      heading.id = "sim-guide-title";
+      heading.tabIndex = -1;
+      heading.autofocus = true;
+      const description = node("p", "", text);
+      description.id = "sim-guide-description";
+      const actions = node("div", "sim-guide-actions");
+      actions.append(button("Skip guide", () => dialog.close(), "sim-button sim-guide-skip"));
+      if (page > 0) actions.append(button("Back", () => { page--; renderPage(); }));
+      actions.append(page === pages.length - 1
+        ? button("Start drafting", () => dialog.close("draft"), "sim-button sim-primary", playIcon)
+        : button("Next", () => { page++; renderPage(); }, "sim-button sim-primary", "M5 12h14m-6-6 6 6-6 6"));
+      content.replaceChildren(mark, node("p", "eyebrow", `How to play · ${page + 1} of ${pages.length}`),
+        heading, description, actions);
+      if (dialog.open) heading.focus();
+    }
+    dialog.append(content);
+    dialog.addEventListener("close", () => {
+      dialog.remove();
+      if (location.hash === "#simulator") {
+        const draftHeading = root.querySelector(".sim-draft section h2");
+        (dialog.returnValue === "draft" && draftHeading ? draftHeading : guideHelp)
+          .focus({ preventScroll: true });
+      }
+    }, { once: true });
+    renderPage();
+    document.body.append(dialog);
+    dialog.showModal();
+    guideSeen = true;
+    try { localStorage.setItem(guideKey, "seen"); } catch {}
+  }
 
   async function openSimulator() {
     if (catalog || loading) return;
@@ -793,9 +857,13 @@
     return scroll;
   }
 
-  document.addEventListener("simulator:open", () => {
+  guideHelp.prepend(controlIcon("M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M9.1 9a3 3 0 1 1 4.5 2.6c-1.1.7-1.6 1.3-1.6 2.4m0 3h.01"));
+  guideHelp.addEventListener("click", showGuide);
+  function enterSimulator() {
+    if (!guideSeen) showGuide();
     if (catalog && run && !playing) renderRun();
     else openSimulator();
-  });
-  if (location.hash === "#simulator") openSimulator();
+  }
+  document.addEventListener("simulator:open", enterSimulator);
+  if (location.hash === "#simulator") enterSimulator();
 })();
