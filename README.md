@@ -1,96 +1,71 @@
-# VCT Scout
+# VCT Formline
 
-A local-first VCT tier-one data explorer. It collects VLR.gg event, match, map,
-player-stat, and profile-image references; imports them into PostgreSQL; and
-serves a small search and 2026 team power-ranking web app.
+An independent VALORANT Champions Tour explorer and fantasy tournament simulator. Compare teams and players across the 2021–2026 seasons, browse past events, and draft a roster to face historical Champions lineups.
 
-## Get started
+**[Open the live app](https://vct-formline.vercel.app/)** · [Team rankings](https://vct-formline.vercel.app/#teams) · [Player rankings](https://vct-formline.vercel.app/#players) · [Champions Simulator](https://vct-formline.vercel.app/#simulator)
 
-1. Install Python 3.9+ and PostgreSQL. From the repository root, install the
-   dependencies with `python -m pip install -r requirements.txt`.
-2. Create a local database (for example, `createdb vct_db -U postgres`), copy
-   `.env.example` to `.env`, and set the local PostgreSQL connection values
-   there. `.env` is ignored by Git and loaded automatically. Never commit or
-   share its real password.
-3. Initialize the versioned schema: `python -m src.db.initialize`.
-4. Scrape VLR.gg's tier-one event listing. By default the scraper starts at
-   January 1 of the current UTC year:
+[![VCT Formline homepage with links to the simulator and rankings](docs/screenshots/homepage.jpg)](https://vct-formline.vercel.app/)
 
-   ```powershell
-   python -m src.scraper.main
-   ```
+## Explore the app
 
-   Scrapes are written as timestamped snapshots under `data/raw/`. Set
-   `--since YYYY-MM-DD` to a later UTC date for a smaller refresh.
-5. Import the newest snapshot: `python -m src.db.import_vlr`.
-6. Start the UI: `python -m src.web.app`, then open
-   `http://127.0.0.1:8000`.
+| Feature | What you can do |
+| --- | --- |
+| [Team rankings](https://vct-formline.vercel.app/#teams) | Compare season power, series records, regional and international finishes, and regional strength. |
+| [Player rankings](https://vct-formline.vercel.app/#players) | Search players and inspect roles, agent picks, map stats, roster history, and tournament achievements. |
+| [Tournament archive](https://vct-formline.vercel.app/#archive) | Filter imported Tier 1 events by season and circuit. |
+| [2027 roadmap](https://vct-formline.vercel.app/#watchlist) | Follow the four regional circuits and the path to Masters Seoul, Masters Valencia, and Champions Austin. |
 
-The legacy import entry point `python -m src.scraper.migrate_json_to_pg` remains
-available and forwards to the versioned importer.
+[![Team standings with tournament placements and the scoring breakdown](docs/screenshots/team-rankings.jpg)](https://vct-formline.vercel.app/#teams)
 
-For a historical refresh, run `python -m src.scraper.main --backfill`.
-It uses the VLR Tier 1 event listing, starts with Masters Reykjavík 2022,
-and writes and imports a snapshot after each event. The full run can take
-substantial time because requests are throttled. Start the web app separately
-and use the season picker on a team profile to inspect imports as they land.
-After the match import, run
-`python -m src.db.sync_vlr_profiles --historical-events` to refresh event
-placements, roster evidence, and VLR profile images.
+### Champions Simulator
 
-To fill the 2021 and 2022 seasons, run:
+Draft a Duelist, Controller, Initiator, Sentinel, and Flex from historical player seasons. Pick a region and play through a group stage and double-elimination playoffs against historical Champions rosters. The draft uses season power to show player strength in half-star increments. Each simulated series includes map results, agent compositions, and an MVP.
+
+[![Champions Simulator draft with role slots, player portraits, and star ratings](docs/screenshots/champions-simulator.jpg)](https://vct-formline.vercel.app/#simulator)
+
+## Data and ranking methodology
+
+The Python ingestion pipeline collects event, match, and player-map data from [VLR.gg](https://www.vlr.gg/). It stores normalized records in PostgreSQL. VCT Formline also tracks sourced roster tenures and match appearances.
+
+- **Team power** combines international achievement (40%), regional achievement (15%), season results (20%), recent form (10%), in-game execution (10%), and opponent strength (5%).
+- **Player power** combines sample-adjusted season performance (65 points), maps played (10), international performance (10), and verified tournament finishes (15). Players qualify after five maps.
+- Rankings summarize imported results for the selected season. Simulator outcomes are fictional and use historical data for player strength and agent picks.
+
+**Stack** · Python, PostgreSQL, FastAPI, and vanilla JavaScript. Production runs on Vercel with hosted PostgreSQL.
+
+## Run locally
+
+Install Python 3.9+ and PostgreSQL. From the repository root, install dependencies, create a database, and copy the environment template. The commands below use PowerShell.
 
 ```powershell
-python -m src.scraper.main --backfill --since 2021-01-01 --through-year 2022
-python -m src.db.sync_vlr_profiles --historical-events --through-year 2022 --placements-only
+python -m pip install -r requirements.txt
+createdb -U postgres vct_db
+Copy-Item .env.example .env
 ```
 
-The bounded backfill skips matches that already have player-map stats. It
-imports each event as it finishes, so it can be resumed with the same command.
+Set the PostgreSQL connection values in `.env`, then initialize the schema and start the app.
 
+```powershell
+python -m src.db.initialize
+python -m src.web.app
+```
 
-## Vercel deployment
+Open the [local app](http://127.0.0.1:8000/). An empty database needs an import before rankings and historical simulator rosters can load.
 
-Import the repository root as a FastAPI project. The root `app.py` serves the
-same routes as the local Python server. The function runs in Singapore to
-match the project's hosted PostgreSQL region.
+### Import or refresh data
 
-Set `DATABASE_URL` in Vercel to the pooled PostgreSQL connection string for
-the deployment environment, then redeploy. Preview deployments can use a
-separate database branch. Restore or migrate the hosted database separately
-and check `/api/health`, the tournament archive, and both ranking pages.
+```powershell
+python -m src.scraper.main
+python -m src.db.import_vlr
+python -m src.db.sync_vlr_profiles --historical-events
+```
 
-The deployment includes checked-in artwork. If an image cached on a developer's
-machine is absent, the frontend tries its source URL. Locally sourced portraits
-without a usable source URL need separate hosting to appear online.
+The default scrape starts on January 1 of the current UTC year and writes snapshots to `data/raw/`. For a resumable historical import, run `python -m src.scraper.main --backfill --since 2021-01-01 --through-year 2026`. The backfill imports each event as it finishes and skips matches that already have player-map stats.
 
-## What is included
+Run tests with `python -m unittest discover -s tests -v`.
 
-- Player/team search, VLR profile links and images, recent map stats, clickable
-  team/player profiles, team event participation, sourced roster listings, and
-  team match history.
-- A global team ranking with a season selector for 2021–2026, combining
-  international achievement (40%), regional achievement (15%), season
-  results (20%), recent form (10%), in-game execution (10%), and opponent
-  strength (5%). It describes
-  season performance; it weights Champions 3×, Masters 2×, and regional
-  matches 1×, and displays earned points out of 100. The player ranking uses
-  weighted rating, ACS, KAST, ADR, and K/D for sample-adjusted season performance
-  (65 points). It also scores maps played (10), international performance (10),
-  and verified tournament finishes (15), with a five-map minimum to qualify.
-  Both rankings use completed Tier 1 matches
-  in the selected season. Team region labels are inferred from the most frequent
-  regional Tier 1 tournament region in VLR data for that season. Neither
-  ranking predicts match outcomes.
-- Explicitly sourced roster-tenure records and separately stored observed
-  match participation, so an appearance is never mislabeled as a current
-  roster. The profile refresh reads current roster listings from VLR team
-  pages and labels event-page roster evidence separately.
-- A four-region 2027 roadmap for Open Qualifiers, regional Cups, Masters, and
-  Champions. Event listings and dates appear only when present in imported VLR
-  data; unannounced stages are clearly marked. VLR regional event logos are
-  saved locally in `vct_images/`.
+## Deployment
 
-See [workflow.md](./workflow.md) for the architecture, data model, refresh,
-profile/image refresh, validation, team and player power formulas, roster
-handling, and future-feature workflow.
+Import the repository root into Vercel as a FastAPI project. Set `DATABASE_URL` to the hosted PostgreSQL connection string, initialize or restore the database, and verify `/api/health` after deployment. See the [project workflow](workflow.md) for architecture, ingestion, roster evidence, and validation.
+
+VCT Formline is independent and unaffiliated with Riot Games. The screenshots were captured from the live app.
