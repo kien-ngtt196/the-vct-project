@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app.css?v=58">
+    <link rel="stylesheet" href="/app.css?v=61">
     <link rel="stylesheet" href="/simulator.css?v=6">
-    <script src="/app.js?v=60" defer></script>
+    <script src="/app.js?v=62" defer></script>
     <script src="/simulator-engine.js?v=2" defer></script>
     <script src="/simulator.js?v=7" defer></script>
   </head>
@@ -62,94 +62,80 @@
         <div id="archive-events" class="archive-grid"></div>
       </section>
       <section class="page-view home-view" data-page-panel="home">
-      <section class="hero">
-        <div class="hero-copy-block">
-          <p class="eyebrow"><span class="eyebrow-marker" aria-hidden="true"></span>VCT GLOBAL · 2026 SEASON</p>
-          <h1>Read the<br><span>power shift.</span></h1>
-          <p class="hero-copy">
-            A live scouting view of the 2026 tier-one season. Track the teams
-            setting the pace, then open the source-backed player and team files.
-          </p>
-          <div class="hero-coverage" aria-label="Ranking coverage">
-            <div><strong data-count="teams">—</strong><span>TEAMS RANKED</span></div>
-            <i aria-hidden="true"></i>
-            <div><strong data-count="players">—</strong><span>PLAYERS TRACKED</span></div>
-            <i aria-hidden="true"></i>
-            <div><strong>2026</strong><span>SEASON WINDOW</span></div>
+        <section class="home-showcase" aria-labelledby="home-title">
+          <video class="home-background" id="home-background" muted loop playsinline preload="none" aria-hidden="true"
+            data-src="https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/74d9d9fd8664d1c431b4b82d007f968eacb3e8b4.mp4?accountingTag=VAL"></video>
+          <div class="home-intro">
+            <p class="eyebrow">VALORANT CHAMPIONS TOUR</p>
+            <h1 id="home-title">VCT <span>Formline</span></h1>
+            <p>Explore team and player rankings, then draft your own roster and take on historical Champions teams.</p>
+            <div class="home-intro-actions">
+              <a class="home-action home-action-primary" href="#simulator" data-view-target="simulator">Play Champions Simulator <span aria-hidden="true">↗</span></a>
+              <a class="home-action" href="#teams" data-view-target="teams">Explore rankings</a>
+            </div>
+            <dl class="home-coverage">
+              <div><dt>Teams ranked</dt><dd data-count="teams">—</dd></div>
+              <div><dt>Players tracked</dt><dd data-count="players">—</dd></div>
+              <div><dt>Seasons covered</dt><dd>2021–26</dd></div>
+            </dl>
           </div>
-          <a class="hero-link" href="#teams" data-view-target="teams">Explore the standings <span aria-hidden="true">↗</span></a>
-        </div>
-        <section class="home-leaders" aria-label="Current top rankings">
-          <section class="home-leader-group" aria-labelledby="home-top-teams-title">
-            <header class="home-leader-heading">
-              <div>
-                <p class="eyebrow">GLOBAL POWER · 2026</p>
-                <h2 id="home-top-teams-title">Top teams</h2>
-              </div>
-              <a href="#teams" data-view-target="teams" aria-label="View all team rankings">ALL ↗</a>
-            </header>
-            <div class="home-leader-list" id="home-top-teams" aria-live="polite">
-              <p class="home-leader-message">Loading team rankings…</p>
-            </div>
-          </section>
-          <section class="home-leader-group" aria-labelledby="home-top-players-title">
-            <header class="home-leader-heading">
-              <div>
-                <p class="eyebrow">INDIVIDUAL IMPACT · 2026</p>
-                <h2 id="home-top-players-title">Top players</h2>
-              </div>
-              <a href="#players" data-view-target="players" aria-label="View all player rankings">ALL ↗</a>
-            </header>
-            <div class="home-leader-list" id="home-top-players" aria-live="polite">
-              <p class="home-leader-message">Loading player rankings…</p>
-            </div>
-          </section>
+          <div class="home-video-actions">
+            <a href="https://www.youtube.com/watch?v=1Z4nca2ptMU" target="_blank" rel="noopener noreferrer">Watch the Shanghai recap ↗</a>
+            <button type="button" id="home-video-toggle">Play background video</button>
+          </div>
         </section>
-      </section>
 
-      <section class="home-workspace" aria-labelledby="workspace-title">
-        <div class="home-section-heading">
-          <div>
-            <p class="eyebrow">YOUR SCOUT DESK</p>
-            <h2 id="workspace-title">Pick a signal.</h2>
+        <section class="home-simulator" aria-labelledby="home-simulator-title">
+          <div class="home-simulator-copy">
+            <h2 id="home-simulator-title">Champions Simulator</h2>
+            <p>Pick five pros from 2021–2026, choose your region, and see how far your lineup goes.</p>
+            <a class="home-action home-action-primary" href="#simulator" data-view-target="simulator">Start drafting <span aria-hidden="true">↗</span></a>
           </div>
-          <span class="home-season">VCT · 2026</span>
-        </div>
-        <div class="home-feature-grid">
-          <a class="home-feature-card team-feature-card" href="#teams" data-view-target="teams">
-            <span class="feature-card-index">01 / TEAMS</span>
-            <span class="feature-card-title">Global power<br>rankings</span>
-            <span class="feature-card-detail"><strong data-count="teams">—</strong> teams · results, form, execution</span>
-            <span class="feature-card-arrow" aria-hidden="true">↗</span>
-          </a>
-          <a class="home-feature-card player-feature-card" href="#players" data-view-target="players">
-            <span class="feature-card-index">02 / PLAYERS</span>
-            <span class="feature-card-title">Player<br>standings</span>
-            <span class="feature-card-detail"><strong data-count="players">—</strong> eligible players · minimum 5 maps</span>
+          <ul class="home-simulator-roles" aria-label="Draft roles">
+            <li data-draft-role="Duelist">Duelist</li>
+            <li data-draft-role="Controller">Controller</li>
+            <li data-draft-role="Initiator">Initiator</li>
+            <li data-draft-role="Sentinel">Sentinel</li>
+            <li data-draft-role="Flex">Flex</li>
+          </ul>
+        </section>
+
+        <section class="home-standings" aria-labelledby="home-standings-title">
+          <h2 id="home-standings-title">2026 standings</h2>
+          <div class="home-leaders" aria-label="2026 ranking leaders">
+            <section class="home-leader-group home-team-leaders" aria-labelledby="home-top-teams-title">
+              <header class="home-leader-heading">
+                <h3 id="home-top-teams-title">Top teams</h3>
+                <a href="#teams" data-view-target="teams">All teams ↗</a>
+              </header>
+              <div class="home-leader-list" id="home-top-teams" aria-live="polite">
+                <p class="home-leader-message">Loading team rankings…</p>
+              </div>
+            </section>
+            <section class="home-leader-group home-player-leaders" aria-labelledby="home-top-players-title">
+              <header class="home-leader-heading">
+                <h3 id="home-top-players-title">Top players</h3>
+                <a href="#players" data-view-target="players">All players ↗</a>
+              </header>
+              <div class="home-leader-list" id="home-top-players" aria-live="polite">
+                <p class="home-leader-message">Loading player rankings…</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <nav class="home-resources" aria-label="More VCT coverage">
+          <a class="home-feature-card archive-feature-card" href="#archive" data-view-target="archive">
+            <span class="feature-card-title">Tournament archive</span>
+            <span class="feature-card-detail">Browse past VCT events</span>
             <span class="feature-card-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="home-feature-card watch-feature-card" href="#watchlist" data-view-target="watchlist">
-            <span class="feature-card-index">03 / NEXT SEASON</span>
-            <span class="feature-card-title">The 2027<br>journey</span>
-            <span class="feature-card-detail">From open qualifiers to the world championship</span>
+            <span class="feature-card-title">2027 roadmap</span>
+            <span class="feature-card-detail">Follow the next VCT season</span>
             <span class="feature-card-arrow" aria-hidden="true">↗</span>
           </a>
-        </div>
-      </section>
-
-      <article class="home-story">
-        <img
-          src="/assets/vct/loud-champions.jpg"
-          alt="LOUD players celebrate together while raising the VALORANT Champions trophy"
-          loading="lazy">
-        <div class="home-story-copy">
-          <p class="eyebrow">A MOMENT FROM THE VCT</p>
-          <h2>Built for the moments<br>that move a season.</h2>
-          <p>Explore the teams, players, and source-backed results behind every power shift.</p>
-          <a href="#teams" data-view-target="teams">Open team rankings <span aria-hidden="true">↗</span></a>
-        </div>
-        <span class="home-story-credit">ARTWORK FROM YOUR VCT_IMAGES FOLDER</span>
-      </article>
+        </nav>
       </section>
 
       <section class="page-view feature-view teams-view" data-page-panel="teams" hidden>

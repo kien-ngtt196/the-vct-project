@@ -118,6 +118,48 @@ function showPage(view, scroll = true) {
   if (view === "simulator") document.dispatchEvent(new Event("simulator:open"));
 }
 
+function setupHomeVideo() {
+  const video = document.querySelector("#home-background");
+  const toggle = document.querySelector("#home-video-toggle");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let requested = !reducedMotion.matches;
+  let visible = false;
+
+  function updatePlayback() {
+    if (requested && visible && !document.hidden) {
+      video.muted = true;
+      if (!video.src) video.src = video.dataset.src;
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }
+
+  toggle.addEventListener("click", () => {
+    requested = video.paused;
+    updatePlayback();
+  });
+  video.addEventListener("playing", () => {
+    video.classList.add("home-background-ready");
+    toggle.textContent = "Pause background video";
+  });
+  video.addEventListener("pause", () => { toggle.textContent = "Play background video"; });
+  video.addEventListener("error", () => {
+    video.classList.remove("home-background-ready");
+    toggle.hidden = true;
+  });
+  const visibility = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    updatePlayback();
+  });
+  visibility.observe(video);
+  document.addEventListener("visibilitychange", updatePlayback);
+  reducedMotion.addEventListener("change", (event) => {
+    requested = !event.matches;
+    updatePlayback();
+  });
+}
+
 function eventKind(title) {
   if (/^(?:valorant )?champions (?:20|austin)/i.test(title)) return "champions";
   if (/\bmasters\b|lock\W*in/i.test(title)) return "masters";
@@ -407,11 +449,28 @@ function getRegion(regionName) {
   return null;
 }
 
+function homeLeaderAchievement(item, type) {
+  const events = (type === "player" ? item.tournament_finishes : item.achievement_events) || [];
+  const best = events.filter((event) => event.placement && Number.isFinite(event.points))
+    .sort((a, b) => b.points - a.points || (b.maps ?? 0) - (a.maps ?? 0))[0];
+  if (!best) return null;
+  const finish = document.createElement("span");
+  finish.className = "home-leader-finish";
+  addImage(finish, eventIcon(best), "home-finish-icon", "");
+  const place = document.createElement("b");
+  place.textContent = best.placement;
+  const title = document.createElement("span");
+  title.textContent = best.title.replace(/^(?:VALORANT |Champions Tour \d{4}: )/i, "");
+  finish.title = `${best.placement} · ${best.title}`;
+  finish.append(place, title);
+  return finish;
+}
+
 function renderHomeLeader(item, type, rank) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "home-leader-button";
-  button.setAttribute("aria-label", `Open ${type} profile: ${item.name}`);
+  const accessibleName = [`Open ${type} profile: ${item.name}`];
   button.addEventListener("click", () => loadProfile({ type, id: item.id, region: item.region }));
 
   const position = document.createElement("span");
@@ -429,13 +488,23 @@ function renderHomeLeader(item, type, rank) {
   identity.className = "home-leader-identity";
   const name = document.createElement("strong");
   name.textContent = item.name;
-  const meta = document.createElement("small");
+  identity.append(name);
   if (type === "player") {
-    meta.textContent = item.team || "TEAM NOT RECORDED · 2026";
-    identity.append(name, meta);
-  } else {
-    identity.append(name);
+    const meta = document.createElement("small");
+    meta.className = "home-leader-meta";
+    if (item.team) meta.append(item.team);
+    if (item.role) {
+      meta.append(roleBadge(item.role));
+      accessibleName.push(item.role);
+    }
+    if (meta.childNodes.length) identity.append(meta);
   }
+  const achievement = homeLeaderAchievement(item, type);
+  if (achievement) {
+    identity.append(achievement);
+    accessibleName.push(achievement.title);
+  }
+  button.setAttribute("aria-label", accessibleName.join(", "));
 
   const score = document.createElement("span");
   score.className = "home-leader-score";
@@ -1324,6 +1393,10 @@ async function loadRoadmap() {
   renderStageEvents();
 }
 
+for (const role of document.querySelectorAll("[data-draft-role]")) {
+  role.replaceChildren(roleBadge(role.dataset.draftRole));
+}
+setupHomeVideo();
 loadPowerRankings();
 loadPlayerRankings();
 loadRoadmap();

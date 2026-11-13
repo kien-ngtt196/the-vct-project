@@ -1222,7 +1222,7 @@ def player_power_by_season(years):
                     "tournament_finishes": [
                         {
                             "event_id": event_id, "kind": finish["kind"], "title": finish["title"],
-                            "placement": finish["placement"], "maps": maps,
+                            "placement": finish["placement"], "points": finish["points"], "maps": maps,
                         }
                         for team_id, event_id, maps in (row[25] or [])
                         if (finish := placements.get((team_id, event_id))) is not None
@@ -1343,7 +1343,8 @@ RESPONSE_HEADERS = {
         "default-src 'self'; img-src 'self' https://vlr.gg https://www.vlr.gg "
         "https://owcdn.net data:; style-src 'self' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; script-src 'self'; "
-        "connect-src 'self'; object-src 'none'; base-uri 'none'"
+        "connect-src 'self'; media-src 'self' https://cmsassets.rgpub.io; "
+        "object-src 'none'; base-uri 'none'"
     ),
 }
 

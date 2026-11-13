@@ -1432,7 +1432,11 @@ main { width: min(1480px, 94vw); }
   border-color: var(--red);
 }
 .home-feature-card:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
-.team-feature-card { background-image: url("/assets/vct/team-champions.jpg"); }
+/* Shannon Cottrell / Riot Games: https://www.flickr.com/photos/valorantesports/54834909990 */
+.archive-feature-card {
+  background-image: url("/vct-images/champions-paris-archive.jpg");
+  background-position: center 47%;
+}
 .player-feature-card { background-image: url("/vct-images/EDG-Kangkang-1920x1281.webp"); }
 .search-feature-card { background-image: url("/vct-images/55597101270_4780e301ce_c.jpg"); }
 .watch-feature-card { background-image: url("/vct-images/182526638-valorant-esports-emea-on-x-gamechangersemea-stage-1-playoffs-start-today-at-1800-cest-contain-you-excitement-and-download-our-stunning-wallpaper.jpg"); }
@@ -2607,4 +2611,134 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
   .profile-match-score { padding-inline: 6px; }
   .match-team-logo { width: 21px; height: 21px; }
   .profile-matchup .match-team { overflow-wrap: anywhere; }
+}
+
+/* Homepage */
+.home-view { --home-gold: #f3d18a; }
+.home-showcase {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: clamp(430px, 52vw, 640px);
+  gap: 28px;
+  overflow: hidden;
+  padding: clamp(20px, 4vw, 56px);
+  border: 1px solid #38332b;
+  border-radius: 12px;
+  background: #181411 url("/vct-images/arena-roadmap.jpg") center / cover;
+  color: #faf6ee;
+}
+.home-background, .home-showcase::before {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.home-background { z-index: -2; object-fit: cover; opacity: 0; }
+.home-background-ready { opacity: 1; }
+.home-showcase::before {
+  z-index: -1;
+  content: "";
+  background: linear-gradient(90deg, #110e0bed 0%, #110e0bcd 34%, #110e0b34 100%),
+    linear-gradient(0deg, #100d0be0, transparent 42%);
+}
+.home-intro { min-width: 0; margin-block: auto; }
+.home-intro .eyebrow { color: var(--home-gold); }
+.home-intro h1 {
+  margin: .14em 0 .2em;
+  font-size: clamp(3rem, 6.5vw, 6.5rem);
+  letter-spacing: -.065em;
+  line-height: .92;
+}
+.home-intro h1 span { display: block; }
+.home-intro > p:not(.eyebrow), .home-simulator-copy > p {
+  max-width: 43ch;
+  color: #d0c8bc;
+  font-size: clamp(.9rem, 1.3vw, 1.08rem);
+  line-height: 1.6;
+}
+.home-intro-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.home-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6em;
+  padding: .75em 1em;
+  border: 1px solid #665844;
+  border-radius: 5px;
+  color: #fff3db;
+  font-size: .84rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.home-action:hover { border-color: var(--home-gold); color: #fff; }
+.home-action:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.home-action-primary { border-color: var(--home-gold); background: var(--home-gold); color: #20170b; }
+.home-action-primary:hover { background: #ffe4ac; color: #20170b; }
+.home-coverage { display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 26px 0 0; }
+.home-coverage div { display: flex; flex-direction: column-reverse; gap: 4px; }
+.home-coverage dt { color: #c2b7a8; font-size: .68rem; }
+.home-coverage dd { margin: 0; font: 700 .94rem var(--mono-font); }
+.home-video-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; font-size: .75rem; }
+.home-video-actions a { color: var(--home-gold); }
+.home-video-actions button { padding: 6px 9px; border: 1px solid #b1a28e; border-radius: 4px; background: #17130ee8; color: #fff3db; font: inherit; cursor: pointer; }
+.home-video-actions button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.home-simulator {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding: clamp(18px, 3vw, 36px);
+  border: 1px solid #554632;
+  border-radius: 9px;
+  color: #faf6ee;
+  background: linear-gradient(100deg, #17130e 30%, #17130ee8 68%, #17130eb5),
+    url("/vct-images/arena-roadmap.jpg") center 45% / cover;
+}
+.home-simulator h2, .home-standings h2 { margin: 0 0 12px; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.home-simulator-copy p { margin: 0 0 16px; }
+.home-simulator-roles { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.home-simulator-roles li { padding: 7px 9px; border: 1px solid #61513a; border-radius: 5px; background: #18140e; color: var(--home-gold); font-size: .78rem; }
+.home-standings { margin-top: 30px; }
+.home-standings .home-leaders, .home-resources { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+:root[data-theme="dark"] .home-standings .home-leader-group {
+  border-radius: 8px;
+  background: linear-gradient(100deg, #151312f2, #151312b8),
+    var(--home-leader-art) center 38% / cover no-repeat, #151515;
+}
+.home-team-leaders { --home-leader-art: url("/vct-images/paper-rex-standings.jpg"); }
+.home-player-leaders { --home-leader-art: url("/vct-images/nrg-standings.jpg"); }
+.home-standings .home-leader-button { min-height: 70px; }
+.home-leader-identity .home-leader-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 9px; }
+.home-leader-meta .role-badge { color: #e4d6b9; }
+.home-leader-finish {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: #e6ddcd;
+  font-size: .68rem;
+}
+.home-leader-finish b { flex: none; color: var(--home-gold); }
+.home-leader-finish span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-finish-icon { flex: none; width: 14px; height: 14px; object-fit: contain; }
+.home-standings .home-leader-heading h3 { margin: 0; color: #f5f2ec; font-size: 1.1rem; }
+.home-resources { margin: 18px 0 35px; }
+.home-resources .home-feature-card { min-height: 118px; }
+
+@media (max-width: 790px) {
+  .home-simulator { grid-template-columns: minmax(0, 1fr); }
+  .home-showcase::before { background: linear-gradient(90deg, #110e0be8, #110e0b99); }
+  .home-intro h1 span { display: inline; }
+  .home-simulator-roles { justify-content: flex-start; }
+}
+@media (max-width: 540px) {
+  .home-standings .home-leaders, .home-resources { grid-template-columns: minmax(0, 1fr); }
+  .home-intro h1 { font-size: clamp(2.45rem, 11vw, 3.7rem); }
 }
