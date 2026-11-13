@@ -120,13 +120,11 @@ function showPage(view, scroll = true) {
 
 function setupHomeVideo() {
   const video = document.querySelector("#home-background");
-  const toggle = document.querySelector("#home-video-toggle");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let requested = !reducedMotion.matches;
   let visible = false;
 
   function updatePlayback() {
-    if (requested && visible && !document.hidden) {
+    if (!reducedMotion.matches && visible && !document.hidden) {
       video.muted = true;
       if (!video.src) video.src = video.dataset.src;
       video.play().catch(() => {});
@@ -135,18 +133,11 @@ function setupHomeVideo() {
     }
   }
 
-  toggle.addEventListener("click", () => {
-    requested = video.paused;
-    updatePlayback();
-  });
   video.addEventListener("playing", () => {
     video.classList.add("home-background-ready");
-    toggle.textContent = "Pause background video";
   });
-  video.addEventListener("pause", () => { toggle.textContent = "Play background video"; });
   video.addEventListener("error", () => {
     video.classList.remove("home-background-ready");
-    toggle.hidden = true;
   });
   const visibility = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
@@ -154,10 +145,7 @@ function setupHomeVideo() {
   });
   visibility.observe(video);
   document.addEventListener("visibilitychange", updatePlayback);
-  reducedMotion.addEventListener("change", (event) => {
-    requested = !event.matches;
-    updatePlayback();
-  });
+  reducedMotion.addEventListener("change", updatePlayback);
 }
 
 function eventKind(title) {
@@ -1396,6 +1384,23 @@ async function loadRoadmap() {
 for (const role of document.querySelectorAll("[data-draft-role]")) {
   role.replaceChildren(roleBadge(role.dataset.draftRole));
 }
+
+const homeArchiveRegions = document.querySelector("#home-archive-regions");
+for (const region of regions) {
+  const mark = document.createElement("span");
+  addImage(mark, region.logo, "home-feature-mark", "");
+  mark.append(region.name);
+  homeArchiveRegions.append(mark);
+}
+
+const homeRoadmapEvents = document.querySelector("#home-roadmap-events");
+for (const event of document.querySelectorAll(".roadmap-global")) {
+  const mark = document.createElement("span");
+  addImage(mark, event.querySelector("img").getAttribute("src"), "home-feature-mark", "");
+  mark.append(event.querySelector("[data-roadmap-event]").textContent);
+  homeRoadmapEvents.append(mark);
+}
+
 setupHomeVideo();
 loadPowerRankings();
 loadPlayerRankings();

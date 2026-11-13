@@ -2620,9 +2620,8 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   min-height: clamp(430px, 52vw, 640px);
-  gap: 28px;
   overflow: hidden;
   padding: clamp(20px, 4vw, 56px);
   border: 1px solid #38332b;
@@ -2641,8 +2640,8 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
 .home-showcase::before {
   z-index: -1;
   content: "";
-  background: linear-gradient(90deg, #110e0bed 0%, #110e0bcd 34%, #110e0b34 100%),
-    linear-gradient(0deg, #100d0be0, transparent 42%);
+  background: linear-gradient(90deg, #110e0be0 0%, #110e0bb8 34%, #110e0b12 100%),
+    linear-gradient(0deg, #100d0b9c, transparent 42%);
 }
 .home-intro { min-width: 0; margin-block: auto; }
 .home-intro .eyebrow { color: var(--home-gold); }
@@ -2684,10 +2683,6 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
 .home-coverage div { display: flex; flex-direction: column-reverse; gap: 4px; }
 .home-coverage dt { color: #c2b7a8; font-size: .68rem; }
 .home-coverage dd { margin: 0; font: 700 .94rem var(--mono-font); }
-.home-video-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; font-size: .75rem; }
-.home-video-actions a { color: var(--home-gold); }
-.home-video-actions button { padding: 6px 9px; border: 1px solid #b1a28e; border-radius: 4px; background: #17130ee8; color: #fff3db; font: inherit; cursor: pointer; }
-.home-video-actions button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .home-simulator {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -2698,10 +2693,12 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
   border: 1px solid #554632;
   border-radius: 9px;
   color: #faf6ee;
-  background: linear-gradient(100deg, #17130e 30%, #17130ee8 68%, #17130eb5),
+  background: linear-gradient(100deg, #17130ef5 22%, #17130ec9 60%, #17130e87),
     url("/vct-images/arena-roadmap.jpg") center 45% / cover;
 }
 .home-simulator h2, .home-standings h2 { margin: 0 0 12px; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.home-simulator h2 { display: flex; align-items: center; gap: 10px; }
+.home-simulator h2 img { flex: none; width: clamp(27px, 4vw, 36px); height: auto; }
 .home-simulator-copy p { margin: 0 0 16px; }
 .home-simulator-roles { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; margin: 0; padding: 0; list-style: none; }
 .home-simulator-roles li { padding: 7px 9px; border: 1px solid #61513a; border-radius: 5px; background: #18140e; color: var(--home-gold); font-size: .78rem; }
@@ -2731,10 +2728,24 @@ img[src$="/vct-images/vlr-vct-emea-2027.png"] {
 .home-standings .home-leader-heading h3 { margin: 0; color: #f5f2ec; font-size: 1.1rem; }
 .home-resources { margin: 18px 0 35px; }
 .home-resources .home-feature-card { min-height: 118px; }
+.home-feature-marks { display: flex; flex-wrap: wrap; gap: 6px; padding-inline-end: 26px; }
+.home-feature-marks > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  border: 1px solid #fff3;
+  border-radius: 4px;
+  background: #12110fdf;
+  color: #fff6e8;
+  font-size: .72rem;
+  font-weight: 600;
+}
+.home-feature-mark { flex: none; width: 17px; height: 17px; object-fit: contain; }
 
 @media (max-width: 790px) {
   .home-simulator { grid-template-columns: minmax(0, 1fr); }
-  .home-showcase::before { background: linear-gradient(90deg, #110e0be8, #110e0b99); }
+  .home-showcase::before { background: linear-gradient(90deg, #110e0bd9, #110e0b80); }
   .home-intro h1 span { display: inline; }
   .home-simulator-roles { justify-content: flex-start; }
 }

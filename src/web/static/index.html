@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/app.css?v=61">
+    <link rel="stylesheet" href="/app.css?v=63">
     <link rel="stylesheet" href="/simulator.css?v=6">
-    <script src="/app.js?v=62" defer></script>
+    <script src="/app.js?v=64" defer></script>
     <script src="/simulator-engine.js?v=2" defer></script>
     <script src="/simulator.js?v=7" defer></script>
   </head>
@@ -79,15 +79,11 @@
               <div><dt>Seasons covered</dt><dd>2021–26</dd></div>
             </dl>
           </div>
-          <div class="home-video-actions">
-            <a href="https://www.youtube.com/watch?v=1Z4nca2ptMU" target="_blank" rel="noopener noreferrer">Watch the Shanghai recap ↗</a>
-            <button type="button" id="home-video-toggle">Play background video</button>
-          </div>
         </section>
 
         <section class="home-simulator" aria-labelledby="home-simulator-title">
           <div class="home-simulator-copy">
-            <h2 id="home-simulator-title">Champions Simulator</h2>
+            <h2 id="home-simulator-title"><img src="/champions-mark.svg" alt="" width="36" height="36">Champions Simulator</h2>
             <p>Pick five pros from 2021–2026, choose your region, and see how far your lineup goes.</p>
             <a class="home-action home-action-primary" href="#simulator" data-view-target="simulator">Start drafting <span aria-hidden="true">↗</span></a>
           </div>
@@ -127,12 +123,12 @@
         <nav class="home-resources" aria-label="More VCT coverage">
           <a class="home-feature-card archive-feature-card" href="#archive" data-view-target="archive">
             <span class="feature-card-title">Tournament archive</span>
-            <span class="feature-card-detail">Browse past VCT events</span>
+            <span class="home-feature-marks" id="home-archive-regions"></span>
             <span class="feature-card-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="home-feature-card watch-feature-card" href="#watchlist" data-view-target="watchlist">
             <span class="feature-card-title">2027 roadmap</span>
-            <span class="feature-card-detail">Follow the next VCT season</span>
+            <span class="home-feature-marks" id="home-roadmap-events"></span>
             <span class="feature-card-arrow" aria-hidden="true">↗</span>
           </a>
         </nav>
